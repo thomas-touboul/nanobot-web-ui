@@ -164,7 +164,7 @@ function EditorContent() {
                 autoFocus
               />
             ) : (
-              <div className="absolute inset-0 w-full h-full overflow-y-auto p-8 md:p-12 bg-card">
+              <div className="absolute inset-0 w-full h-full overflow-y-auto p-6 md:p-10 bg-card">
                 {isMarkdown ? (
                   <div className="prose prose-zinc dark:prose-invert max-w-none">
                     <ReactMarkdown
