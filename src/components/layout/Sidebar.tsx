@@ -59,6 +59,13 @@ const navigation = [
     match: (path: string, params: URLSearchParams) => params.get("file") === "USER.md"
   },
   { 
+    title: "Heartbeat", 
+    subtitle: "Tasks & Routine", 
+    href: "/editor?file=HEARTBEAT.md", 
+    icon: Zap,
+    match: (path: string, params: URLSearchParams) => params.get("file") === "HEARTBEAT.md"
+  },
+  { 
     title: "Skills", 
     subtitle: "Capabilities", 
     href: "/skills", 
