@@ -2,16 +2,69 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { LayoutDashboard, FileCode2, BrainCircuit, Fingerprint, Zap, Radio } from "lucide-react";
+import { 
+  FileCode2, 
+  BrainCircuit, 
+  Fingerprint, 
+  Zap, 
+  Settings,
+  TerminalSquare,
+  User,
+  FileText
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Éditeur", href: "/editor", icon: FileCode2, match: (path: string, params: URLSearchParams) => path === "/editor" && !params.get("file") },
-  { name: "Mémoire", href: "/editor?file=MEMORY.md", icon: BrainCircuit, match: (path: string, params: URLSearchParams) => path === "/editor" && params.get("file") === "MEMORY.md" },
-  { name: "Personnalité", href: "/editor?file=SOUL.md", icon: Fingerprint, match: (path: string, params: URLSearchParams) => path === "/editor" && params.get("file") === "SOUL.md" },
-  { name: "Skills", href: "/skills", icon: Zap, match: (path: string) => path.startsWith("/skills") },
+  { 
+    title: "Configuration", 
+    subtitle: "openclaw.json", 
+    href: "/editor?file=openclaw.json", 
+    icon: Settings,
+    match: (path: string, params: URLSearchParams) => params.get("file") === "openclaw.json"
+  },
+  { 
+    title: "Agents & Workspace", 
+    subtitle: "AGENTS.md", 
+    href: "/editor?file=AGENTS.md", 
+    icon: BrainCircuit,
+    match: (path: string, params: URLSearchParams) => params.get("file") === "AGENTS.md"
+  },
+  { 
+    title: "Outils & SSH", 
+    subtitle: "TOOLS.md", 
+    href: "/editor?file=TOOLS.md", 
+    icon: TerminalSquare,
+    match: (path: string, params: URLSearchParams) => params.get("file") === "TOOLS.md"
+  },
+  { 
+    title: "Mémoire Long Terme", 
+    subtitle: "MEMORY.md", 
+    href: "/editor?file=MEMORY.md", 
+    icon: FileText,
+    match: (path: string, params: URLSearchParams) => params.get("file") === "MEMORY.md"
+  },
+  { 
+    title: "Personnalité", 
+    subtitle: "SOUL.md", 
+    href: "/editor?file=SOUL.md", 
+    icon: Fingerprint,
+    match: (path: string, params: URLSearchParams) => params.get("file") === "SOUL.md"
+  },
+  { 
+    title: "Profil Utilisateur", 
+    subtitle: "USER.md", 
+    href: "/editor?file=USER.md", 
+    icon: User,
+    match: (path: string, params: URLSearchParams) => params.get("file") === "USER.md"
+  },
+  { 
+    title: "Skills", 
+    subtitle: "Compétences", 
+    href: "/skills", 
+    icon: Zap,
+    match: (path: string) => path.startsWith("/skills")
+  },
 ];
 
 function SidebarContent() {
@@ -29,7 +82,7 @@ function SidebarContent() {
         </Link>
       </div>
       
-      <nav className="flex-1 p-3 space-y-0.5">
+      <nav className="flex-1 p-3 space-y-1">
         {navigation.map((item) => {
           const isActive = item.match 
             ? item.match(pathname, searchParams)
@@ -37,27 +90,39 @@ function SidebarContent() {
 
           return (
             <Link
-              key={item.name}
+              key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 border border-transparent",
                 isActive 
-                  ? "bg-secondary text-foreground font-semibold" 
-                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                  ? "bg-secondary border-border/50 shadow-sm" 
+                  : "hover:bg-secondary/50 hover:border-border/30"
               )}
             >
-              <item.icon className={cn("w-4 h-4", isActive ? "text-foreground" : "text-muted-foreground/70")} />
-              {item.name}
+              <div className={cn(
+                "w-8 h-8 rounded-md flex items-center justify-center transition-colors",
+                isActive ? "bg-background text-primary" : "bg-secondary/50 text-muted-foreground group-hover:bg-background group-hover:text-foreground"
+              )}>
+                <item.icon className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className={cn(
+                  "text-sm font-medium leading-none transition-colors",
+                  isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                )}>
+                  {item.title}
+                </span>
+                <span className="text-[10px] text-muted-foreground font-mono mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                  {item.subtitle}
+                </span>
+              </div>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-border/40">
-        <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          Gateway Online
-        </div>
+      <div className="p-4 border-t border-border/40 text-xs text-muted-foreground text-center">
+        v0.1.0-alpha
       </div>
     </aside>
   );

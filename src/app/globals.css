@@ -38,6 +38,8 @@
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-pulse-slow: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   @keyframes accordion-down {
     from { height: 0; }
@@ -46,6 +48,14 @@
   @keyframes accordion-up {
     from { height: var(--radix-accordion-content-height); }
     to { height: 0; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 }
 
@@ -57,10 +67,6 @@
   }
 }
 
-/*
-  Linear / Vercel-like Theme
-  Minimalist, high contrast text, subtle borders.
-*/
 :root {
   --background: #ffffff;
   --foreground: #09090b; /* Zinc 950 */
@@ -94,10 +100,10 @@
 }
 
 .dark {
-  --background: #000000; /* Pure Black or #0a0a0a */
-  --foreground: #ededed; /* Zinc 50ish */
+  --background: #000000;
+  --foreground: #ededed;
  
-  --card: #000000;
+  --card: #0a0a0a;
   --card-foreground: #ededed;
  
   --popover: #000000;
@@ -106,13 +112,13 @@
   --primary: #fafafa;
   --primary-foreground: #18181b;
  
-  --secondary: #27272a; /* Zinc 800 */
+  --secondary: #1f1f22; /* Zinc 800-ish */
   --secondary-foreground: #fafafa;
  
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa; /* Zinc 400 */
+  --muted: #1f1f22;
+  --muted-foreground: #a1a1aa;
  
-  --accent: #27272a;
+  --accent: #1f1f22;
   --accent-foreground: #fafafa;
  
   --destructive: #7f1d1d;
@@ -129,5 +135,8 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    /* Subtle gradient overlay */
+    background-image: radial-gradient(circle at 50% 0%, var(--color-secondary) 0%, transparent 70%);
+    background-attachment: fixed;
   }
 }

@@ -2,106 +2,150 @@
 
 import { useState, useEffect } from "react";
 import { 
-  FileCode2, 
-  ArrowRight,
-  Database,
-  Activity,
-  Server
+  Activity, 
+  Server, 
+  Cpu, 
+  Network, 
+  CheckCircle2,
+  Terminal
 } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+interface GatewayStatus {
+  service: string;
+  state: string;
+  port: number | string;
+  pid: number | string;
+  rpc_probe: string;
+  error?: string;
+}
+
 export default function Dashboard() {
-  const [files, setFiles] = useState<{name: string, type: string}[]>([]);
+  const [status, setStatus] = useState<GatewayStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/files")
+    fetch("/api/gateway/status")
       .then((res) => res.json())
       .then((data) => {
-        setFiles(data.files || []);
+        setStatus(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
         setLoading(false);
       });
   }, []);
 
   return (
-    <div className="space-y-8 container max-w-5xl py-8">
+    <div className="space-y-8 container max-w-4xl py-8 animate-fade-in">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground text-sm">Vue d'ensemble de l'instance OpenClaw.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Gateway Status</h1>
+        <p className="text-muted-foreground text-sm">Monitoring en temps réel du service OpenClaw Gateway.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Status Card */}
-        <div className="p-6 bg-card border border-border rounded-lg shadow-sm flex flex-col justify-between h-32 relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
-          <div className="flex justify-between items-start z-10">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Gateway Status</p>
-              <h3 className="text-2xl font-semibold mt-1 text-emerald-600 dark:text-emerald-400">Online</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Main Status Card */}
+        <div className="md:col-span-2 p-8 bg-card border border-border rounded-xl shadow-sm relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <Server className="w-64 h-64" />
+          </div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className={cn(
+                "w-16 h-16 rounded-full flex items-center justify-center border-4",
+                status?.state === "active" 
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" 
+                  : "bg-red-500/10 border-red-500/20 text-red-500"
+              )}>
+                {loading ? (
+                  <Activity className="w-8 h-8 animate-pulse" />
+                ) : (
+                  <Activity className="w-8 h-8" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">OpenClaw Gateway</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={cn(
+                    "w-2.5 h-2.5 rounded-full",
+                    status?.state === "active" ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+                  )}></span>
+                  <span className={cn(
+                    "text-sm font-medium",
+                    status?.state === "active" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+                  )}>
+                    {loading ? "Checking..." : (status?.state === "active" ? "Operational" : "Offline")}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-              <Activity className="w-4 h-4" />
+
+            <div className="flex flex-col gap-1 text-right">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Uptime</span>
+              <span className="text-2xl font-mono font-medium text-foreground">99.9%</span>
             </div>
           </div>
-          <div className="text-xs text-muted-foreground flex items-center gap-2 z-10">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            System operational
-          </div>
-          <div className="absolute right-0 bottom-0 w-24 h-24 bg-gradient-to-tr from-emerald-500/5 to-transparent rounded-full blur-xl transform translate-x-8 translate-y-8 group-hover:scale-150 transition-transform duration-500"></div>
         </div>
 
-        {/* Database / Memory Card */}
-        <div className="p-6 bg-card border border-border rounded-lg shadow-sm flex flex-col justify-between h-32 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
-          <div className="flex justify-between items-start z-10">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Mémoire</p>
-              <h3 className="text-2xl font-semibold mt-1 text-foreground">Actif</h3>
+        {/* Info Grid */}
+        <div className="p-6 bg-card border border-border rounded-xl flex flex-col gap-4 hover:border-border/80 transition-colors">
+          <div className="flex items-center gap-3 text-muted-foreground mb-2">
+            <Cpu className="w-5 h-5" />
+            <h3 className="text-sm font-medium uppercase tracking-wider">Process Info</h3>
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
+              <span className="text-sm text-muted-foreground">PID</span>
+              <span className="text-sm font-mono font-medium bg-secondary px-2 py-0.5 rounded">{status?.pid || "---"}</span>
             </div>
-            <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
-              <Database className="w-4 h-4" />
+            <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
+              <span className="text-sm text-muted-foreground">Service State</span>
+              <span className="text-sm font-medium flex items-center gap-1.5">
+                {status?.state === "active" && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
+                {status?.state || "---"}
+              </span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
+              <span className="text-sm text-muted-foreground">Manager</span>
+              <span className="text-sm font-medium">{status?.service || "---"}</span>
             </div>
           </div>
-          <div className="text-xs text-muted-foreground z-10">
-            Linked to local storage
+        </div>
+
+        <div className="p-6 bg-card border border-border rounded-xl flex flex-col gap-4 hover:border-border/80 transition-colors">
+          <div className="flex items-center gap-3 text-muted-foreground mb-2">
+            <Network className="w-5 h-5" />
+            <h3 className="text-sm font-medium uppercase tracking-wider">Network</h3>
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
+              <span className="text-sm text-muted-foreground">Port</span>
+              <span className="text-sm font-mono font-medium bg-secondary px-2 py-0.5 rounded">{status?.port || "---"}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
+              <span className="text-sm text-muted-foreground">RPC Probe</span>
+              <span className={cn(
+                "text-sm font-medium px-2 py-0.5 rounded-full border",
+                status?.rpc_probe === "ok" || status?.rpc_probe === "Online"
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                  : "bg-secondary text-muted-foreground border-transparent"
+              )}>
+                {status?.rpc_probe || "Unknown"}
+              </span>
+            </div>
+             <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
+              <span className="text-sm text-muted-foreground">Protocol</span>
+              <span className="text-sm font-medium">WebSocket / HTTP</span>
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border pb-4">
-          <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
-            <FileCode2 className="w-5 h-5 text-muted-foreground" />
-            Fichiers Récents
-          </h2>
-          <Link href="/editor" className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1">
-            Tout voir <ArrowRight className="w-3 h-3" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {loading ? (
-            Array(3).fill(0).map((_, i) => (
-              <div key={i} className="h-20 bg-secondary/50 rounded-lg animate-pulse" />
-            ))
-          ) : (
-            files.slice(0, 6).map((file) => (
-              <Link 
-                key={file.name} 
-                href={`/editor?file=${file.name}`}
-                className="group flex items-center p-4 bg-card hover:bg-secondary/40 border border-border hover:border-foreground/20 rounded-lg transition-all duration-200"
-              >
-                <div className="w-10 h-10 rounded-md bg-secondary flex items-center justify-center mr-4 group-hover:bg-background transition-colors border border-transparent group-hover:border-border">
-                  <FileCode2 className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{file.type}</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
-              </Link>
-            ))
-          )}
-        </div>
+      
+      <div className="p-4 rounded-lg bg-secondary/30 border border-border text-xs font-mono text-muted-foreground flex items-center gap-3">
+        <Terminal className="w-4 h-4" />
+        <span>To manage gateway: <span className="text-foreground">openclaw gateway [start|stop|restart]</span></span>
       </div>
     </div>
   );
