@@ -1,21 +1,32 @@
-# Molt Admin 🦞
+# openclaw-admin 🦞
 
-Interface d'administration locale pour la configuration, la mémoire et la personnalité de **Molt**.
+A local management dashboard for the configuration, memory, and personality of **OpenClaw**.
 
-## ⚠️ Règle de Sécurité Absolue
+## Features
 
-**ZERO DATA SENSIBLE** : Interdiction formelle de committer des secrets (tokens, mots de passe, clés API) sur ce dépôt.
-- La configuration `openclaw.json` doit être lue localement mais ne doit jamais être commitée si elle contient des tokens réels (utiliser un fichier `.env` ou garder le fichier en dehors du suivi git si nécessaire).
-- Le `.gitignore` est configuré pour protéger les données sensibles.
+- **Configuration Management**: Direct editing of `openclaw.json` and core configuration files.
+- **Skills Center**: List, create, and delete specialized agent skills with real-time file editing.
+- **Workspace Memory**: Visualization and management of the agent's knowledge base (`AGENTS.md`, `MEMORY.md`, `SOUL.md`, etc.).
+- **Tasks & Routine**: Direct access to `HEARTBEAT.md` for managing automated agent tasks.
 
-## Stack Technique
+## Tech Stack
+
 - **Next.js 15** (App Router)
-- **Tailwind CSS**
+- **Tailwind CSS 4**
 - **Lucide React** (Icons)
 
-## Développement
+## Getting Started
+
+First, install the dependencies:
+
 ```bash
 npm install
+```
+
+Then, run the development server:
+
+```bash
 npm run dev
 ```
-Accédez ensuite à l'interface sur `http://localhost:3000`.
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to access the dashboard.
