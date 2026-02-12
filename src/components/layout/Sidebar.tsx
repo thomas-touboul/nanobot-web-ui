@@ -121,9 +121,6 @@ function SidebarContent() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-border/40 text-xs text-muted-foreground text-center">
-        v0.1.0-alpha
-      </div>
     </aside>
   );
 }

@@ -11,7 +11,7 @@ export default function TopBar() {
   useEffect(() => setMounted(true), []);
 
   return (
-    <header className="sticky top-0 z-30 h-14 border-b border-border bg-background/80 backdrop-blur-md px-6 flex items-center justify-between">
+    <header className="h-14 w-full border-b border-border bg-background px-6 flex items-center justify-between shrink-0">
       <div className="flex items-center">
         <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full animate-fade-in">
           <span className="relative flex h-2 w-2">

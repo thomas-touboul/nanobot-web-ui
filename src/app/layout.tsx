@@ -28,11 +28,13 @@ export default function RootLayout({
         >
           <div className="flex h-screen overflow-hidden bg-background text-foreground">
             <Sidebar />
-            <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <div className="relative flex flex-1 flex-col h-full overflow-hidden">
               <TopBar />
-              <main className="flex-1 p-6">
-                {children}
-              </main>
+              <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                <main className="p-6">
+                  {children}
+                </main>
+              </div>
             </div>
           </div>
         </ThemeProvider>

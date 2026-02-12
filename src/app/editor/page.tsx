@@ -1,18 +1,31 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Save, ChevronLeft, Loader2, CheckCircle2, FileText } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { 
+  Save, 
+  Loader2, 
+  CheckCircle2, 
+  FileText, 
+  Pencil, 
+  Eye, 
+  X 
+} from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 function EditorContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const filename = searchParams.get("file");
   
   const [content, setContent] = useState("");
+  const [originalContent, setOriginalContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (filename) {
@@ -21,7 +34,10 @@ function EditorContent() {
         .then((res) => res.json())
         .then((data) => {
           setContent(data.content || "");
+          setOriginalContent(data.content || "");
           setLoading(false);
+          // Default to preview mode for supported types
+          setIsEditing(false);
         })
         .catch(err => {
             console.error(err);
@@ -40,13 +56,24 @@ function EditorContent() {
         headers: { "Content-Type": "application/json" },
       });
       if (res.ok) {
-        setMessage("Enregistré avec succès !");
+        setMessage("Enregistré !");
+        setOriginalContent(content);
+        setIsEditing(false); // Return to preview after save
         setTimeout(() => setMessage(""), 3000);
       }
     } catch (e) {
       console.error(e);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleExitEdit = () => {
+    if (canPreview) {
+      setIsEditing(false);
+    } else {
+      setContent(originalContent);
+      setIsEditing(false);
     }
   };
 
@@ -61,6 +88,10 @@ function EditorContent() {
     );
   }
 
+  const isMarkdown = filename.endsWith(".md");
+  const isJson = filename.endsWith(".json");
+  const canPreview = isMarkdown || isJson;
+
   return (
     <div className="h-full flex flex-col space-y-4 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -74,21 +105,42 @@ function EditorContent() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {message && (
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium animate-fade-in">
+            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium animate-fade-in mr-2">
               <CheckCircle2 size={16} />
               {message}
             </div>
           )}
-          <button 
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-all shadow-sm"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            Enregistrer
-          </button>
+
+          {!isEditing ? (
+             <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-all shadow-sm border border-border"
+            >
+              <Pencil className="w-4 h-4" />
+              Modifier
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={handleExitEdit}
+                className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-all shadow-sm border border-border"
+              >
+                {canPreview ? <Eye className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                {canPreview ? "Preview" : "Annuler"}
+              </button>
+              
+              <button 
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-all shadow-sm"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Enregistrer
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -98,12 +150,59 @@ function EditorContent() {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full h-full p-6 bg-transparent font-mono text-sm resize-none focus:outline-none leading-relaxed"
-            spellCheck={false}
-          />
+          <>
+            {isEditing ? (
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full h-full p-6 bg-transparent font-mono text-sm resize-none focus:outline-none leading-relaxed"
+                spellCheck={false}
+                autoFocus
+              />
+            ) : (
+              <div className="w-full h-full overflow-y-auto p-6 bg-card text-sm">
+                {isMarkdown ? (
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code({node, inline, className, children, ...props}: any) {
+                          const match = /language-(\w+)/.exec(className || '');
+                          return !inline && match ? (
+                            <SyntaxHighlighter
+                              style={atomDark}
+                              language={match[1]}
+                              PreTag="div"
+                              {...props}
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                      }}
+                    >
+                      {content}
+                    </ReactMarkdown>
+                  </div>
+                ) : isJson ? (
+                  <SyntaxHighlighter 
+                    language="json" 
+                    style={atomDark}
+                    customStyle={{ background: 'transparent', padding: 0 }}
+                    wrapLongLines
+                  >
+                    {content}
+                  </SyntaxHighlighter>
+                ) : (
+                  <pre className="font-mono whitespace-pre-wrap">{content}</pre>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
