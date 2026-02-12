@@ -1,7 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FileText, Settings, ShieldAlert, Activity } from "lucide-react";
+import { 
+  FileText, 
+  Settings, 
+  Activity, 
+  Clock, 
+  Zap, 
+  CheckCircle2, 
+  AlertCircle,
+  ArrowRight,
+  Database
+} from "lucide-react";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [files, setFiles] = useState([]);
@@ -16,77 +27,107 @@ export default function Dashboard() {
       });
   }, []);
 
-  return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <header className="mb-10 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-            Molt <span className="text-blue-500">Admin</span> 🦞
-          </h1>
-          <p className="text-slate-500">Gérez votre configuration et votre mémoire en toute simplicité.</p>
-        </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-full border border-amber-200 text-sm font-medium">
-          <ShieldAlert size={16} />
-          <span>Zéro Secrets en Git</span>
-        </div>
-      </header>
+  const stats = [
+    { name: "Sessions Actives", value: "1", icon: Activity, color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-900/20" },
+    { name: "Skills Installés", value: "9", icon: Zap, iconColor: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/20" },
+    { name: "Dernier Backup", value: "Aujourd'hui", icon: Database, color: "text-green-600", bg: "bg-green-100 dark:bg-green-900/20" },
+    { name: "Uptime Gateway", value: "24h 12m", icon: Clock, color: "text-purple-600", bg: "bg-purple-100 dark:bg-purple-900/20" },
+  ];
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Status Card */}
-        <div className="md:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-              <Activity size={24} />
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Bonjour, Thomas 👋</h1>
+        <p className="text-muted-foreground mt-1">Voici un aperçu de l'état de Molt et de ses configurations.</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat) => (
+          <div key={stat.name} className="p-6 bg-card border border-border rounded-xl shadow-sm space-y-3">
+            <div className={`w-10 h-10 ${stat.bg} rounded-lg flex items-center justify-center`}>
+              <stat.icon size={20} className={stat.color || stat.iconColor} />
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900">Gateway Status</h3>
-              <p className="text-sm text-green-600 font-medium">Online & Ready</p>
+              <p className="text-sm font-medium text-muted-foreground">{stat.name}</p>
+              <p className="text-2xl font-bold">{stat.value}</p>
             </div>
           </div>
-          <button className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
-            Redémarrer la Gateway
-          </button>
-        </div>
+        ))}
+      </div>
 
-        {/* Files Section */}
-        <div className="md:col-span-2 space-y-4">
-          <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
-            <FileText size={20} className="text-blue-500" />
-            Fichiers de Configuration
-          </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Section */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <FileText size={18} className="text-blue-500" />
+              Configuration & Mémoire
+            </h2>
+            <Link href="/editor" className="text-sm text-blue-600 hover:underline flex items-center gap-1 font-medium">
+              Tout voir <ArrowRight size={14} />
+            </Link>
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {loading ? (
-              <div className="col-span-2 text-center py-10 text-slate-400">Chargement...</div>
+              Array(4).fill(0).map((_, i) => (
+                <div key={i} className="h-24 bg-card border border-border rounded-xl animate-pulse" />
+              ))
             ) : (
-              files.map((file) => (
-                <div key={file.name} className="p-4 bg-white rounded-xl shadow-sm border border-slate-100 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded ${file.type === 'json' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
-                      {file.type}
-                    </span>
-                    <Settings size={14} className="text-slate-300 group-hover:text-blue-400" />
+              files.slice(0, 4).map((file) => (
+                <Link 
+                  key={file.name} 
+                  href={`/editor?file=${file.name}`}
+                  className="p-4 bg-card border border-border rounded-xl hover:border-blue-500/50 hover:shadow-sm transition-all group"
+                >
+                  <div className="flex items-center justify-between mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    <span>{file.type}</span>
+                    <ArrowRight size={12} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                   </div>
-                  <h4 className="font-medium text-slate-900 truncate">{file.name}</h4>
-                  <p className="text-xs text-slate-400 mt-1 truncate">{file.path}</p>
-                </div>
+                  <h4 className="font-semibold text-card-foreground">{file.name}</h4>
+                </Link>
               ))
             )}
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-slate-900">Actions Rapides</h2>
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-            <button className="w-full text-left p-3 bg-white rounded-xl border border-slate-200 text-sm font-medium hover:border-blue-300 transition-all">
-              Éditer ma Personnalité (SOUL)
-            </button>
-            <button className="w-full text-left p-3 bg-white rounded-xl border border-slate-200 text-sm font-medium hover:border-blue-300 transition-all">
-              Mettre à jour la Mémoire
-            </button>
-            <button className="w-full text-left p-3 bg-white rounded-xl border border-slate-200 text-sm font-medium hover:border-blue-300 transition-all">
-              Gérer les Skills
+        {/* Sidebar Status */}
+        <div className="space-y-6">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <CheckCircle2 size={18} className="text-green-500" />
+            Checks Santé
+          </h2>
+          <div className="bg-card border border-border rounded-xl divide-y divide-border overflow-hidden">
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="text-sm font-medium">Connectivité GitHub</span>
+              </div>
+              <CheckCircle2 size={14} className="text-green-500" />
+            </div>
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="text-sm font-medium">Secrets & Sécurité</span>
+              </div>
+              <CheckCircle2 size={14} className="text-green-500" />
+            </div>
+            <div className="p-4 flex items-center justify-between opacity-50">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                <span className="text-sm font-medium">Redis Cache</span>
+              </div>
+              <AlertCircle size={14} className="text-amber-500" />
+            </div>
+          </div>
+
+          <div className="p-6 bg-blue-600 rounded-xl text-white space-y-4">
+            <h3 className="font-bold">Besoin d'aide ?</h3>
+            <p className="text-sm text-blue-100 leading-relaxed">
+              Consultez la documentation technique d'OpenClaw pour configurer vos agents ou créer de nouveaux skills.
+            </p>
+            <button className="w-full py-2 bg-white text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors">
+              Voir la Doc
             </button>
           </div>
         </div>
