@@ -58,7 +58,7 @@ function EditorContent() {
         headers: { "Content-Type": "application/json" },
       });
       if (res.ok) {
-        setMessage("Enregistré !");
+        setMessage("Saved!");
         setOriginalContent(content);
         setIsEditing(false); // Return to preview after save
         setTimeout(() => setMessage(""), 3000);
@@ -82,10 +82,10 @@ function EditorContent() {
   if (!filename) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-4 animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center shadow-inner">
             <FileText className="w-8 h-8 opacity-50" />
         </div>
-        <p className="font-medium">Sélectionnez un fichier dans la barre latérale pour l'éditer.</p>
+        <p className="font-medium">Select a file from the sidebar to edit.</p>
       </div>
     );
   }
@@ -100,12 +100,12 @@ function EditorContent() {
     <div className="h-full flex flex-col space-y-4 animate-fade-in">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-2 bg-secondary/50 rounded-lg">
+          <div className="p-2 bg-secondary/50 rounded-lg shadow-sm border border-border/40">
             <FileText className="w-5 h-5 text-muted-foreground" />
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">{filename}</h1>
-            <p className="text-xs text-muted-foreground font-mono">/home/moltbot/.openclaw/{filename}</p>
+            <p className="text-[10px] text-muted-foreground font-mono">/home/moltbot/.openclaw/{filename}</p>
           </div>
         </div>
 
@@ -123,7 +123,7 @@ function EditorContent() {
               className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-all shadow-sm border border-border"
             >
               <Pencil className="w-4 h-4" />
-              Modifier
+              Edit
             </button>
           ) : (
             <>
@@ -132,7 +132,7 @@ function EditorContent() {
                 className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-all shadow-sm border border-border"
               >
                 {canPreview ? <Eye className="w-4 h-4" /> : <X className="w-4 h-4" />}
-                {canPreview ? "Preview" : "Annuler"}
+                {canPreview ? "Preview" : "Cancel"}
               </button>
               
               <button 
@@ -141,14 +141,14 @@ function EditorContent() {
                 className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-all shadow-sm"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                Enregistrer
+                Save
               </button>
             </>
           )}
         </div>
       </div>
 
-      <div className="flex-1 relative min-h-[500px] border border-border rounded-xl overflow-hidden shadow-sm bg-card">
+      <div className="flex-1 relative min-h-[500px] border border-border rounded-xl overflow-hidden shadow-lg bg-card">
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -159,14 +159,14 @@ function EditorContent() {
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="absolute inset-0 w-full h-full p-6 bg-transparent font-mono text-sm resize-none focus:outline-none leading-relaxed"
+                className="absolute inset-0 w-full h-full p-4 md:p-6 bg-transparent font-mono text-xs resize-none focus:outline-none leading-relaxed"
                 spellCheck={false}
                 autoFocus
               />
             ) : (
-              <div className="absolute inset-0 w-full h-full overflow-y-auto p-6 md:p-10 bg-card">
+              <div className="absolute inset-0 w-full h-full overflow-y-auto p-4 md:p-6 bg-card">
                 {isMarkdown ? (
-                  <div className="prose prose-zinc dark:prose-invert max-w-none">
+                  <div className="prose prose-sm prose-zinc dark:prose-invert max-w-none">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
@@ -196,13 +196,13 @@ function EditorContent() {
                   <SyntaxHighlighter 
                     language="json" 
                     style={syntaxStyle}
-                    customStyle={{ background: 'transparent', padding: 0 }}
+                    customStyle={{ background: 'transparent', padding: 0, fontSize: '0.75rem' }}
                     wrapLongLines
                   >
                     {content}
                   </SyntaxHighlighter>
                 ) : (
-                  <pre className="font-mono whitespace-pre-wrap">{content}</pre>
+                  <pre className="font-mono text-xs whitespace-pre-wrap">{content}</pre>
                 )}
               </div>
             )}

@@ -31,28 +31,28 @@ const navigation = [
     match: (path: string, params: URLSearchParams) => params.get("file") === "AGENTS.md"
   },
   { 
-    title: "Outils & SSH", 
+    title: "Tools & SSH", 
     subtitle: "TOOLS.md", 
     href: "/editor?file=TOOLS.md", 
     icon: TerminalSquare,
     match: (path: string, params: URLSearchParams) => params.get("file") === "TOOLS.md"
   },
   { 
-    title: "Mémoire Long Terme", 
+    title: "Long Term Memory", 
     subtitle: "MEMORY.md", 
     href: "/editor?file=MEMORY.md", 
     icon: FileText,
     match: (path: string, params: URLSearchParams) => params.get("file") === "MEMORY.md"
   },
   { 
-    title: "Personnalité", 
+    title: "Personality", 
     subtitle: "SOUL.md", 
     href: "/editor?file=SOUL.md", 
     icon: Fingerprint,
     match: (path: string, params: URLSearchParams) => params.get("file") === "SOUL.md"
   },
   { 
-    title: "Profil Utilisateur", 
+    title: "User Profile", 
     subtitle: "USER.md", 
     href: "/editor?file=USER.md", 
     icon: User,
@@ -60,7 +60,7 @@ const navigation = [
   },
   { 
     title: "Skills", 
-    subtitle: "Compétences", 
+    subtitle: "Capabilities", 
     href: "/skills", 
     icon: Zap,
     match: (path: string) => path.startsWith("/skills")

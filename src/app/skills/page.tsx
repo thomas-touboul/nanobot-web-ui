@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Puzzle, Edit, ArrowRight, Loader2, Package } from "lucide-react";
+import { Puzzle, Edit, ArrowRight, Loader2, Zap } from "lucide-react";
 
 interface Skill {
   folderName: string;
@@ -39,13 +39,13 @@ export default function SkillsPage() {
     <div className="p-8 space-y-8 animate-fade-in max-w-7xl mx-auto">
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Package className="w-6 h-6 text-primary" />
+          <div className="p-2 bg-primary/10 rounded-lg shadow-sm border border-primary/20">
+            <Zap className="w-6 h-6 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Compétences</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Skills</h1>
         </div>
         <p className="text-muted-foreground text-lg ml-12">
-          Gérez les capacités et les outils de votre agent OpenClaw.
+          Manage your OpenClaw agent's capabilities and tools.
         </p>
       </div>
 
@@ -53,14 +53,14 @@ export default function SkillsPage() {
         {skills.map((skill) => (
           <div 
             key={skill.folderName} 
-            className="group relative flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-all duration-200"
+            className="group relative flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-300 shadow-sm"
           >
             <div className="p-6 flex-1 space-y-4">
               <div className="flex items-start justify-between">
-                <div className="p-2 bg-secondary rounded-lg group-hover:bg-primary/10 transition-colors">
+                <div className="p-2 bg-secondary rounded-lg group-hover:bg-primary/10 transition-colors shadow-inner">
                   <Puzzle className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
                 </div>
-                <div className="px-2 py-1 rounded-full bg-secondary/50 text-[10px] font-mono text-muted-foreground">
+                <div className="px-2 py-1 rounded-full bg-secondary/80 text-[10px] font-mono text-muted-foreground border border-border/50">
                   {skill.folderName}
                 </div>
               </div>
@@ -70,7 +70,7 @@ export default function SkillsPage() {
                   {skill.name}
                 </h3>
                 <p className="text-sm text-muted-foreground line-clamp-3">
-                  {skill.description || "Aucune description disponible."}
+                  {skill.description || "No description available."}
                 </p>
               </div>
             </div>
@@ -81,7 +81,7 @@ export default function SkillsPage() {
                 className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
               >
                 <Edit className="w-4 h-4" />
-                Éditer le fichier
+                Edit Skill File
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
@@ -89,10 +89,10 @@ export default function SkillsPage() {
         ))}
 
         {skills.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-muted-foreground border-2 border-dashed border-border rounded-xl bg-card/50">
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-muted-foreground border-2 border-dashed border-border rounded-xl bg-card/50 shadow-inner">
             <Puzzle className="w-12 h-12 mb-4 opacity-20" />
-            <p className="text-lg font-medium">Aucune compétence détectée</p>
-            <p className="text-sm">Installez des skills dans le dossier <code className="text-xs bg-secondary px-1 py-0.5 rounded">.openclaw/skills</code></p>
+            <p className="text-lg font-medium">No skills detected</p>
+            <p className="text-sm">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.openclaw/skills</code> folder</p>
           </div>
         )}
       </div>
