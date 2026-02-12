@@ -14,11 +14,13 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { atomDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useTheme } from "next-themes";
 
 function EditorContent() {
   const searchParams = useSearchParams();
   const filename = searchParams.get("file");
+  const { resolvedTheme } = useTheme();
   
   const [content, setContent] = useState("");
   const [originalContent, setOriginalContent] = useState("");
@@ -91,6 +93,8 @@ function EditorContent() {
   const isMarkdown = filename.endsWith(".md");
   const isJson = filename.endsWith(".json");
   const canPreview = isMarkdown || isJson;
+  
+  const syntaxStyle = resolvedTheme === 'dark' ? atomDark : oneLight;
 
   return (
     <div className="h-full flex flex-col space-y-4 animate-fade-in">
@@ -155,12 +159,12 @@ function EditorContent() {
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full h-full p-6 bg-transparent font-mono text-sm resize-none focus:outline-none leading-relaxed"
+                className="absolute inset-0 w-full h-full p-6 bg-transparent font-mono text-sm resize-none focus:outline-none leading-relaxed"
                 spellCheck={false}
                 autoFocus
               />
             ) : (
-              <div className="w-full h-full overflow-y-auto p-6 bg-card text-sm">
+              <div className="absolute inset-0 w-full h-full overflow-y-auto p-6 bg-card text-sm">
                 {isMarkdown ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none">
                     <ReactMarkdown
@@ -170,7 +174,7 @@ function EditorContent() {
                           const match = /language-(\w+)/.exec(className || '');
                           return !inline && match ? (
                             <SyntaxHighlighter
-                              style={atomDark}
+                              style={syntaxStyle}
                               language={match[1]}
                               PreTag="div"
                               {...props}
@@ -191,7 +195,7 @@ function EditorContent() {
                 ) : isJson ? (
                   <SyntaxHighlighter 
                     language="json" 
-                    style={atomDark}
+                    style={syntaxStyle}
                     customStyle={{ background: 'transparent', padding: 0 }}
                     wrapLongLines
                   >
