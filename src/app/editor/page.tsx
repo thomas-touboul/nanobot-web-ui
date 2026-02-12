@@ -164,9 +164,9 @@ function EditorContent() {
                 autoFocus
               />
             ) : (
-              <div className="absolute inset-0 w-full h-full overflow-y-auto p-6 bg-card text-sm">
+              <div className="absolute inset-0 w-full h-full overflow-y-auto p-8 md:p-12 bg-card">
                 {isMarkdown ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <div className="prose prose-zinc dark:prose-invert max-w-none">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
