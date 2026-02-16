@@ -12,9 +12,10 @@ import {
   User,
   Activity,
   ShieldCheck,
-  FileText
+  FileText,
+  LucideIcon
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 
 interface File {
   name: string;
@@ -22,7 +23,7 @@ interface File {
   type: string;
 }
 
-const fileIcons: Record<string, any> = {
+const fileIcons: Record<string, LucideIcon> = {
   "SOUL.md": Fingerprint,
   "AGENTS.md": BrainCircuit,
   "TOOLS.md": TerminalSquare,
@@ -70,17 +71,14 @@ export default function CoreFilesPage() {
 
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-          <div className="p-2 bg-emerald-500/10 rounded-lg shadow-sm border border-emerald-500/20">
-            <Library className="w-8 h-8 text-emerald-500" />
-          </div>
-          Core Files
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Identity, personality, and global rules.
-        </p>
-      </div>
+      <HeaderWithIcon 
+        title="Core Files"
+        subtitle="Identity, personality, and global rules."
+        icon={Library}
+        iconColorClass="text-emerald-500"
+        iconBgClass="bg-emerald-500/10"
+        iconBorderClass="border-emerald-500/20"
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {files.map((file) => {

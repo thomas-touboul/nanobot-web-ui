@@ -8,12 +8,13 @@ import {
   Loader2, 
   Search,
   Calendar,
-  ArrowUpDown,
   Clock,
   Type,
-  Brain
+  Brain,
+  LucideIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 
 interface MemoryFile {
   name: string;
@@ -24,6 +25,74 @@ interface MemoryFile {
 
 type SortKey = "name" | "updatedAt" | "size";
 
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+};
+
+const formatSize = (bytes: number) => {
+  if (bytes < 1024) return bytes + ' B';
+  return (bytes / 1024).toFixed(1) + ' KB';
+};
+
+interface SortButtonProps {
+  active: boolean;
+  label: string;
+  icon: LucideIcon;
+  onClick: () => void;
+  order: "asc" | "desc";
+}
+
+const SortButton = ({ active, label, icon: Icon, onClick, order }: SortButtonProps) => (
+  <button 
+    onClick={onClick}
+    className={cn(
+      "inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border transition-all",
+      active ? "bg-sky-500/10 border-sky-500/30 text-sky-600 dark:text-sky-400" : "bg-transparent border-transparent text-muted-foreground hover:bg-secondary"
+    )}
+  >
+    <Icon className="w-2.5 h-2.5" /> {label} {active && (order === "asc" ? "↑" : "↓")}
+  </button>
+);
+
+const FileItem = ({ file, isDaily }: { file: MemoryFile, isDaily: boolean }) => (
+  <Link
+    href={`/editor?file=${file.path}`}
+    className="group flex items-center justify-between px-4 py-3 bg-card border border-border rounded-xl hover:border-sky-500/20 hover:shadow-sm transition-all duration-200"
+  >
+    <div className="flex items-center gap-4 min-w-0">
+      <div className={cn(
+        "p-2 rounded-lg transition-colors shadow-inner shrink-0",
+        isDaily ? "bg-sky-500/5 group-hover:bg-sky-500/10" : "bg-secondary group-hover:bg-amber-500/10"
+      )}>
+        {isDaily ? (
+          <Calendar className="w-4 h-4 text-sky-500/70 group-hover:text-sky-500 transition-colors" />
+        ) : (
+          <Brain className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />
+        )}
+      </div>
+      <div className="flex flex-col min-w-0">
+        <span className="font-semibold text-sm text-foreground tracking-tight group-hover:text-sky-500 transition-colors truncate">
+          {file.name}
+        </span>
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
+          <span className="uppercase font-bold tracking-tighter opacity-70">
+            {formatDate(file.updatedAt)}
+          </span>
+          <span className="font-mono opacity-40">•</span>
+          <span className="font-mono opacity-60">
+            {formatSize(file.size)}
+          </span>
+        </div>
+      </div>
+    </div>
+    <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-sky-500 transition-transform group-hover:translate-x-0.5 shrink-0" />
+  </Link>
+);
+
 export default function MemoryPage() {
   const [files, setFiles] = useState<MemoryFile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,22 +102,17 @@ export default function MemoryPage() {
   const [dailySort, setDailySort] = useState<{key: SortKey, order: "asc" | "desc"}>({ key: "updatedAt", order: "desc" });
   const [otherSort, setOtherSort] = useState<{key: SortKey, order: "asc" | "desc"}>({ key: "updatedAt", order: "desc" });
 
-  const fetchFiles = () => {
-    setLoading(true);
+  useEffect(() => {
     fetch("/api/memory")
       .then((res) => res.json())
       .then((data) => {
-        setFiles(data);
+        setFiles(data.files || []);
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
         setLoading(false);
       });
-  };
-
-  useEffect(() => {
-    fetchFiles();
   }, []);
 
   const isDailyLog = (name: string) => /^\d{4}-\d{2}-\d{2}\.md$/.test(name);
@@ -56,8 +120,8 @@ export default function MemoryPage() {
   const filteredFiles = files.filter(file => file.name.toLowerCase().includes(searchQuery.toLowerCase()));
   
   const getSortFn = (sort: {key: SortKey, order: "asc" | "desc"}) => (a: MemoryFile, b: MemoryFile) => {
-    let valA: any = a[sort.key];
-    let valB: any = b[sort.key];
+    let valA: string | number = a[sort.key];
+    let valB: string | number = b[sort.key];
     
     if (sort.key === "updatedAt") {
       valA = new Date(a.updatedAt).getTime();
@@ -72,66 +136,6 @@ export default function MemoryPage() {
   const dailyFiles = filteredFiles.filter(f => isDailyLog(f.name)).sort(getSortFn(dailySort));
   const otherFiles = filteredFiles.filter(f => !isDailyLog(f.name)).sort(getSortFn(otherSort));
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
-
-  const formatSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    return (bytes / 1024).toFixed(1) + ' KB';
-  };
-
-  const SortButton = ({ active, label, icon: Icon, onClick, order }: any) => (
-    <button 
-      onClick={onClick}
-      className={cn(
-        "inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border transition-all",
-        active ? "bg-sky-500/10 border-sky-500/30 text-sky-600 dark:text-sky-400" : "bg-transparent border-transparent text-muted-foreground hover:bg-secondary"
-      )}
-    >
-      <Icon className="w-2.5 h-2.5" /> {label} {active && (order === "asc" ? "↑" : "↓")}
-    </button>
-  );
-
-  const FileItem = ({ file, isDaily }: { file: MemoryFile, isDaily: boolean }) => (
-    <Link
-      href={`/editor?file=${file.path}`}
-      className="group flex items-center justify-between px-4 py-3 bg-card border border-border rounded-xl hover:border-sky-500/20 hover:shadow-sm transition-all duration-200"
-    >
-      <div className="flex items-center gap-4 min-w-0">
-        <div className={cn(
-          "p-2 rounded-lg transition-colors shadow-inner shrink-0",
-          isDaily ? "bg-sky-500/5 group-hover:bg-sky-500/10" : "bg-secondary group-hover:bg-amber-500/10"
-        )}>
-          {isDaily ? (
-            <Calendar className="w-4 h-4 text-sky-500/70 group-hover:text-sky-500 transition-colors" />
-          ) : (
-            <Brain className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />
-          )}
-        </div>
-        <div className="flex flex-col min-w-0">
-          <span className="font-semibold text-sm text-foreground tracking-tight group-hover:text-sky-500 transition-colors truncate">
-            {file.name}
-          </span>
-          <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
-            <span className="uppercase font-bold tracking-tighter opacity-70">
-              {formatDate(file.updatedAt)}
-            </span>
-            <span className="font-mono opacity-40">•</span>
-            <span className="font-mono opacity-60">
-              {formatSize(file.size)}
-            </span>
-          </div>
-        </div>
-      </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-sky-500 transition-transform group-hover:translate-x-0.5 shrink-0" />
-    </Link>
-  );
-
   if (loading && files.length === 0) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -143,17 +147,14 @@ export default function MemoryPage() {
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-            <div className="p-2 bg-sky-500/10 rounded-lg shadow-sm border border-sky-500/20">
-              <History className="w-8 h-8 text-sky-500" />
-            </div>
-            Memory
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Access and manage your daily short-term memory logs.
-          </p>
-        </div>
+        <HeaderWithIcon 
+            title="Memory"
+            subtitle="Access and manage your daily short-term memory logs."
+            icon={History}
+            iconColorClass="text-sky-500"
+            iconBgClass="bg-sky-500/10"
+            iconBorderClass="border-sky-500/20"
+        />
 
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

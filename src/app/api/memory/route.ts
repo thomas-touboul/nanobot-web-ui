@@ -6,7 +6,7 @@ const MEMORY_ROOT = '/home/moltbot/.openclaw/memory';
 
 export async function GET() {
   if (!fs.existsSync(MEMORY_ROOT)) {
-    return NextResponse.json([]);
+    return NextResponse.json({ files: [] });
   }
 
   try {
@@ -24,7 +24,7 @@ export async function GET() {
       })
       .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
-    return NextResponse.json(files);
+    return NextResponse.json({ files });
   } catch (error) {
     console.error('Error reading memory files:', error);
     return NextResponse.json({ error: 'Failed to list memory files' }, { status: 500 });
