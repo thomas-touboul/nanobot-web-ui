@@ -27,6 +27,8 @@ const mainNavigation = [
     subtitle: "openclaw.json", 
     href: "/editor?file=openclaw.json", 
     icon: Settings,
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
     match: (path: string, params: URLSearchParams) => params.get("file") === "openclaw.json"
   },
   { 
@@ -34,6 +36,8 @@ const mainNavigation = [
     subtitle: "Identity & Rules", 
     href: "/core-files", 
     icon: Library,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
     match: (path: string) => path.startsWith("/core-files")
   },
   { 
@@ -41,6 +45,8 @@ const mainNavigation = [
     subtitle: "Short-term Logs", 
     href: "/memory", 
     icon: History,
+    color: "text-sky-500",
+    bgColor: "bg-sky-500/10",
     match: (path: string) => path.startsWith("/memory")
   },
   { 
@@ -48,6 +54,8 @@ const mainNavigation = [
     subtitle: "Capabilities", 
     href: "/skills", 
     icon: Zap,
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
     match: (path: string) => path.startsWith("/skills")
   },
   { 
@@ -55,6 +63,8 @@ const mainNavigation = [
     subtitle: "Event Triggers", 
     href: "/hooks", 
     icon: Webhook,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
     match: (path: string) => path.startsWith("/hooks")
   },
 ];
@@ -91,8 +101,8 @@ function SidebarContent() {
                 )}
               >
                 <div className={cn(
-                  "w-8 h-8 rounded-md flex items-center justify-center transition-colors shadow-inner",
-                  isActive ? "bg-background text-primary" : "bg-secondary/50 text-muted-foreground group-hover:bg-background group-hover:text-foreground"
+                  "w-8 h-8 rounded-md flex items-center justify-center transition-all duration-200 shadow-inner",
+                  isActive ? cn("bg-background", item.color) : cn("bg-secondary/50 text-muted-foreground group-hover:bg-background", `group-hover:${item.color}`)
                 )}>
                   <item.icon className="w-4 h-4" />
                 </div>
