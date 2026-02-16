@@ -47,6 +47,13 @@ function getSafePath(pathSegments: string[]): string | null {
       return fullPath;
   }
 
+  // 4. Pattern match for Memory: memory/*.md
+  if (pathSegments.length === 2 && 
+      pathSegments[0] === 'memory' && 
+      pathSegments[1].endsWith('.md')) {
+      return fullPath;
+  }
+
   return null;
 }
 

@@ -120,23 +120,23 @@ export default function SkillsPage() {
   }
 
   return (
-    <div className="p-8 space-y-8 animate-fade-in max-w-7xl mx-auto pb-20">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg shadow-sm border border-primary/20">
-              <Zap className="w-6 h-6 text-primary" />
+    <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+            <div className="p-2 bg-purple-500/10 rounded-lg shadow-sm border border-purple-500/20">
+              <Zap className="w-8 h-8 text-purple-500" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Skills</h1>
-          </div>
-          <p className="text-muted-foreground text-lg ml-12">
+            Skills
+          </h1>
+          <p className="text-muted-foreground text-sm">
             Manage your OpenClaw agent's capabilities and tools.
           </p>
         </div>
 
         <button 
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-all shadow-md active:scale-95"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl transition-all font-semibold shadow-lg hover:opacity-90 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           Create New Skill
@@ -147,12 +147,12 @@ export default function SkillsPage() {
         {skills.map((skill) => (
           <div 
             key={skill.folderName} 
-            className="group relative flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-300 shadow-sm"
+            className="group relative flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-300 shadow-sm"
           >
             <div className="p-6 flex-1 space-y-4">
               <div className="flex items-start justify-between">
-                <div className="p-2 bg-secondary rounded-lg group-hover:bg-primary/10 transition-colors shadow-inner">
-                  <Puzzle className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
+                <div className="p-2 bg-secondary/50 rounded-xl group-hover:bg-primary/10 transition-colors shadow-inner">
+                  <Puzzle className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="px-2 py-1 rounded-full bg-secondary/80 text-[10px] font-mono text-muted-foreground border border-border/50">
@@ -171,33 +171,35 @@ export default function SkillsPage() {
               </div>
               
               <div>
-                <h3 className="font-semibold text-xl mb-2 group-hover:text-primary transition-colors">
+                <h3 className="font-semibold text-xl mb-2 group-hover:text-primary transition-colors tracking-tight">
                   {skill.name}
                 </h3>
-                <p className="text-sm text-muted-foreground line-clamp-3">
+                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                   {skill.description || "No description available."}
                 </p>
               </div>
             </div>
 
-            <div className="p-4 border-t border-border bg-secondary/30 flex justify-end">
+            <div className="p-4 border-t border-border bg-secondary/20 flex justify-end">
               <Link
                 href={`/editor?file=skills/${skill.folderName}/SKILL.md`}
-                className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                className="flex items-center gap-2 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="w-3.5 h-3.5" />
                 Edit Skill File
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
           </div>
         ))}
 
         {skills.length === 0 && !loading && (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-muted-foreground border-2 border-dashed border-border rounded-xl bg-card/50 shadow-inner">
-            <Puzzle className="w-12 h-12 mb-4 opacity-20" />
-            <p className="text-lg font-medium">No skills detected</p>
-            <p className="text-sm">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.openclaw/skills</code> folder</p>
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-muted-foreground border-2 border-dashed border-border rounded-2xl bg-card/30 shadow-inner">
+            <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
+              <Puzzle className="w-8 h-8 opacity-20" />
+            </div>
+            <p className="text-lg font-semibold">No skills detected</p>
+            <p className="text-sm mt-1">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.openclaw/skills</code> folder</p>
           </div>
         )}
       </div>
@@ -220,45 +222,44 @@ export default function SkillsPage() {
             
             <div className="p-6 space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-semibold flex items-center gap-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
                   Folder Name
-                  <span className="text-[10px] font-normal text-muted-foreground font-mono bg-secondary px-1.5 py-0.5 rounded">lowercase, no spaces</span>
                 </label>
                 <input 
                   type="text" 
                   placeholder="e.g. my-awesome-skill"
                   value={newSkillFolder}
                   onChange={(e) => setNewSkillFolder(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
-                  className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold">SKILL.md Template</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">SKILL.md Template</label>
                 <textarea 
                   value={newSkillContent}
                   onChange={(e) => setNewSkillContent(e.target.value)}
-                  className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-xs font-mono h-64 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none shadow-inner"
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-xs font-mono h-64 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none shadow-inner"
                 />
               </div>
               
-              <div className="flex items-center gap-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-600 dark:text-blue-400">
+              <div className="flex items-center gap-2 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
                 <Info className="w-4 h-4 shrink-0" />
-                <p className="text-xs">This will create a new directory in <code>.openclaw/skills/</code> and initialize it with your content.</p>
+                <p className="text-xs leading-relaxed">This will create a new directory in <code>.openclaw/skills/</code> and initialize it with your content.</p>
               </div>
             </div>
 
-            <div className="p-4 bg-secondary/30 border-t border-border flex justify-end gap-3">
+            <div className="p-4 bg-secondary/20 border-t border-border flex justify-end gap-3">
               <button 
                 onClick={() => setIsCreateModalOpen(false)}
-                className="px-4 py-2 text-sm font-medium hover:bg-secondary rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium hover:bg-secondary rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleCreateSkill}
                 disabled={!newSkillFolder || creating}
-                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-all shadow-md active:scale-95 flex items-center gap-2"
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-all shadow-md active:scale-95 flex items-center gap-2"
               >
                 {creating && <Loader2 className="w-4 h-4 animate-spin" />}
                 Create Skill
@@ -293,7 +294,7 @@ export default function SkillsPage() {
               </p>
               
               <div className="space-y-2">
-                <label className="text-sm font-semibold">
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
                   Type <span className="font-mono text-primary">{selectedSkill.folderName}</span> to confirm:
                 </label>
                 <input 
@@ -301,25 +302,25 @@ export default function SkillsPage() {
                   value={confirmName}
                   onChange={(e) => setConfirmName(e.target.value)}
                   placeholder={selectedSkill.folderName}
-                  className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-destructive/20 focus:ring-2 transition-all font-mono"
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-destructive/20 focus:ring-2 transition-all font-mono"
                 />
               </div>
             </div>
 
-            <div className="p-4 bg-secondary/30 border-t border-border flex justify-end gap-3">
+            <div className="p-4 bg-secondary/20 border-t border-border flex justify-end gap-3">
               <button 
                 onClick={() => {
                   setIsDeleteModalOpen(false);
                   setConfirmName("");
                 }}
-                className="px-4 py-2 text-sm font-medium hover:bg-secondary rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium hover:bg-secondary rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleDeleteSkill}
                 disabled={confirmName !== selectedSkill.folderName || deleting}
-                className="px-6 py-2 bg-destructive text-destructive-foreground rounded-lg text-sm font-medium hover:bg-destructive/90 disabled:opacity-50 transition-all shadow-md active:scale-95 flex items-center gap-2"
+                className="px-6 py-2 bg-destructive text-destructive-foreground rounded-xl text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-all shadow-md active:scale-95 flex items-center gap-2"
               >
                 {deleting && <Loader2 className="w-4 h-4 animate-spin" />}
                 Delete Forever

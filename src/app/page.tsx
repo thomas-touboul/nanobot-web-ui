@@ -38,15 +38,20 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="space-y-8 container max-w-4xl py-8 animate-fade-in">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Gateway Status</h1>
-        <p className="text-muted-foreground text-sm">Monitoring en temps réel du service OpenClaw Gateway.</p>
+    <div className="space-y-8 container max-w-5xl py-8 animate-fade-in">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <div className="p-2 bg-emerald-500/10 rounded-lg shadow-sm border border-emerald-500/20">
+            <Activity className="w-8 h-8 text-emerald-500" />
+          </div>
+          Gateway Status
+        </h1>
+        <p className="text-muted-foreground text-sm">Real-time monitoring of the OpenClaw Gateway service.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Main Status Card */}
-        <div className="md:col-span-2 p-8 bg-card border border-border rounded-xl shadow-sm relative overflow-hidden group">
+        <div className="md:col-span-2 p-8 bg-card border border-border rounded-2xl shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5">
             <Server className="w-64 h-64" />
           </div>
@@ -90,15 +95,15 @@ export default function Dashboard() {
         </div>
 
         {/* Info Grid */}
-        <div className="p-6 bg-card border border-border rounded-xl flex flex-col gap-4 hover:border-border/80 transition-colors">
+        <div className="p-6 bg-card border border-border rounded-2xl flex flex-col gap-4 hover:border-border/80 transition-colors">
           <div className="flex items-center gap-3 text-muted-foreground mb-2">
             <Cpu className="w-5 h-5" />
-            <h3 className="text-sm font-medium uppercase tracking-wider">Process Info</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider">Process Info</h3>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
               <span className="text-sm text-muted-foreground">PID</span>
-              <span className="text-sm font-mono font-medium bg-secondary px-2 py-0.5 rounded">{status?.pid || "---"}</span>
+              <span className="text-sm font-mono font-medium bg-secondary px-2 py-0.5 rounded-lg">{status?.pid || "---"}</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
               <span className="text-sm text-muted-foreground">Service State</span>
@@ -114,15 +119,15 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="p-6 bg-card border border-border rounded-xl flex flex-col gap-4 hover:border-border/80 transition-colors">
+        <div className="p-6 bg-card border border-border rounded-2xl flex flex-col gap-4 hover:border-border/80 transition-colors">
           <div className="flex items-center gap-3 text-muted-foreground mb-2">
             <Network className="w-5 h-5" />
-            <h3 className="text-sm font-medium uppercase tracking-wider">Network</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider">Network</h3>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
               <span className="text-sm text-muted-foreground">Port</span>
-              <span className="text-sm font-mono font-medium bg-secondary px-2 py-0.5 rounded">{status?.port || "---"}</span>
+              <span className="text-sm font-mono font-medium bg-secondary px-2 py-0.5 rounded-lg">{status?.port || "---"}</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
               <span className="text-sm text-muted-foreground">RPC Probe</span>
