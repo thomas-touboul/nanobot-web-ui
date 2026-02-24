@@ -1,0 +1,104 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { 
+  Settings,
+  Zap,
+  Library,
+  Webhook,
+  History
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export const mainNavigation = [
+  { 
+    title: "Configuration", 
+    subtitle: "openclaw.json", 
+    href: "/editor?file=openclaw.json", 
+    icon: Settings,
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
+    match: (path: string, params: URLSearchParams) => params.get("file") === "openclaw.json"
+  },
+  { 
+    title: "Core Files", 
+    subtitle: "Identity & Rules", 
+    href: "/core-files", 
+    icon: Library,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+    match: (path: string) => path.startsWith("/core-files")
+  },
+  { 
+    title: "Memory", 
+    subtitle: "Short-term Logs", 
+    href: "/memory", 
+    icon: History,
+    color: "text-sky-500",
+    bgColor: "bg-sky-500/10",
+    match: (path: string) => path.startsWith("/memory")
+  },
+  { 
+    title: "Skills", 
+    subtitle: "Capabilities", 
+    href: "/skills", 
+    icon: Zap,
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
+    match: (path: string) => path.startsWith("/skills")
+  },
+  { 
+    title: "Hooks", 
+    subtitle: "Event Triggers", 
+    href: "/hooks", 
+    icon: Webhook,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    match: (path: string) => path.startsWith("/hooks")
+  },
+];
+
+export function NavigationItems({ onItemClick }: { onItemClick?: () => void }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  return (
+    <div className="space-y-1">
+      {mainNavigation.map((item) => {
+        const isActive = item.match(pathname, searchParams);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onItemClick}
+            className={cn(
+              "group flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 border border-transparent shadow-sm",
+              isActive 
+                ? "bg-secondary border-border/50 shadow-md" 
+                : "hover:bg-secondary/50 hover:border-border/30 shadow-none"
+            )}
+          >
+            <div className={cn(
+              "w-8 h-8 rounded-md flex items-center justify-center transition-all duration-200 shadow-inner",
+              isActive ? cn("bg-background", item.color) : cn("bg-secondary/50 text-muted-foreground group-hover:bg-background", `group-hover:${item.color}`)
+            )}>
+              <item.icon className="w-4 h-4" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className={cn(
+                "text-sm font-medium leading-none transition-colors",
+                isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+              )}>
+                {item.title}
+              </span>
+              <span className="text-[10px] text-muted-foreground font-mono mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                {item.subtitle}
+              </span>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}

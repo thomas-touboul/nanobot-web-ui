@@ -7,7 +7,8 @@ import {
   Cpu, 
   Network, 
   CheckCircle2,
-  Terminal
+  Terminal,
+  Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,30 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Model & Provider Info */}
+        <div className="md:col-span-2 p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-center justify-between gap-6 overflow-hidden relative group">
+          <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
+            <Bot className="w-40 h-40" />
+          </div>
+          
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-500">
+              <Bot className="w-6 h-6" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70">Primary Model</span>
+              <span className="text-lg font-semibold text-foreground">google-gemini-cli/gemini-3-flash-preview</span>
+            </div>
+          </div>
+          
+          <div className="hidden sm:flex flex-col items-end relative z-10">
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Provider</span>
+            <span className="text-sm font-medium px-3 py-1 bg-secondary rounded-full border border-border mt-1">
+              Google Gemini
+            </span>
+          </div>
+        </div>
+
         {/* Main Status Card */}
         <div className="md:col-span-2 p-8 bg-card border border-border rounded-2xl shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5">
