@@ -6,7 +6,8 @@ import {
   Zap, 
   ScrollText, 
   Calendar,
-  Activity
+  Activity,
+  Users
 } from "lucide-react";
 
 /**
@@ -56,6 +57,14 @@ export const UI_TEXT = {
       bgColor: "bg-purple-500/10",
       borderColor: "border-purple-500/20",
     },
+    subagents: {
+      title: "Subagents",
+      subtitle: "Active Tasks",
+      icon: Users,
+      color: "text-orange-500",
+      bgColor: "bg-orange-500/10",
+      borderColor: "border-orange-500/20",
+    },
     history: {
       title: "History",
       subtitle: "Activity Logs",
@@ -70,7 +79,7 @@ export const UI_TEXT = {
       icon: Calendar,
       color: "text-rose-500",
       bgColor: "bg-rose-500/10",
-      borderColor: "border-rose-500/20",
+      borderColor: "border-orange-500/20",
     },
   },
   pages: {
@@ -101,6 +110,10 @@ export const UI_TEXT = {
     skills: {
       title: "Skills",
       subtitle: "Manage and create specialized capabilities for your agent.",
+    },
+    subagents: {
+      title: "Subagents Monitor",
+      subtitle: "Track and manage background tasks and subagents activity.",
     },
     history: {
       title: "History",

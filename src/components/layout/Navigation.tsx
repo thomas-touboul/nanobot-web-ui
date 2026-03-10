@@ -30,6 +30,11 @@ export const mainNavigation = [
     match: (path: string) => path.startsWith("/skills")
   },
   { 
+    ...UI_TEXT.navigation.subagents,
+    href: "/subagents", 
+    match: (path: string) => path.startsWith("/subagents")
+  },
+  { 
     ...UI_TEXT.navigation.history,
     href: "/history", 
     match: (path: string) => path.startsWith("/history")
