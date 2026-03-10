@@ -7,6 +7,8 @@ import {
   Cpu,
   Zap,
   Library,
+  ScrollText,
+  Activity,
   History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -57,6 +59,24 @@ export const mainNavigation = [
     bgColor: "bg-purple-500/10",
     match: (path: string) => path.startsWith("/skills")
   },
+  { 
+    title: "History", 
+    subtitle: "Activity Logs", 
+    href: "/history", 
+    icon: ScrollText,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    match: (path: string) => path.startsWith("/history")
+  },
+  { 
+    title: "Schedule", 
+    subtitle: "Cron & Tasks", 
+    href: "/cron", 
+    icon: Activity,
+    color: "text-rose-500",
+    bgColor: "bg-rose-500/10",
+    match: (path: string) => path.startsWith("/cron")
+  },
 ];
 
 export function NavigationItems({ onItemClick }: { onItemClick?: () => void }) {
@@ -66,33 +86,33 @@ export function NavigationItems({ onItemClick }: { onItemClick?: () => void }) {
   return (
     <div className="space-y-1">
       {mainNavigation.map((item) => {
+        const Icon = item.icon;
         const isActive = item.match(pathname, searchParams);
+
         return (
           <Link
             key={item.href}
             href={item.href}
             onClick={onItemClick}
             className={cn(
-              "group flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 border border-transparent shadow-sm",
+              "group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
               isActive 
-                ? "bg-secondary border-border/50 shadow-md" 
-                : "hover:bg-secondary/50 hover:border-border/30 shadow-none"
+                ? "bg-secondary text-foreground shadow-sm" 
+                : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
             )}
           >
             <div className={cn(
-              "w-8 h-8 rounded-md flex items-center justify-center transition-all duration-200 shadow-inner",
-              isActive ? cn("bg-background", item.color) : cn("bg-secondary/50 text-muted-foreground group-hover:bg-background", `group-hover:${item.color}`)
+              "p-1.5 rounded-lg transition-colors",
+              isActive ? item.bgColor : "bg-transparent group-hover:bg-secondary"
             )}>
-              <item.icon className="w-4 h-4" />
+              <Icon className={cn(
+                "w-4 h-4",
+                isActive ? item.color : "text-muted-foreground group-hover:text-foreground"
+              )} />
             </div>
-            <div className="flex flex-col text-left">
-              <span className={cn(
-                "text-sm font-medium leading-none transition-colors",
-                isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
-              )}>
-                {item.title}
-              </span>
-              <span className="text-[10px] text-muted-foreground font-mono mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+            <div className="flex flex-col">
+              <span>{item.title}</span>
+              <span className="text-[10px] text-muted-foreground/60 font-normal leading-tight">
                 {item.subtitle}
               </span>
             </div>
