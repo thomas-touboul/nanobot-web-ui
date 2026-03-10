@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Suspense } from "react";
-import { NavigationItems } from "./Navigation";
+import { Navigation } from "./Navigation";
 
 function SidebarContent() {
   return (
@@ -16,9 +16,9 @@ function SidebarContent() {
         </Link>
       </div>
       
-      <nav className="flex-1 p-3 space-y-4">
-        <NavigationItems />
-      </nav>
+      <div className="flex-1 py-4">
+        <Navigation />
+      </div>
     </aside>
   );
 }

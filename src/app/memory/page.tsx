@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
+import { UI_TEXT } from "@/constants/ui-text";
 
 interface MemoryFile {
   name: string;
@@ -148,12 +149,12 @@ export default function MemoryPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <HeaderWithIcon 
-            title="Memory"
-            subtitle="Access and manage your daily short-term memory logs."
-            icon={History}
-            iconColorClass="text-sky-500"
-            iconBgClass="bg-sky-500/10"
-            iconBorderClass="border-sky-500/20"
+            title={UI_TEXT.pages.memory.title}
+            subtitle={UI_TEXT.pages.memory.subtitle}
+            icon={UI_TEXT.navigation.memory.icon}
+            iconColorClass={UI_TEXT.navigation.memory.color}
+            iconBgClass={UI_TEXT.navigation.memory.bgColor}
+            iconBorderClass={UI_TEXT.navigation.memory.borderColor}
         />
 
         <div className="relative w-full md:w-72">

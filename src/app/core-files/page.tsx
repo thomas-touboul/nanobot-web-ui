@@ -16,6 +16,7 @@ import {
   LucideIcon
 } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
+import { UI_TEXT } from "@/constants/ui-text";
 
 interface File {
   name: string;
@@ -74,12 +75,12 @@ export default function CoreFilesPage() {
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <HeaderWithIcon 
-        title="Core Files"
-        subtitle="Identity, personality, and global rules."
-        icon={Library}
-        iconColorClass="text-emerald-500"
-        iconBgClass="bg-emerald-500/10"
-        iconBorderClass="border-emerald-500/20"
+        title={UI_TEXT.pages.coreFiles.title}
+        subtitle={UI_TEXT.pages.coreFiles.subtitle}
+        icon={UI_TEXT.navigation.coreFiles.icon}
+        iconColorClass={UI_TEXT.navigation.coreFiles.color}
+        iconBgClass={UI_TEXT.navigation.coreFiles.bgColor}
+        iconBorderClass={UI_TEXT.navigation.coreFiles.borderColor}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

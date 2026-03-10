@@ -10,6 +10,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
+import { UI_TEXT } from "@/constants/ui-text";
 
 interface CronJob {
   job_id: string;
@@ -63,12 +64,12 @@ export default function CronPage() {
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <HeaderWithIcon 
-        title="Schedule" 
-        subtitle="Manage your recurring tasks and reminders."
-        icon={Activity}
-        iconColorClass="text-rose-500"
-        iconBgClass="bg-rose-500/10"
-        iconBorderClass="border-rose-500/20"
+        title={UI_TEXT.pages.schedule.title} 
+        subtitle={UI_TEXT.pages.schedule.subtitle}
+        icon={UI_TEXT.navigation.schedule.icon}
+        iconColorClass={UI_TEXT.navigation.schedule.color}
+        iconBgClass={UI_TEXT.navigation.schedule.bgColor}
+        iconBorderClass={UI_TEXT.navigation.schedule.borderColor}
       />
 
       {loading ? (

@@ -15,22 +15,14 @@ import {
   Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { HeaderWithIcon } from "@/components/HeaderWithIcon";
+import { UI_TEXT } from "@/constants/ui-text";
 
 interface Skill {
   folderName: string;
   name: string;
   description: string;
 }
-
-const DEFAULT_SKILL_TEMPLATE = `---
-name: New Skill
-description: A short description of what this skill does.
----
-
-# New Skill
-
-Describe how to use this skill here.
-`;
 
 export default function SkillsPage() {
   const [skills, setSkills] = useState<Skill[]>([]);
@@ -122,17 +114,14 @@ export default function SkillsPage() {
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-            <div className="p-2 bg-purple-500/10 rounded-lg shadow-sm border border-purple-500/20">
-              <Zap className="w-8 h-8 text-purple-500" />
-            </div>
-            Skills
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Manage your Nanobot agent's capabilities and tools.
-          </p>
-        </div>
+        <HeaderWithIcon 
+          title={UI_TEXT.pages.skills.title} 
+          subtitle={UI_TEXT.pages.skills.subtitle} 
+          icon={UI_TEXT.navigation.skills.icon}
+          iconColorClass={UI_TEXT.navigation.skills.color}
+          iconBgClass={UI_TEXT.navigation.skills.bgColor}
+          iconBorderClass={UI_TEXT.navigation.skills.borderColor}
+        />
 
         <button 
           onClick={() => setIsCreateModalOpen(true)}

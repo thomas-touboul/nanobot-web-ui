@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
+import { UI_TEXT } from "@/constants/ui-text";
 
 interface HistoryEntry {
   date: string;
@@ -54,12 +55,12 @@ export default function HistoryPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <HeaderWithIcon 
-          icon={ScrollText} 
-          title="History" 
-          subtitle="Long-term activity logs from HISTORY.md"
-          iconColorClass="text-indigo-500"
-          iconBgClass="bg-indigo-500/10"
-          iconBorderClass="border-indigo-500/20"
+          icon={UI_TEXT.navigation.history.icon} 
+          title={UI_TEXT.pages.history.title} 
+          subtitle={UI_TEXT.pages.history.subtitle}
+          iconColorClass={UI_TEXT.navigation.history.color}
+          iconBgClass={UI_TEXT.navigation.history.bgColor}
+          iconBorderClass={UI_TEXT.navigation.history.borderColor}
         />
         
         <div className="flex items-center gap-3">

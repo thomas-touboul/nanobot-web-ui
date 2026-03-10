@@ -11,6 +11,8 @@ import {
   Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { HeaderWithIcon } from "@/components/HeaderWithIcon";
+import { UI_TEXT } from "@/constants/ui-text";
 
 interface GatewayStatus {
   service: string;
@@ -39,16 +41,15 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="space-y-8 container max-w-5xl py-8 animate-fade-in">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-          <div className="p-2 bg-emerald-500/10 rounded-lg shadow-sm border border-emerald-500/20">
-            <Activity className="w-8 h-8 text-emerald-500" />
-          </div>
-          Gateway Status
-        </h1>
-        <p className="text-muted-foreground text-sm">Real-time monitoring of the AI Agent Gateway service.</p>
-      </div>
+    <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
+      <HeaderWithIcon 
+        title={UI_TEXT.pages.dashboard.title} 
+        subtitle={UI_TEXT.pages.dashboard.subtitle} 
+        icon={UI_TEXT.pages.dashboard.icon}
+        iconColorClass={UI_TEXT.pages.dashboard.color}
+        iconBgClass={UI_TEXT.pages.dashboard.bgColor}
+        iconBorderClass={UI_TEXT.pages.dashboard.borderColor}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Model & Provider Info */}

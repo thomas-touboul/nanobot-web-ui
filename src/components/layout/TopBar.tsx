@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import { useEffect, useState, Suspense } from "react";
-import { NavigationItems } from "./Navigation";
+import { Navigation } from "./Navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -93,7 +93,7 @@ export default function TopBar() {
             </div>
             <nav className="space-y-1">
               <Suspense fallback={<div className="animate-pulse space-y-2"><div className="h-10 bg-secondary rounded-md w-full"></div></div>}>
-                <NavigationItems onItemClick={() => setMobileMenuOpen(false)} />
+                <Navigation onItemClick={() => setMobileMenuOpen(false)} />
               </Suspense>
             </nav>
           </div>

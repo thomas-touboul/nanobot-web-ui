@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { cn } from "@/lib/utils";
+import { UI_TEXT } from "@/constants/ui-text";
 
 interface ProviderConfig {
   apiKey: string;
@@ -95,12 +96,12 @@ export default function ModelsPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <HeaderWithIcon 
-          title="Providers" 
-          subtitle="Manage your AI model providers and API keys."
-          icon={Cpu}
-          iconColorClass="text-cyan-500"
-          iconBgClass="bg-cyan-500/10"
-          iconBorderClass="border-cyan-500/20"
+          title={UI_TEXT.pages.providers.title} 
+          subtitle={UI_TEXT.pages.providers.subtitle}
+          icon={UI_TEXT.navigation.providers.icon}
+          iconColorClass={UI_TEXT.navigation.providers.color}
+          iconBgClass={UI_TEXT.navigation.providers.bgColor}
+          iconBorderClass={UI_TEXT.navigation.providers.borderColor}
         />
         
         <div className="flex items-center gap-3">
