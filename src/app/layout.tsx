@@ -8,8 +8,8 @@ import TopBar from "@/components/layout/TopBar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "OpenClaw Admin",
-  description: "OpenClaw Administration Dashboard",
+  title: "AI Agent Admin",
+  description: "AI Agent Administration Dashboard",
 };
 
 export default function RootLayout({

@@ -28,7 +28,7 @@ export default function TopBar() {
 
           <Link href="/" className="flex md:hidden items-center gap-2 font-semibold text-sm tracking-tight text-foreground">
             <div className="w-5 h-5 bg-foreground rounded text-[10px] flex items-center justify-center text-background font-bold shadow-sm">
-              OC
+              A
             </div>
           </Link>
 
@@ -80,9 +80,9 @@ export default function TopBar() {
             <div className="flex items-center justify-between mb-6 px-2">
               <div className="flex items-center gap-2 font-semibold text-lg tracking-tight text-foreground">
                 <div className="w-6 h-6 bg-foreground rounded text-[12px] flex items-center justify-center text-background font-bold shadow-sm">
-                  OC
+                  A
                 </div>
-                <span>openclaw-admin</span>
+                <span>AI Agent Admin</span>
               </div>
               <button 
                 onClick={() => setMobileMenuOpen(false)}

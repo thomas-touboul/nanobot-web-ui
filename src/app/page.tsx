@@ -47,7 +47,7 @@ export default function Dashboard() {
           </div>
           Gateway Status
         </h1>
-        <p className="text-muted-foreground text-sm">Real-time monitoring of the OpenClaw Gateway service.</p>
+        <p className="text-muted-foreground text-sm">Real-time monitoring of the AI Agent Gateway service.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -63,7 +63,7 @@ export default function Dashboard() {
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold uppercase tracking-widest text-emerald-600/70 dark:text-emerald-400/70">Primary Model</span>
-              <span className="text-lg font-semibold text-foreground">google-gemini-cli/gemini-3-flash-preview</span>
+              <span className="text-lg font-semibold text-foreground">gemini/gemini-3-flash-preview</span>
             </div>
           </div>
           
@@ -96,7 +96,7 @@ export default function Dashboard() {
                 )}
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground">OpenClaw Gateway</h2>
+                <h2 className="text-2xl font-bold text-foreground">AI Agent Gateway</h2>
                 <div className="flex items-center gap-2 mt-1">
                   <span className={cn(
                     "w-2.5 h-2.5 rounded-full",
@@ -175,7 +175,7 @@ export default function Dashboard() {
       
       <div className="p-4 rounded-lg bg-secondary/30 border border-border text-xs font-mono text-muted-foreground flex items-center gap-3">
         <Terminal className="w-4 h-4" />
-        <span>To manage gateway: <span className="text-foreground">openclaw gateway [start|stop|restart]</span></span>
+        <span>To manage gateway: <span className="text-foreground">nanobot gateway [start|stop|restart]</span></span>
       </div>
     </div>
   );

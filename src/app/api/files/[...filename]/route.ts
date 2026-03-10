@@ -2,55 +2,45 @@ import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 
-const CONFIG_ROOT = '/home/moltbot/.openclaw';
+const CONFIG_ROOT = '/home/moltbot/.nanobot';
 
-// Helper to validate filename and return absolute path if valid
 function getSafePath(pathSegments: string[]): string | null {
-  // Normalize segments to prevent '..' injection in individual segments
-  // (Next.js usually handles this, but good to be safe)
-  if (pathSegments.some(seg => seg.includes('..') || seg.includes('/') || seg.includes('\\'))) {
-     // This check is slightly paranoid as segments are split by slash, 
-     // but if a segment contains explicit dot-dot it's suspicious.
-     // Standard path.join handles '..' by resolving up, so we check the final result below.
-  }
-
   const relPath = path.join(...pathSegments);
   const fullPath = path.join(CONFIG_ROOT, relPath);
 
-  // 1. Prevent Directory Traversal
+  // Prevent Directory Traversal
   if (!fullPath.startsWith(CONFIG_ROOT)) {
     return null;
   }
 
-  // 2. Allowlist for Root Files
-  const allowedRootFiles = [
-    'openclaw.json',
-    'SOUL.md',
-    'MEMORY.md',
-    'AGENTS.md',
-    'TOOLS.md',
-    'IDENTITY.md',
-    'USER.md',
-    'HEARTBEAT.md',
+  // Allowed files (relative to CONFIG_ROOT)
+  const allowedFiles = [
+    'config.json',
+    'workspace/SOUL.md',
+    'workspace/memory/MEMORY.md',
+    'workspace/AGENTS.md',
+    'workspace/TOOLS.md',
+    'workspace/USER.md',
+    'workspace/HEARTBEAT.md',
   ];
 
-  // Check if it's a root file (single segment usually, or match exact relative path)
-  if (allowedRootFiles.includes(relPath)) {
+  if (allowedFiles.includes(relPath)) {
     return fullPath;
   }
 
-  // 3. Pattern match for Skills: skills/<folder>/SKILL.md
-  // We strictly require structure: skills -> <folder> -> SKILL.md
-  if (pathSegments.length === 3 && 
-      pathSegments[0] === 'skills' && 
-      pathSegments[2] === 'SKILL.md') {
+  // Skills: workspace/skills/<folder>/SKILL.md
+  if (pathSegments.length === 4 && 
+      pathSegments[0] === 'workspace' && 
+      pathSegments[1] === 'skills' && 
+      pathSegments[3] === 'SKILL.md') {
       return fullPath;
   }
 
-  // 4. Pattern match for Memory: memory/*.md
-  if (pathSegments.length === 2 && 
-      pathSegments[0] === 'memory' && 
-      pathSegments[1].endsWith('.md')) {
+  // Memory: workspace/memory/*.md
+  if (pathSegments.length === 3 && 
+      pathSegments[0] === 'workspace' && 
+      pathSegments[1] === 'memory' && 
+      pathSegments[2].endsWith('.md')) {
       return fullPath;
   }
 
@@ -62,7 +52,6 @@ export async function GET(
   { params }: { params: Promise<{ filename: string[] }> }
 ) {
   const { filename } = await params;
-
   const filePath = getSafePath(filename);
 
   if (!filePath || !fs.existsSync(filePath)) {
@@ -83,7 +72,6 @@ export async function POST(
 ) {
   const { filename } = await params;
   const { content } = await request.json();
-
   const filePath = getSafePath(filename);
 
   if (!filePath) {
@@ -91,23 +79,18 @@ export async function POST(
   }
 
   try {
-    // Create a backup if file exists
     if (fs.existsSync(filePath)) {
         fs.copyFileSync(filePath, `${filePath}.bak`);
     }
     
-    // Write new content
-    // Ensure directory exists (rare case where folder exists but file doesn't)
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
-        return NextResponse.json({ error: 'Directory does not exist' }, { status: 400 });
+        fs.mkdirSync(dir, { recursive: true });
     }
 
     fs.writeFileSync(filePath, content, 'utf-8');
-    
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: 'Failed to write file' }, { status: 500 });
   }
 }

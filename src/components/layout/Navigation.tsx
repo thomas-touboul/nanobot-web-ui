@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { 
   Settings,
+  Cpu,
   Zap,
   Library,
-  Webhook,
   History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,12 +14,21 @@ import { cn } from "@/lib/utils";
 export const mainNavigation = [
   { 
     title: "Configuration", 
-    subtitle: "openclaw.json", 
-    href: "/editor?file=openclaw.json", 
+    subtitle: "config.json", 
+    href: "/editor?file=config.json", 
     icon: Settings,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
-    match: (path: string, params: URLSearchParams) => params.get("file") === "openclaw.json"
+    match: (path: string, params: URLSearchParams) => params.get("file") === "config.json"
+  },
+  { 
+    title: "Providers", 
+    subtitle: "Models & Keys", 
+    href: "/models", 
+    icon: Cpu,
+    color: "text-cyan-500",
+    bgColor: "bg-cyan-500/10",
+    match: (path: string) => path.startsWith("/models")
   },
   { 
     title: "Core Files", 
@@ -47,15 +56,6 @@ export const mainNavigation = [
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
     match: (path: string) => path.startsWith("/skills")
-  },
-  { 
-    title: "Hooks", 
-    subtitle: "Event Triggers", 
-    href: "/hooks", 
-    icon: Webhook,
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-500/10",
-    match: (path: string) => path.startsWith("/hooks")
   },
 ];
 

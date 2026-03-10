@@ -41,8 +41,8 @@ export default function SkillsPage() {
   const [confirmName, setConfirmName] = useState("");
   
   // Create Skill state
-  const [newSkillFolder, setNewSkillFolder] = useState("");
-  const [newSkillContent, setNewSkillContent] = useState(DEFAULT_SKILL_TEMPLATE);
+  const [newSkillTitle, setNewSkillTitle] = useState("");
+  const [newSkillDescription, setNewSkillDescription] = useState("");
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -65,18 +65,18 @@ export default function SkillsPage() {
   }, []);
 
   const handleCreateSkill = async () => {
-    if (!newSkillFolder) return;
+    if (!newSkillTitle || !newSkillDescription) return;
     setCreating(true);
     try {
       const res = await fetch("/api/skills", {
         method: "POST",
-        body: JSON.stringify({ folderName: newSkillFolder, content: newSkillContent }),
+        body: JSON.stringify({ title: newSkillTitle, description: newSkillDescription }),
         headers: { "Content-Type": "application/json" },
       });
       if (res.ok) {
         setIsCreateModalOpen(false);
-        setNewSkillFolder("");
-        setNewSkillContent(DEFAULT_SKILL_TEMPLATE);
+        setNewSkillTitle("");
+        setNewSkillDescription("");
         fetchSkills();
       } else {
         const data = await res.json();
@@ -130,7 +130,7 @@ export default function SkillsPage() {
             Skills
           </h1>
           <p className="text-muted-foreground text-sm">
-            Manage your OpenClaw agent's capabilities and tools.
+            Manage your Nanobot agent's capabilities and tools.
           </p>
         </div>
 
@@ -182,7 +182,7 @@ export default function SkillsPage() {
 
             <div className="p-4 border-t border-border bg-secondary/20 flex justify-end">
               <Link
-                href={`/editor?file=skills/${skill.folderName}/SKILL.md`}
+                href={`/editor?file=workspace/skills/${skill.folderName}/SKILL.md`}
                 className="flex items-center gap-2 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
               >
                 <Edit className="w-3.5 h-3.5" />
@@ -199,7 +199,7 @@ export default function SkillsPage() {
               <Puzzle className="w-8 h-8 opacity-20" />
             </div>
             <p className="text-lg font-semibold">No skills detected</p>
-            <p className="text-sm mt-1">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.openclaw/skills</code> folder</p>
+            <p className="text-sm mt-1">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.nanobot/skills</code> folder</p>
           </div>
         )}
       </div>
@@ -223,29 +223,30 @@ export default function SkillsPage() {
             <div className="p-6 space-y-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                  Folder Name
+                  Skill Title
                 </label>
                 <input 
                   type="text" 
-                  placeholder="e.g. my-awesome-skill"
-                  value={newSkillFolder}
-                  onChange={(e) => setNewSkillFolder(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
-                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                  placeholder="e.g. My Awesome Skill"
+                  value={newSkillTitle}
+                  onChange={(e) => setNewSkillTitle(e.target.value)}
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">SKILL.md Template</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Description</label>
                 <textarea 
-                  value={newSkillContent}
-                  onChange={(e) => setNewSkillContent(e.target.value)}
-                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-xs font-mono h-64 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none shadow-inner"
+                  placeholder="Describe what this skill does and how to use it..."
+                  value={newSkillDescription}
+                  onChange={(e) => setNewSkillDescription(e.target.value)}
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm h-64 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none shadow-inner"
                 />
               </div>
               
               <div className="flex items-center gap-2 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
                 <Info className="w-4 h-4 shrink-0" />
-                <p className="text-xs leading-relaxed">This will create a new directory in <code>.openclaw/skills/</code> and initialize it with your content.</p>
+                <p className="text-xs leading-relaxed">This will create a new directory in <code>.nanobot/workspace/skills/</code> and initialize it with a <code>SKILL.md</code> file.</p>
               </div>
             </div>
 
@@ -258,7 +259,7 @@ export default function SkillsPage() {
               </button>
               <button 
                 onClick={handleCreateSkill}
-                disabled={!newSkillFolder || creating}
+                disabled={!newSkillTitle || !newSkillDescription || creating}
                 className="px-6 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-all shadow-md active:scale-95 flex items-center gap-2"
               >
                 {creating && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -290,7 +291,7 @@ export default function SkillsPage() {
             
             <div className="p-6 space-y-4">
               <p className="text-sm text-muted-foreground leading-relaxed">
-                This action is <strong className="text-foreground">permanent</strong>. It will delete the <code>.openclaw/skills/{selectedSkill.folderName}</code> directory and all its contents.
+                This action is <strong className="text-foreground">permanent</strong>. It will delete the <code>.nanobot/skills/{selectedSkill.folderName}</code> directory and all its contents.
               </p>
               
               <div className="space-y-2">

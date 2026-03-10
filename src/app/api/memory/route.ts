@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { NextResponse } from 'next/server';
 
-const MEMORY_ROOT = '/home/moltbot/.openclaw/memory';
+const MEMORY_ROOT = '/home/moltbot/.nanobot/workspace/memory';
 
 export async function GET() {
   if (!fs.existsSync(MEMORY_ROOT)) {
@@ -17,7 +17,7 @@ export async function GET() {
         const stats = fs.statSync(path.join(MEMORY_ROOT, entry.name));
         return {
           name: entry.name,
-          path: `memory/${entry.name}`,
+          path: `workspace/memory/${entry.name}`,
           updatedAt: stats.mtime,
           size: stats.size,
         };

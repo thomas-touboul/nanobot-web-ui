@@ -10,9 +10,9 @@ function SidebarContent() {
       <div className="h-14 flex items-center px-6 border-b border-border/40">
         <Link href="/" className="flex items-center gap-2 font-semibold text-sm tracking-tight text-foreground hover:opacity-80 transition-opacity">
           <div className="w-5 h-5 bg-foreground rounded text-[10px] flex items-center justify-center text-background font-bold shadow-sm">
-            OC
+            A
           </div>
-          <span>openclaw-admin</span>
+          <span>AI Agent Admin</span>
         </Link>
       </div>
       

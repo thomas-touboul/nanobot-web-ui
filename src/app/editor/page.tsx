@@ -105,7 +105,7 @@ function EditorContent() {
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">{filename}</h1>
-            <p className="text-[10px] text-muted-foreground font-mono">/home/moltbot/.openclaw/{filename}</p>
+            <p className="text-[10px] text-muted-foreground font-mono">/home/moltbot/.nanobot/{filename}</p>
           </div>
         </div>
 

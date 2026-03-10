@@ -2,34 +2,34 @@ import fs from 'fs';
 import path from 'path';
 import { NextResponse } from 'next/server';
 
-const CONFIG_ROOT = '/home/moltbot/.openclaw';
+const ROOT = '/home/moltbot/.nanobot';
+const WORKSPACE = path.join(ROOT, 'workspace');
 
 export async function GET() {
   try {
-    const files = [
-      'openclaw.json',
-      'SOUL.md',
-      'MEMORY.md',
-      'AGENTS.md',
-      'TOOLS.md',
-      'IDENTITY.md',
-      'USER.md',
-      'HEARTBEAT.md',
+    const rootFiles = [
+      { name: 'config.json', path: path.join(ROOT, 'config.json'), type: 'json' },
     ];
 
-    const fileData = files.map((file) => {
-      const filePath = path.join(CONFIG_ROOT, file);
-      if (fs.existsSync(filePath)) {
-        return {
-          name: file,
-          path: filePath,
-          type: file.endsWith('.json') ? 'json' : 'markdown',
-        };
-      }
-      return null;
-    }).filter(Boolean);
+    const workspaceFiles = [
+      { name: 'SOUL.md', path: path.join(WORKSPACE, 'SOUL.md'), type: 'markdown' },
+      { name: 'MEMORY.md', path: path.join(WORKSPACE, 'memory/MEMORY.md'), type: 'markdown' },
+      { name: 'AGENTS.md', path: path.join(WORKSPACE, 'AGENTS.md'), type: 'markdown' },
+      { name: 'TOOLS.md', path: path.join(WORKSPACE, 'TOOLS.md'), type: 'markdown' },
+      { name: 'USER.md', path: path.join(WORKSPACE, 'USER.md'), type: 'markdown' },
+      { name: 'HEARTBEAT.md', path: path.join(WORKSPACE, 'HEARTBEAT.md'), type: 'markdown' },
+    ];
 
-    return NextResponse.json({ files: fileData });
+    const allFiles = [...rootFiles, ...workspaceFiles].filter(f => fs.existsSync(f.path));
+
+    return NextResponse.json({ 
+      files: allFiles.map(f => ({
+        name: f.name,
+        // We return a relative path from ROOT to be used by the [...filename] route
+        path: path.relative(ROOT, f.path),
+        type: f.type
+      }))
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to list files' }, { status: 500 });
   }

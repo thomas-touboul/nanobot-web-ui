@@ -6,45 +6,39 @@ const execAsync = promisify(exec);
 
 export async function GET() {
   try {
-    const { stdout } = await execAsync('openclaw gateway status');
-    
-    // Parse output
-    const lines = stdout.split('\n');
-    const status: any = {};
+    // Check systemd service status
+    let serviceState = 'inactive';
+    let pid = 'N/A';
+    try {
+      const { stdout: systemdOutput } = await execAsync('systemctl --user show nanobot-gateway --property=ActiveState,MainPID');
+      const lines = systemdOutput.split('\n');
+      lines.forEach(line => {
+        if (line.startsWith('ActiveState=')) serviceState = line.split('=')[1];
+        if (line.startsWith('MainPID=')) pid = line.split('=')[1];
+      });
+    } catch (e) {
+      console.error('Failed to get systemd status', e);
+    }
 
-    lines.forEach(line => {
-      if (line.startsWith('Service:')) status.service = line.split('Service:')[1].trim();
-      if (line.startsWith('Runtime:')) {
-        const runtime = line.split('Runtime:')[1].trim();
-        // Extract pid and state
-        const pidMatch = runtime.match(/pid (\d+)/);
-        const stateMatch = runtime.match(/state (\w+)/);
-        if (pidMatch) status.pid = pidMatch[1];
-        if (stateMatch) status.state = stateMatch[1];
-      }
-      if (line.startsWith('Gateway:')) {
-        const portMatch = line.match(/port=(\d+)/);
-        if (portMatch) status.port = portMatch[1];
-      }
-      if (line.startsWith('RPC probe:')) status.rpc_probe = line.split('RPC probe:')[1].trim();
-    });
+    // Get nanobot status for config info
+    let model = 'unknown';
+    try {
+      const { stdout: nanobotOutput } = await execAsync('/home/moltbot/.local/bin/nanobot status');
+      const modelMatch = nanobotOutput.match(/Model: (.*)/);
+      if (modelMatch) model = modelMatch[1].trim();
+    } catch (e) {
+      console.error('Failed to get nanobot status', e);
+    }
 
-    // Fallback if parsing fails (based on prompt requirements)
-    if (!status.pid) status.pid = "1819783";
-    if (!status.port) status.port = "18789";
-    if (!status.service) status.service = "systemd (enabled)";
-    if (!status.state) status.state = "active";
-
-    return NextResponse.json(status);
-  } catch (error) {
-    console.error("Gateway status check failed", error);
-    // Return mock data on error as per prompt "Infos de la gateway... : ..."
     return NextResponse.json({
-      service: "systemd (enabled)",
-      state: "active",
-      port: 18789,
-      pid: 1819783,
-      rpc_probe: "ok"
+      service: 'nanobot-gateway',
+      state: serviceState,
+      pid: pid === '0' ? 'N/A' : pid,
+      model: model,
+      port: 18790, // Default nanobot port
+      uptime: 'N/A' 
     });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

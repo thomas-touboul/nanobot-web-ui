@@ -51,7 +51,9 @@ export default function CoreFilesPage() {
     fetch("/api/files")
       .then((res) => res.json())
       .then((data) => {
-        const coreFiles = (data.files || []).filter((f: File) => f.name !== "openclaw.json");
+        const coreFiles = (data.files || []).filter((f: File) => 
+          f.name !== "config.json" && f.name !== "MEMORY.md"
+        );
         setFiles(coreFiles);
         setLoading(false);
       })
@@ -86,7 +88,7 @@ export default function CoreFilesPage() {
           return (
             <Link
               key={file.name}
-              href={`/editor?file=${file.name}`}
+              href={`/editor?file=${file.path}`}
               className="group flex flex-col p-5 bg-card border border-border rounded-2xl hover:border-emerald-500/20 hover:shadow-md transition-all duration-300"
             >
               <div className="flex items-center gap-4 mb-4">
