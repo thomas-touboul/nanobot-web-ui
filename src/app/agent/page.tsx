@@ -28,9 +28,11 @@ export default function AgentPage() {
       const res = await fetch("/api/config");
       if (res.ok) {
         const data = await res.json();
-        console.log("API Response:", data);
-        console.log("Agent config:", data.agent);
-        setConfig(data.agent || {});
+        // Support multiple possible structures
+        const agentConfig = data.agent || data.agentConfig || data.config?.agent || {};
+        console.log("API Response keys:", Object.keys(data));
+        console.log("Agent config used:", agentConfig);
+        setConfig(agentConfig);
       } else {
         console.error("API error:", res.status);
       }
