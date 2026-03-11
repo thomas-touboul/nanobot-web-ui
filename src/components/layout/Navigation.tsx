@@ -88,9 +88,12 @@ const NavItem = ({ item, isActive, onClick }: NavItemProps) => {
   );
 };
 
-const NavSection = ({ title, items, pathname, searchParams, onItemClick }: any) => (
+const NavSection = ({ title, items, pathname, searchParams, onItemClick, isFirst }: any) => (
   <div className="space-y-1">
-    <h3 className="px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/40 mb-2 mt-6">
+    <h3 className={cn(
+      "px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/40 mb-2",
+      isFirst ? "mt-3" : "mt-6"
+    )}>
       {title}
     </h3>
     {items.map((item: any) => (
@@ -120,6 +123,7 @@ export function Navigation({ onItemClick }: NavigationProps) {
         pathname={pathname} 
         searchParams={searchParams} 
         onItemClick={onItemClick} 
+        isFirst
       />
       <NavSection 
         title="Brain" 
