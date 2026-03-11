@@ -29,9 +29,11 @@ export default function AgentPage() {
       if (res.ok) {
         const data = await res.json();
         // Config key is "agents" (plural)
+        console.log("Full API data:", JSON.stringify(data, null, 2));
+        console.log("data.agents value:", data.agents);
+        console.log("data.agents type:", typeof data.agents);
         const agentConfig = data.agents || {};
-        console.log("API Response keys:", Object.keys(data));
-        console.log("Agents config used:", agentConfig);
+        console.log("Agent config set to:", agentConfig);
         setConfig(agentConfig);
       } else {
         console.error("API error:", res.status);
