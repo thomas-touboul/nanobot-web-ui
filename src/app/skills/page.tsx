@@ -7,12 +7,12 @@ import {
   Edit, 
   ArrowRight, 
   Loader2, 
-  Zap, 
   Plus, 
   Trash2, 
   X,
   AlertTriangle,
-  Info
+  Info,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
@@ -113,7 +113,7 @@ export default function SkillsPage() {
 
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <HeaderWithIcon 
           title={UI_TEXT.pages.skills.title} 
           subtitle={UI_TEXT.pages.skills.subtitle} 
@@ -125,65 +125,72 @@ export default function SkillsPage() {
 
         <button 
           onClick={() => setIsCreateModalOpen(true)}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl transition-all font-semibold shadow-lg hover:opacity-90 active:scale-95"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl transition-all font-semibold shadow-lg hover:opacity-90 active:scale-95 shrink-0"
         >
           <Plus className="w-4 h-4" />
           Create New Skill
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-4">
         {skills.map((skill) => (
           <div 
             key={skill.folderName} 
-            className="group relative flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-300 shadow-sm"
+            className="group relative flex flex-col md:flex-row bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md hover:border-primary/20 transition-all duration-300 shadow-sm"
           >
-            <div className="p-6 flex-1 space-y-4">
-              <div className="flex items-start justify-between">
-                <div className="p-2 bg-secondary/50 rounded-xl group-hover:bg-primary/10 transition-colors shadow-inner">
-                  <Puzzle className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            <div className="p-6 flex-1 flex flex-col md:flex-row gap-6">
+              <div className="flex items-start gap-5 flex-1 min-w-0">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-primary/20 bg-primary/10 shadow-sm shrink-0 group-hover:bg-primary/20 transition-colors">
+                  <Puzzle className="w-6 h-6 text-primary" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="px-2 py-1 rounded-full bg-secondary/80 text-[10px] font-mono text-muted-foreground border border-border/50">
-                    {skill.folderName}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-3 mb-1">
+                    <h3 className="text-lg font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                      {skill.name}
+                    </h3>
+                    <span className="text-[10px] font-mono text-muted-foreground/40 tracking-wider">
+                      {skill.folderName}
+                    </span>
                   </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {skill.description || "No description available."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 shrink-0 border-t md:border-t-0 md:border-l border-border/50 pt-4 md:pt-0 md:pl-8">
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/editor?file=workspace/skills/${skill.folderName}/SKILL.md`}
+                    className="p-2 rounded-lg text-muted-foreground/60 hover:text-primary hover:bg-primary/10 transition-all"
+                    title="Edit Skill"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Link>
                   <button 
                     onClick={() => {
                       setSelectedSkill(skill);
                       setIsDeleteModalOpen(true);
                     }}
-                    className="p-1 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                    className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
+                    title="Delete Skill"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
+                <Link
+                  href={`/editor?file=workspace/skills/${skill.folderName}/SKILL.md`}
+                  className="p-2 rounded-lg text-muted-foreground/40 group-hover:text-primary transition-all group-hover:translate-x-0.5"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </Link>
               </div>
-              
-              <div>
-                <h3 className="font-semibold text-xl mb-2 group-hover:text-primary transition-colors tracking-tight">
-                  {skill.name}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                  {skill.description || "No description available."}
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 border-t border-border bg-secondary/20 flex justify-end">
-              <Link
-                href={`/editor?file=workspace/skills/${skill.folderName}/SKILL.md`}
-                className="flex items-center gap-2 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
-              >
-                <Edit className="w-3.5 h-3.5" />
-                Edit Skill File
-                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-              </Link>
             </div>
           </div>
         ))}
 
         {skills.length === 0 && !loading && (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-muted-foreground border-2 border-dashed border-border rounded-2xl bg-card/30 shadow-inner">
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border-2 border-dashed border-border rounded-2xl bg-card/30 shadow-inner">
             <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
               <Puzzle className="w-8 h-8 opacity-20" />
             </div>
@@ -234,7 +241,7 @@ export default function SkillsPage() {
               </div>
               
               <div className="flex items-center gap-2 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
-                <Info className="w-4 h-4 shrink-0" />
+                <info className="w-4 h-4 shrink-0" />
                 <p className="text-xs leading-relaxed">This will create a new directory in <code>.nanobot/workspace/skills/</code> and initialize it with a <code>SKILL.md</code> file.</p>
               </div>
             </div>
