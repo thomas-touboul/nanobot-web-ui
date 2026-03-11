@@ -28,10 +28,10 @@ export default function AgentPage() {
       const res = await fetch("/api/config");
       if (res.ok) {
         const data = await res.json();
-        // Support multiple possible structures
-        const agentConfig = data.agent || data.agentConfig || data.config?.agent || {};
+        // Config key is "agents" (plural)
+        const agentConfig = data.agents || {};
         console.log("API Response keys:", Object.keys(data));
-        console.log("Agent config used:", agentConfig);
+        console.log("Agents config used:", agentConfig);
         setConfig(agentConfig);
       } else {
         console.error("API error:", res.status);
@@ -54,7 +54,7 @@ export default function AgentPage() {
       const saveRes = await fetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agent: config }),
+        body: JSON.stringify({ agents: config }),
       });
       
       if (saveRes.ok) {
