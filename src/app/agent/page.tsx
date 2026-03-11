@@ -6,10 +6,6 @@ import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { UI_TEXT } from "@/constants/ui-text";
 
 interface AgentConfig {
-  name?: string;
-  description?: string;
-  timezone?: string;
-  language?: string;
   model?: string;
   temperature?: number;
   maxTokens?: number;
@@ -19,7 +15,6 @@ interface AgentConfig {
     intervalS?: number;
   };
   memoryWindow?: number;
-  systemPrompt?: string;
 }
 
 export default function AgentPage() {
@@ -115,77 +110,6 @@ export default function AgentPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Agent Configuration */}
-        <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
-          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
-            Agent Configuration
-          </h3>
-          
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                Agent Name
-              </label>
-              <input
-                type="text"
-                value={config.name || ''}
-                onChange={(e) => setConfig({ ...config, name: e.target.value })}
-                placeholder="e.g. My AI Assistant"
-                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-              />
-              <p className="text-xs text-muted-foreground">The display name of your agent.</p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                Description
-              </label>
-              <textarea
-                value={config.description || ''}
-                onChange={(e) => setConfig({ ...config, description: e.target.value })}
-                placeholder="Brief description of the agent's purpose..."
-                rows={3}
-                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all resize-none"
-              />
-              <p className="text-xs text-muted-foreground">Optional description for documentation.</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                  Language
-                </label>
-                <select
-                  value={config.language || 'en'}
-                  onChange={(e) => setConfig({ ...config, language: e.target.value })}
-                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-                >
-                  <option value="en">English</option>
-                  <option value="fr">Français</option>
-                  <option value="es">Español</option>
-                  <option value="de">Deutsch</option>
-                  <option value="it">Italiano</option>
-                  <option value="pt">Português</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                  Timezone
-                </label>
-                <input
-                  type="text"
-                  value={config.timezone || ''}
-                  onChange={(e) => setConfig({ ...config, timezone: e.target.value })}
-                  placeholder="Europe/Paris"
-                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-                />
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground -mt-4">Primary language and IANA timezone identifier.</p>
-          </div>
-        </div>
-
         {/* Model Settings */}
         <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
           <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
@@ -259,7 +183,7 @@ export default function AgentPage() {
           </div>
         </div>
 
-        {/* Heartbeat Settings */}
+        {/* Heartbeat & Maintenance */}
         <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
           <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
             Heartbeat & Maintenance
@@ -319,44 +243,6 @@ export default function AgentPage() {
             </div>
           </div>
         </div>
-
-        {/* System Prompt */}
-        <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
-          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
-            System Prompt
-          </h3>
-          
-          <div className="space-y-4">
-            <textarea
-              value={config.systemPrompt || ''}
-              onChange={(e) => setConfig({ ...config, systemPrompt: e.target.value })}
-              placeholder="Enter the system prompt that defines the agent's behavior, personality, and capabilities..."
-              rows={10}
-              className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all resize-none font-mono"
-            />
-            <p className="text-xs text-muted-foreground">
-              The system prompt is sent with every request to guide the model's behavior. 
-              You can also manage this in the Core Files section.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Raw Config Access */}
-      <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
-        <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-4">
-          Advanced
-        </h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          For more advanced configuration options, edit the config.json file directly.
-        </p>
-        <a
-          href="/editor?file=config.json"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-secondary text-secondary-foreground rounded-xl transition-all font-medium hover:bg-secondary/80 active:scale-95"
-        >
-          <Bot className="w-4 h-4" />
-          Open config.json in Editor
-        </a>
       </div>
     </div>
   );
