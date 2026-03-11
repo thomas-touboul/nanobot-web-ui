@@ -5,7 +5,13 @@ import { NextRequest, NextResponse } from 'next/server';
 const CONFIG_ROOT = '/home/moltbot/.nanobot';
 
 function getSafePath(pathSegments: string[]): string | null {
-  const relPath = path.join(...pathSegments);
+  let relPath = path.join(...pathSegments);
+  
+  // If the path doesn't start with workspace/, prepend it if it's a known location
+  if (!relPath.startsWith('workspace/') && !relPath.startsWith('config.json')) {
+    relPath = path.join('workspace', relPath);
+  }
+
   const fullPath = path.join(CONFIG_ROOT, relPath);
 
   // Prevent Directory Traversal
@@ -22,6 +28,7 @@ function getSafePath(pathSegments: string[]): string | null {
     'workspace/TOOLS.md',
     'workspace/USER.md',
     'workspace/HEARTBEAT.md',
+    'workspace/memory/HISTORY.md',
   ];
 
   if (allowedFiles.includes(relPath)) {
@@ -29,18 +36,19 @@ function getSafePath(pathSegments: string[]): string | null {
   }
 
   // Skills: workspace/skills/<folder>/SKILL.md
-  if (pathSegments.length === 4 && 
-      pathSegments[0] === 'workspace' && 
-      pathSegments[1] === 'skills' && 
-      pathSegments[3] === 'SKILL.md') {
+  const segments = relPath.split(path.sep);
+  if (segments.length === 4 && 
+      segments[0] === 'workspace' && 
+      segments[1] === 'skills' && 
+      segments[3] === 'SKILL.md') {
       return fullPath;
   }
 
   // Memory: workspace/memory/*.md
-  if (pathSegments.length === 3 && 
-      pathSegments[0] === 'workspace' && 
-      pathSegments[1] === 'memory' && 
-      pathSegments[2].endsWith('.md')) {
+  if (segments.length === 3 && 
+      segments[0] === 'workspace' && 
+      segments[1] === 'memory' && 
+      segments[2].endsWith('.md')) {
       return fullPath;
   }
 
