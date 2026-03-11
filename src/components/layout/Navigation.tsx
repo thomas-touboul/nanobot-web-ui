@@ -7,9 +7,14 @@ import { cn } from "@/lib/utils";
 
 const systemNavigation = [
   { 
-    ...UI_TEXT.navigation.configuration,
-    href: "/editor?file=config.json", 
-    match: (path: string, params: URLSearchParams) => params.get("file") === "config.json"
+    ...UI_TEXT.navigation.agent,
+    href: "/agent", 
+    match: (path: string) => path.startsWith("/agent")
+  },
+  { 
+    ...UI_TEXT.navigation.channels,
+    href: "/channels", 
+    match: (path: string) => path.startsWith("/channels")
   },
   { 
     ...UI_TEXT.navigation.providers,

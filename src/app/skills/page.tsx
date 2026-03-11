@@ -5,7 +5,6 @@ import Link from "next/link";
 import { 
   Puzzle, 
   Edit, 
-  ArrowRight, 
   Loader2, 
   Plus, 
   Trash2, 
@@ -241,7 +240,7 @@ export default function SkillsPage() {
               </div>
               
               <div className="flex items-center gap-2 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
-                <info className="w-4 h-4 shrink-0" />
+                <Info className="w-4 h-4 shrink-0" />
                 <p className="text-xs leading-relaxed">This will create a new directory in <code>.nanobot/workspace/skills/</code> and initialize it with a <code>SKILL.md</code> file.</p>
               </div>
             </div>

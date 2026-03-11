@@ -7,7 +7,9 @@ import {
   ScrollText, 
   Calendar,
   Activity,
-  Users
+  Users,
+  Bot,
+  MessageSquare
 } from "lucide-react";
 
 /**
@@ -17,21 +19,29 @@ import {
 
 export const UI_TEXT = {
   navigation: {
-    configuration: {
-      title: "Configuration",
-      subtitle: "config.json",
-      icon: Settings,
+    agent: {
+      title: "Agent",
+      subtitle: "Agent Settings",
+      icon: Bot,
       color: "text-amber-500",
       bgColor: "bg-amber-500/10",
       borderColor: "border-amber-500/20",
+    },
+    channels: {
+      title: "Channels",
+      subtitle: "Telegram & WhatsApp",
+      icon: MessageSquare,
+      color: "text-cyan-500",
+      bgColor: "bg-cyan-500/10",
+      borderColor: "border-cyan-500/20",
     },
     providers: {
       title: "Providers",
       subtitle: "Models & Keys",
       icon: Cpu,
-      color: "text-cyan-500",
-      bgColor: "bg-cyan-500/10",
-      borderColor: "border-cyan-500/20",
+      color: "text-violet-500",
+      bgColor: "bg-violet-500/10",
+      borderColor: "border-violet-500/20",
     },
     coreFiles: {
       title: "Core Files",
@@ -91,9 +101,21 @@ export const UI_TEXT = {
       bgColor: "bg-emerald-500/10",
       borderColor: "border-emerald-500/20",
     },
-    configuration: {
-      title: "Configuration",
-      subtitle: "Directly edit your agent's configuration files.",
+    agent: {
+      title: "Agent Configuration",
+      subtitle: "Configure your agent's identity and behavior.",
+      icon: Bot,
+      color: "text-amber-500",
+      bgColor: "bg-amber-500/10",
+      borderColor: "border-amber-500/20",
+    },
+    channels: {
+      title: "Channels",
+      subtitle: "Manage Telegram, WhatsApp and other communication channels.",
+      icon: MessageSquare,
+      color: "text-cyan-500",
+      bgColor: "bg-cyan-500/10",
+      borderColor: "border-cyan-500/20",
     },
     providers: {
       title: "Providers",

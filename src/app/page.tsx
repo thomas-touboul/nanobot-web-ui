@@ -8,8 +8,11 @@ import {
   Network, 
   CheckCircle2,
   Terminal,
-  Bot
+  Bot,
+  Settings,
+  ArrowRight
 } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface GatewayStatus {
@@ -156,6 +159,27 @@ export default function Dashboard() {
         </div>
       </div>
       
+      {/* Configuration Link Card */}
+      <Link 
+        href="/editor?file=config.json"
+        className="group flex items-center justify-between p-5 bg-card border border-border rounded-2xl hover:border-amber-500/30 hover:shadow-md transition-all duration-300"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-amber-500/20 bg-amber-500/10 shadow-sm">
+            <Settings className="w-6 h-6 text-amber-500" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-foreground tracking-tight group-hover:text-amber-500 transition-colors">
+              Edit Configuration
+            </h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Directly modify config.json settings
+            </p>
+          </div>
+        </div>
+        <ArrowRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-amber-500 transition-transform group-hover:translate-x-1" />
+      </Link>
+
       <div className="p-4 rounded-lg bg-secondary/30 border border-border text-xs font-mono text-muted-foreground flex items-center gap-3">
         <Terminal className="w-4 h-4" />
         <span>To manage gateway: <span className="text-foreground">nanobot gateway [start|stop|restart]</span></span>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { os } from 'os';
+import os from 'os';
 
 const CRON_JOBS_PATH = '/home/moltbot/.nanobot/cron/jobs.json';
 
