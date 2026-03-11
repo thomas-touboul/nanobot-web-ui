@@ -81,3 +81,33 @@ ${description}
     return NextResponse.json({ error: 'Failed to create skill' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const folderName = searchParams.get('folderName');
+
+    if (!folderName) {
+      return NextResponse.json({ error: 'Folder name is required' }, { status: 400 });
+    }
+
+    const skillPath = path.join(SKILLS_DIR, folderName);
+
+    // Security: ensure we are within the skills directory
+    if (!skillPath.startsWith(SKILLS_DIR)) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
+    if (!fs.existsSync(skillPath)) {
+      return NextResponse.json({ error: 'Skill not found' }, { status: 404 });
+    }
+
+    // Recursive delete
+    fs.rmSync(skillPath, { recursive: true, force: true });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete skill:', error);
+    return NextResponse.json({ error: 'Failed to delete skill' }, { status: 500 });
+  }
+}
