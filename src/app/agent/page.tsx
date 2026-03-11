@@ -10,10 +10,6 @@ interface AgentConfig {
   temperature?: number;
   maxTokens?: number;
   reasoningEffort?: "low" | "medium" | "high" | null;
-  heartbeat?: {
-    enabled?: boolean;
-    intervalS?: number;
-  };
   memoryWindow?: number;
 }
 
@@ -28,12 +24,8 @@ export default function AgentPage() {
       const res = await fetch("/api/config");
       if (res.ok) {
         const data = await res.json();
-        // Config key is "agents" (plural)
-        console.log("Full API data:", JSON.stringify(data, null, 2));
-        console.log("data.agents value:", data.agents);
-        console.log("data.agents type:", typeof data.agents);
-        const agentConfig = data.agents || {};
-        console.log("Agent config set to:", agentConfig);
+        // Config is in agents.defaults
+        const agentConfig = data.agents?.defaults || {};
         setConfig(agentConfig);
       } else {
         console.error("API error:", res.status);
@@ -56,7 +48,7 @@ export default function AgentPage() {
       const saveRes = await fetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agents: config }),
+        body: JSON.stringify({ agents: { defaults: config } }),
       });
       
       if (saveRes.ok) {
@@ -117,7 +109,7 @@ export default function AgentPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="max-w-2xl">
         {/* Model Settings */}
         <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
           <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
@@ -133,7 +125,7 @@ export default function AgentPage() {
                 type="text"
                 value={config.model || ''}
                 onChange={(e) => setConfig({ ...config, model: e.target.value })}
-                placeholder="e.g. gemini/gemini-3-flash-preview"
+                placeholder="e.g. moonshot/kimi-k2.5"
                 className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all font-mono"
               />
               <p className="text-xs text-muted-foreground">Model identifier (provider/model-name format).</p>
@@ -151,7 +143,7 @@ export default function AgentPage() {
                   min={0}
                   max={2}
                   step={0.1}
-                  placeholder="0.7"
+                  placeholder="0.1"
                   className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                 />
                 <p className="text-xs text-muted-foreground">0-2 (0 = deterministic)</p>
@@ -167,7 +159,7 @@ export default function AgentPage() {
                   onChange={(e) => setConfig({ ...config, maxTokens: e.target.value ? parseInt(e.target.value) : undefined })}
                   min={1}
                   step={1}
-                  placeholder="4096"
+                  placeholder="8192"
                   className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                 />
                 <p className="text-xs text-muted-foreground">Response length limit</p>
@@ -190,56 +182,6 @@ export default function AgentPage() {
               </select>
               <p className="text-xs text-muted-foreground">For reasoning-capable models (o1, etc.)</p>
             </div>
-          </div>
-        </div>
-
-        {/* Heartbeat & Maintenance */}
-        <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
-          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
-            Heartbeat & Maintenance
-          </h3>
-          
-          <div className="space-y-6">
-            <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-xl">
-              <div>
-                <h4 className="font-semibold text-sm">Enable Heartbeat</h4>
-                <p className="text-xs text-muted-foreground mt-1">Periodic tasks execution</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={config.heartbeat?.enabled ?? false}
-                  onChange={(e) => setConfig({
-                    ...config,
-                    heartbeat: { ...config.heartbeat, enabled: e.target.checked }
-                  })}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-amber-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
-              </label>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                Heartbeat Interval (seconds)
-              </label>
-              <input
-                type="number"
-                value={config.heartbeat?.intervalS ?? ''}
-                onChange={(e) => setConfig({
-                  ...config,
-                  heartbeat: { 
-                    ...config.heartbeat, 
-                    intervalS: e.target.value ? parseInt(e.target.value) : undefined 
-                  }
-                })}
-                min={60}
-                step={60}
-                placeholder="86400"
-                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-              />
-              <p className="text-xs text-muted-foreground">Default: 86400 (24 hours)</p>
-            </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
@@ -251,7 +193,7 @@ export default function AgentPage() {
                 onChange={(e) => setConfig({ ...config, memoryWindow: e.target.value ? parseInt(e.target.value) : undefined })}
                 min={1}
                 step={1}
-                placeholder="100"
+                placeholder="200"
                 className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
               />
               <p className="text-xs text-muted-foreground">Number of exchanges to keep in context</p>

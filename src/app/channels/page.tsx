@@ -6,17 +6,19 @@ import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { UI_TEXT } from "@/constants/ui-text";
 
 interface ChannelConfig {
+  sendProgress?: boolean;
   telegram?: {
     enabled?: boolean;
-    botToken?: string;
-    allowedChatIds?: string[];
-    sendProgress?: boolean;
+    token?: string;
+    allowFrom?: string[];
+    proxy?: string | null;
+    replyToMessage?: boolean;
   };
   whatsapp?: {
     enabled?: boolean;
-    sessionName?: string;
-    allowedNumbers?: string[];
-    sendProgress?: boolean;
+    bridgeUrl?: string;
+    bridgeToken?: string;
+    allowFrom?: string[];
   };
 }
 
@@ -71,48 +73,48 @@ export default function ChannelsPage() {
 
   const addChatId = () => {
     if (!newChatId.trim()) return;
-    const currentIds = config.telegram?.allowedChatIds || [];
+    const currentIds = config.telegram?.allowFrom || [];
     setConfig({
       ...config,
       telegram: {
         ...config.telegram,
-        allowedChatIds: [...currentIds, newChatId.trim()]
+        allowFrom: [...currentIds, newChatId.trim()]
       }
     });
     setNewChatId("");
   };
 
   const removeChatId = (index: number) => {
-    const currentIds = config.telegram?.allowedChatIds || [];
+    const currentIds = config.telegram?.allowFrom || [];
     setConfig({
       ...config,
       telegram: {
         ...config.telegram,
-        allowedChatIds: currentIds.filter((_, i) => i !== index)
+        allowFrom: currentIds.filter((_, i) => i !== index)
       }
     });
   };
 
   const addNumber = () => {
     if (!newNumber.trim()) return;
-    const currentNumbers = config.whatsapp?.allowedNumbers || [];
+    const currentNumbers = config.whatsapp?.allowFrom || [];
     setConfig({
       ...config,
       whatsapp: {
         ...config.whatsapp,
-        allowedNumbers: [...currentNumbers, newNumber.trim()]
+        allowFrom: [...currentNumbers, newNumber.trim()]
       }
     });
     setNewNumber("");
   };
 
   const removeNumber = (index: number) => {
-    const currentNumbers = config.whatsapp?.allowedNumbers || [];
+    const currentNumbers = config.whatsapp?.allowFrom || [];
     setConfig({
       ...config,
       whatsapp: {
         ...config.whatsapp,
-        allowedNumbers: currentNumbers.filter((_, i) => i !== index)
+        allowFrom: currentNumbers.filter((_, i) => i !== index)
       }
     });
   };
@@ -162,6 +164,31 @@ export default function ChannelsPage() {
         </div>
       )}
 
+      {/* Global Channel Settings */}
+      <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
+        <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
+          Global Settings
+        </h3>
+        
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-xl">
+            <div>
+              <h4 className="font-semibold text-sm">Send Progress Updates</h4>
+              <p className="text-xs text-muted-foreground mt-1">Show typing indicators while processing</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={config.sendProgress ?? false}
+                onChange={(e) => setConfig({ ...config, sendProgress: e.target.checked })}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-violet-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Telegram */}
         <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
@@ -203,10 +230,10 @@ export default function ChannelsPage() {
                   </label>
                   <input
                     type="password"
-                    value={config.telegram?.botToken || ''}
+                    value={config.telegram?.token || ''}
                     onChange={(e) => setConfig({
                       ...config,
-                      telegram: { ...config.telegram, botToken: e.target.value }
+                      telegram: { ...config.telegram, token: e.target.value }
                     })}
                     placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
                     className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all font-mono"
@@ -216,16 +243,16 @@ export default function ChannelsPage() {
 
                 <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-xl">
                   <div>
-                    <h4 className="font-semibold text-sm">Send Progress Updates</h4>
-                    <p className="text-xs text-muted-foreground mt-1">Show typing indicators</p>
+                    <h4 className="font-semibold text-sm">Reply to Message</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Reply to the message that triggered the response</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={config.telegram?.sendProgress ?? false}
+                      checked={config.telegram?.replyToMessage ?? false}
                       onChange={(e) => setConfig({
                         ...config,
-                        telegram: { ...config.telegram, sendProgress: e.target.checked }
+                        telegram: { ...config.telegram, replyToMessage: e.target.checked }
                       })}
                       className="sr-only peer"
                     />
@@ -254,7 +281,7 @@ export default function ChannelsPage() {
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {(config.telegram?.allowedChatIds || []).map((id, index) => (
+                    {(config.telegram?.allowFrom || []).map((id, index) => (
                       <span key={index} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-500/10 text-violet-600 rounded-lg text-xs font-mono">
                         {id}
                         <button onClick={() => removeChatId(index)} className="hover:text-violet-800">
@@ -305,37 +332,35 @@ export default function ChannelsPage() {
               <>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                    Session Name
+                    Bridge URL
                   </label>
                   <input
                     type="text"
-                    value={config.whatsapp?.sessionName || ''}
+                    value={config.whatsapp?.bridgeUrl || ''}
                     onChange={(e) => setConfig({
                       ...config,
-                      whatsapp: { ...config.whatsapp, sessionName: e.target.value }
+                      whatsapp: { ...config.whatsapp, bridgeUrl: e.target.value }
                     })}
-                    placeholder="my-whatsapp-session"
-                    className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                    placeholder="ws://localhost:3001"
+                    className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono"
                   />
+                  <p className="text-xs text-muted-foreground">WebSocket URL of the WhatsApp bridge server.</p>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-xl">
-                  <div>
-                    <h4 className="font-semibold text-sm">Send Progress Updates</h4>
-                    <p className="text-xs text-muted-foreground mt-1">Show typing indicators</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={config.whatsapp?.sendProgress ?? false}
-                      onChange={(e) => setConfig({
-                        ...config,
-                        whatsapp: { ...config.whatsapp, sendProgress: e.target.checked }
-                      })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                    Bridge Token
                   </label>
+                  <input
+                    type="password"
+                    value={config.whatsapp?.bridgeToken || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      whatsapp: { ...config.whatsapp, bridgeToken: e.target.value }
+                    })}
+                    placeholder="Authentication token"
+                    className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono"
+                  />
                 </div>
 
                 <div className="space-y-3">
@@ -359,7 +384,7 @@ export default function ChannelsPage() {
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {(config.whatsapp?.allowedNumbers || []).map((num, index) => (
+                    {(config.whatsapp?.allowFrom || []).map((num, index) => (
                       <span key={index} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-600 rounded-lg text-xs font-mono">
                         {num}
                         <button onClick={() => removeNumber(index)} className="hover:text-emerald-800">
