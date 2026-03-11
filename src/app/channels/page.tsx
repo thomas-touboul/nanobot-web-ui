@@ -148,7 +148,7 @@ export default function ChannelsPage() {
           <button 
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-cyan-500 text-white rounded-xl transition-all font-semibold shadow-lg hover:opacity-90 active:scale-95 disabled:opacity-50 shrink-0"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-violet-500 text-white rounded-xl transition-all font-semibold shadow-lg hover:opacity-90 active:scale-95 disabled:opacity-50 shrink-0"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Changes
@@ -191,7 +191,7 @@ export default function ChannelsPage() {
                   })}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-cyan-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+                <div className="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-violet-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
               </label>
             </div>
 
@@ -209,7 +209,7 @@ export default function ChannelsPage() {
                       telegram: { ...config.telegram, botToken: e.target.value }
                     })}
                     placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
-                    className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all font-mono"
+                    className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all font-mono"
                   />
                   <p className="text-xs text-muted-foreground">Get this from @BotFather on Telegram.</p>
                 </div>
@@ -229,7 +229,7 @@ export default function ChannelsPage() {
                       })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-cyan-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+                    <div className="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-violet-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
                   </label>
                 </div>
 
@@ -243,21 +243,21 @@ export default function ChannelsPage() {
                       value={newChatId}
                       onChange={(e) => setNewChatId(e.target.value)}
                       placeholder="Add chat ID..."
-                      className="flex-1 bg-secondary/30 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                      className="flex-1 bg-secondary/30 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all"
                       onKeyDown={(e) => e.key === 'Enter' && addChatId()}
                     />
                     <button
                       onClick={addChatId}
-                      className="px-4 py-2.5 bg-cyan-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-all"
+                      className="px-4 py-2.5 bg-violet-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-all"
                     >
                       Add
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {(config.telegram?.allowedChatIds || []).map((id, index) => (
-                      <span key={index} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 text-cyan-600 rounded-lg text-xs font-mono">
+                      <span key={index} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-500/10 text-violet-600 rounded-lg text-xs font-mono">
                         {id}
-                        <button onClick={() => removeChatId(index)} className="hover:text-cyan-800">
+                        <button onClick={() => removeChatId(index)} className="hover:text-violet-800">
                           ×
                         </button>
                       </span>
