@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { UI_TEXT } from "@/constants/ui-text";
 
@@ -61,7 +62,7 @@ export function Navigation({ onItemClick }: NavigationProps) {
         const Icon = item.icon;
         
         return (
-          <a
+          <Link
             key={item.href}
             href={item.href}
             onClick={onItemClick}
@@ -84,7 +85,7 @@ export function Navigation({ onItemClick }: NavigationProps) {
                 {item.subtitle}
               </span>
             </div>
-          </a>
+          </Link>
         );
       })}
     </nav>

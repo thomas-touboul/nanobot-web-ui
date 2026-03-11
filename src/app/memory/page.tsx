@@ -25,9 +25,11 @@ type SortKey = "name" | "updatedAt" | "size";
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
 };
 
@@ -71,7 +73,7 @@ const FileItem = ({ file }: { file: MemoryFile }) => {
             {file.name}
           </span>
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
-            <span className="uppercase font-bold tracking-tighter opacity-70">
+            <span className="font-medium opacity-70">
               {formatDate(file.updatedAt)}
             </span>
             <span className="font-mono opacity-40">•</span>
@@ -89,31 +91,35 @@ const FileItem = ({ file }: { file: MemoryFile }) => {
 const CoreCard = ({ file, title, description }: { file: MemoryFile, title: string, description: string }) => (
   <Link
     href={`/editor?file=${file.path}`}
-    className="group relative p-5 bg-card border border-border rounded-2xl hover:border-sky-500/20 hover:shadow-md transition-all duration-300 overflow-hidden max-w-md"
+    className="group relative p-6 bg-card border border-border rounded-2xl hover:border-sky-500/20 hover:shadow-md transition-all duration-300 overflow-hidden w-full"
   >
     <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity text-sky-500">
-      <Clock className="w-24 h-24" />
+      <Clock className="w-32 h-32" />
     </div>
-    <div className="relative z-10 flex flex-col gap-3">
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-sky-500/20 bg-sky-500/10 shadow-sm shrink-0">
-          <Clock className="w-5 h-5 text-sky-500" />
+    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex items-center gap-5 min-w-0">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-sky-500/20 bg-sky-500/10 shadow-sm shrink-0">
+          <Clock className="w-6 h-6 text-sky-500" />
         </div>
-        <div>
-          <h3 className="text-base font-bold text-foreground tracking-tight">{title}</h3>
-          <p className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-wider">{file.path}</p>
+        <div className="min-w-0">
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-bold text-foreground tracking-tight">{title}</h3>
+            <span className="text-[10px] font-mono text-muted-foreground/40 tracking-wider">{file.path}</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed mt-0.5 max-w-xl truncate md:whitespace-normal">
+            {description}
+          </p>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
-      <div className="flex items-center gap-3 pt-1">
+      
+      <div className="flex items-center gap-8 shrink-0 border-t md:border-t-0 md:border-l border-border/50 pt-4 md:pt-0 md:pl-8">
         <div className="flex flex-col">
-          <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Updated</span>
-          <span className="text-[11px] font-medium">{formatDate(file.updatedAt)}</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Last Update</span>
+          <span className="text-[11px] font-medium text-foreground/80 whitespace-nowrap">{formatDate(file.updatedAt)}</span>
         </div>
-        <div className="w-px h-5 bg-border/50" />
         <div className="flex flex-col">
           <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Size</span>
-          <span className="text-[11px] font-medium">{formatSize(file.size)}</span>
+          <span className="text-[11px] font-medium text-foreground/80 whitespace-nowrap">{formatSize(file.size)}</span>
         </div>
       </div>
     </div>
@@ -222,7 +228,7 @@ export default function MemoryPage() {
               />
               <SortButton 
                 label="Date" icon={Clock} active={sort.key === "updatedAt"} order={sort.order}
-                onClick={() => setSort({ key: "updatedAt", order: sort.key === "updatedAt" && sort.order === "desc" ? "asc" : "desc" })} 
+                onClick={() => setSort({ key: "updatedAt", order: sort.key === "updatedAt" && sort.desc === "asc" ? "desc" : "asc" })} 
               />
             </div>
           </div>
