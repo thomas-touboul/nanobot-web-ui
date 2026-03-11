@@ -175,15 +175,17 @@ export default function MemoryPage() {
   }
 
   return (
-    <div className="space-y-8 container max-w-7xl py-4 animate-fade-in pb-20">
-      <HeaderWithIcon 
-          title="Knowledge Base"
-          subtitle="Manage project-specific memory and long-term facts."
-          icon={Clock}
-          iconColorClass="text-sky-500"
-          iconBgClass="bg-sky-500/10"
-          iconBorderClass="border-sky-500/20"
-      />
+    <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <HeaderWithIcon 
+            title="Knowledge Base"
+            subtitle="Manage project-specific memory and long-term facts."
+            icon={Clock}
+            iconColorClass="text-sky-500"
+            iconBgClass="bg-sky-500/10"
+            iconBorderClass="border-sky-500/20"
+        />
+      </div>
 
       {/* Section 1: Core Memory */}
       <div className="space-y-4">
