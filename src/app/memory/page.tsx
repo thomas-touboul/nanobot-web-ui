@@ -89,28 +89,31 @@ const FileItem = ({ file }: { file: MemoryFile }) => {
 const CoreCard = ({ file, title, description }: { file: MemoryFile, title: string, description: string }) => (
   <Link
     href={`/editor?file=${file.path}`}
-    className="group relative p-6 bg-card border border-border rounded-2xl hover:border-sky-500/20 hover:shadow-md transition-all duration-300 overflow-hidden"
+    className="group relative p-5 bg-card border border-border rounded-2xl hover:border-sky-500/20 hover:shadow-md transition-all duration-300 overflow-hidden max-w-md"
   >
     <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity text-sky-500">
-      <Clock className="w-32 h-32" />
+      <Clock className="w-24 h-24" />
     </div>
-    <div className="relative z-10 flex flex-col gap-4">
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-sky-500/20 bg-sky-500/10 shadow-sm">
-        <Clock className="w-6 h-6 text-sky-500" />
-      </div>
-      <div>
-        <h3 className="text-lg font-bold text-foreground tracking-tight">{title}</h3>
-        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{description}</p>
-      </div>
-      <div className="flex items-center gap-3 mt-2">
-        <div className="flex flex-col">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Last Update</span>
-          <span className="text-xs font-medium">{formatDate(file.updatedAt)}</span>
+    <div className="relative z-10 flex flex-col gap-3">
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-sky-500/20 bg-sky-500/10 shadow-sm shrink-0">
+          <Clock className="w-5 h-5 text-sky-500" />
         </div>
-        <div className="w-px h-6 bg-border/50" />
+        <div>
+          <h3 className="text-base font-bold text-foreground tracking-tight">{title}</h3>
+          <p className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-wider">{file.path}</p>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
+      <div className="flex items-center gap-3 pt-1">
         <div className="flex flex-col">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Size</span>
-          <span className="text-xs font-medium">{formatSize(file.size)}</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Updated</span>
+          <span className="text-[11px] font-medium">{formatDate(file.updatedAt)}</span>
+        </div>
+        <div className="w-px h-5 bg-border/50" />
+        <div className="flex flex-col">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">Size</span>
+          <span className="text-[11px] font-medium">{formatSize(file.size)}</span>
         </div>
       </div>
     </div>
