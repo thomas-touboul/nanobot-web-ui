@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { UI_TEXT } from "@/constants/ui-text";
+import { cn } from "@/lib/utils";
 
 const systemNavigation = [
   { 
