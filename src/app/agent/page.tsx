@@ -7,12 +7,19 @@ import { UI_TEXT } from "@/constants/ui-text";
 
 interface AgentConfig {
   name?: string;
+  description?: string;
   timezone?: string;
   language?: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+  reasoningEffort?: "low" | "medium" | "high" | null;
   heartbeat?: {
     enabled?: boolean;
     intervalS?: number;
   };
+  memoryWindow?: number;
+  systemPrompt?: string;
 }
 
 export default function AgentPage() {
@@ -43,7 +50,6 @@ export default function AgentPage() {
     setSaving(true);
     setMessage(null);
     try {
-      // Save only agent section - API will merge
       const saveRes = await fetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -109,10 +115,10 @@ export default function AgentPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Agent Identity */}
+        {/* Agent Configuration */}
         <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
           <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
-            Agent Identity
+            Agent Configuration
           </h3>
           
           <div className="space-y-6">
@@ -132,33 +138,123 @@ export default function AgentPage() {
 
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                Language
+                Description
               </label>
-              <select
-                value={config.language || 'en'}
-                onChange={(e) => setConfig({ ...config, language: e.target.value })}
-                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-              >
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-                <option value="es">Español</option>
-                <option value="de">Deutsch</option>
-              </select>
-              <p className="text-xs text-muted-foreground">Primary language for responses.</p>
+              <textarea
+                value={config.description || ''}
+                onChange={(e) => setConfig({ ...config, description: e.target.value })}
+                placeholder="Brief description of the agent's purpose..."
+                rows={3}
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all resize-none"
+              />
+              <p className="text-xs text-muted-foreground">Optional description for documentation.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                  Language
+                </label>
+                <select
+                  value={config.language || 'en'}
+                  onChange={(e) => setConfig({ ...config, language: e.target.value })}
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                >
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
+                  <option value="es">Español</option>
+                  <option value="de">Deutsch</option>
+                  <option value="it">Italiano</option>
+                  <option value="pt">Português</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                  Timezone
+                </label>
+                <input
+                  type="text"
+                  value={config.timezone || ''}
+                  onChange={(e) => setConfig({ ...config, timezone: e.target.value })}
+                  placeholder="Europe/Paris"
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground -mt-4">Primary language and IANA timezone identifier.</p>
+          </div>
+        </div>
+
+        {/* Model Settings */}
+        <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
+            Model Settings
+          </h3>
+          
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                Default Model
+              </label>
+              <input
+                type="text"
+                value={config.model || ''}
+                onChange={(e) => setConfig({ ...config, model: e.target.value })}
+                placeholder="e.g. gemini/gemini-3-flash-preview"
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all font-mono"
+              />
+              <p className="text-xs text-muted-foreground">Model identifier (provider/model-name format).</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                  Temperature
+                </label>
+                <input
+                  type="number"
+                  value={config.temperature ?? 0.7}
+                  onChange={(e) => setConfig({ ...config, temperature: parseFloat(e.target.value) })}
+                  min={0}
+                  max={2}
+                  step={0.1}
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                />
+                <p className="text-xs text-muted-foreground">0-2 (0 = deterministic)</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                  Max Tokens
+                </label>
+                <input
+                  type="number"
+                  value={config.maxTokens || 4096}
+                  onChange={(e) => setConfig({ ...config, maxTokens: parseInt(e.target.value) })}
+                  min={1}
+                  step={1}
+                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                />
+                <p className="text-xs text-muted-foreground">Response length limit</p>
+              </div>
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                Timezone
+                Reasoning Effort
               </label>
-              <input
-                type="text"
-                value={config.timezone || ''}
-                onChange={(e) => setConfig({ ...config, timezone: e.target.value })}
-                placeholder="e.g. Europe/Paris"
+              <select
+                value={config.reasoningEffort || ''}
+                onChange={(e) => setConfig({ ...config, reasoningEffort: e.target.value as any || null })}
                 className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-              />
-              <p className="text-xs text-muted-foreground">IANA timezone identifier.</p>
+              >
+                <option value="">Not set</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <p className="text-xs text-muted-foreground">For reasoning-capable models (o1, etc.)</p>
             </div>
           </div>
         </div>
@@ -206,6 +302,42 @@ export default function AgentPage() {
               />
               <p className="text-xs text-muted-foreground">Default: 86400 (24 hours)</p>
             </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                Memory Window
+              </label>
+              <input
+                type="number"
+                value={config.memoryWindow || 100}
+                onChange={(e) => setConfig({ ...config, memoryWindow: parseInt(e.target.value) })}
+                min={1}
+                step={1}
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+              />
+              <p className="text-xs text-muted-foreground">Number of exchanges to keep in context</p>
+            </div>
+          </div>
+        </div>
+
+        {/* System Prompt */}
+        <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
+            System Prompt
+          </h3>
+          
+          <div className="space-y-4">
+            <textarea
+              value={config.systemPrompt || ''}
+              onChange={(e) => setConfig({ ...config, systemPrompt: e.target.value })}
+              placeholder="Enter the system prompt that defines the agent's behavior, personality, and capabilities..."
+              rows={10}
+              className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all resize-none font-mono"
+            />
+            <p className="text-xs text-muted-foreground">
+              The system prompt is sent with every request to guide the model's behavior. 
+              You can also manage this in the Core Files section.
+            </p>
           </div>
         </div>
       </div>
