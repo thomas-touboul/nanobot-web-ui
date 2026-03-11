@@ -244,6 +244,23 @@ export default function AgentPage() {
           </div>
         </div>
       </div>
+
+      {/* Advanced */}
+      <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
+        <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-4">
+          Advanced
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          For more advanced configuration options, edit the config.json file directly.
+        </p>
+        <a
+          href="/editor?file=config.json"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-secondary text-secondary-foreground rounded-xl transition-all font-medium hover:bg-secondary/80 active:scale-95"
+        >
+          <Bot className="w-4 h-4" />
+          Open config.json in Editor
+        </a>
+      </div>
     </div>
   );
 }
