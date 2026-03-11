@@ -35,3 +35,37 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to list memory files' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const filename = searchParams.get('filename');
+
+    if (!filename) {
+      return NextResponse.json({ error: 'Filename is required' }, { status: 400 });
+    }
+
+    // Security: only allow .md files in memory/
+    if (!filename.endsWith('.md')) {
+      return NextResponse.json({ error: 'Only .md files can be deleted' }, { status: 400 });
+    }
+
+    // Security: prevent deletion of core system files
+    if (filename === 'MEMORY.md' || filename === 'HISTORY.md') {
+      return NextResponse.json({ error: 'Cannot delete core system files' }, { status: 403 });
+    }
+
+    const filePath = path.join(MEMORY_DIR, filename);
+
+    // Check if file exists and is within memory directory
+    if (!fs.existsSync(filePath) || !filePath.startsWith(MEMORY_DIR)) {
+      return NextResponse.json({ error: 'File not found or access denied' }, { status: 404 });
+    }
+
+    fs.unlinkSync(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting memory file:', error);
+    return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });
+  }
+}

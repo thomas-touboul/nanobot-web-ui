@@ -9,7 +9,8 @@ import {
   Clock,
   Type,
   FileText,
-  LucideIcon
+  LucideIcon,
+  Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
@@ -58,13 +59,37 @@ const SortButton = ({ active, label, icon: Icon, onClick, order }: SortButtonPro
   </button>
 );
 
-const FileItem = ({ file }: { file: MemoryFile }) => {
+const FileItem = ({ file, onDelete }: { file: MemoryFile, onDelete: (name: string) => void }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (confirm(`Are you sure you want to delete ${file.name}?`)) {
+      setIsDeleting(true);
+      try {
+        const res = await fetch(`/api/memory?filename=${file.name}`, { method: 'DELETE' });
+        if (res.ok) {
+          onDelete(file.name);
+        } else {
+          alert("Failed to delete file.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred.");
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
   return (
-    <Link
-      href={`/editor?file=${file.path}`}
-      className="group flex items-center justify-between px-4 py-3 bg-card border border-border rounded-xl hover:border-sky-500/20 hover:shadow-sm transition-all duration-200"
-    >
-      <div className="flex items-center gap-4 min-w-0">
+    <div className="group relative flex items-center justify-between px-4 py-3 bg-card border border-border rounded-xl hover:border-sky-500/20 hover:shadow-sm transition-all duration-200">
+      <Link
+        href={`/editor?file=${file.path}`}
+        className="flex items-center gap-4 min-w-0 flex-1"
+      >
         <div className="p-2 rounded-lg bg-sky-500/5 group-hover:bg-sky-500/10 transition-colors shadow-inner shrink-0">
           <FileText className="w-4 h-4 text-sky-500/70 group-hover:text-sky-500 transition-colors" />
         </div>
@@ -82,9 +107,20 @@ const FileItem = ({ file }: { file: MemoryFile }) => {
             </span>
           </div>
         </div>
+      </Link>
+      
+      <div className="flex items-center gap-2 shrink-0 ml-4">
+        <button
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="p-2 rounded-lg text-muted-foreground/40 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+          title="Delete file"
+        >
+          {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+        </button>
+        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-sky-500 transition-transform group-hover:translate-x-0.5" />
       </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-sky-500 transition-transform group-hover:translate-x-0.5 shrink-0" />
-    </Link>
+    </div>
   );
 };
 
@@ -132,7 +168,7 @@ export default function MemoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState<{key: SortKey, order: "asc" | "desc"}>({ key: "name", order: "asc" });
 
-  useEffect(() => {
+  const fetchFiles = () => {
     fetch("/api/memory")
       .then((res) => res.json())
       .then((data) => {
@@ -143,7 +179,15 @@ export default function MemoryPage() {
         console.error(err);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchFiles();
   }, []);
+
+  const handleDeleteFile = (name: string) => {
+    setFiles(prev => prev.filter(f => f.name !== name));
+  };
 
   const memoryFile = files.find(f => f.name === "MEMORY.md");
   const otherFiles = files.filter(f => f.name !== "HISTORY.md" && f.name !== "MEMORY.md");
@@ -230,14 +274,14 @@ export default function MemoryPage() {
               />
               <SortButton 
                 label="Date" icon={Clock} active={sort.key === "updatedAt"} order={sort.order}
-                onClick={() => setSort({ key: "updatedAt", order: sort.key === "updatedAt" && sort.desc === "asc" ? "desc" : "asc" })} 
+                onClick={() => setSort({ key: "updatedAt", order: sort.key === "updatedAt" && sort.order === "asc" ? "desc" : "asc" })} 
               />
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sortedFiles.map(f => <FileItem key={f.path} file={f} />)}
+          {sortedFiles.map(f => <FileItem key={f.path} file={f} onDelete={handleDeleteFile} />)}
           {sortedFiles.length === 0 && (
             <div className="col-span-full py-12 text-center border border-dashed border-border rounded-2xl bg-secondary/5">
               <p className="text-sm text-muted-foreground italic">No additional documents found.</p>
