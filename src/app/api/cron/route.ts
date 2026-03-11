@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { os } from 'os';
+
+const CRON_JOBS_PATH = '/home/moltbot/.nanobot/cron/jobs.json';
 
 export async function GET() {
   try {
-    // We use the nanobot CLI to list cron jobs
-    const output = execSync('/home/moltbot/.local/bin/nanobot cron list', { encoding: 'utf-8' });
-    
-    // Simple parsing of the output (assuming it's a list of jobs)
-    // If the output is JSON, we'd parse it differently. 
-    // For now, let's assume we need to parse the text output or it returns JSON.
-    try {
-      const jobs = JSON.parse(output);
-      return NextResponse.json(jobs);
-    } catch {
-      // Fallback if it's just text
-      return NextResponse.json({ raw: output });
+    if (!fs.existsSync(CRON_JOBS_PATH)) {
+      return NextResponse.json({ jobs: [], version: 1 });
     }
+    
+    const fileContent = fs.readFileSync(CRON_JOBS_PATH, 'utf-8');
+    const data = JSON.parse(fileContent);
+    
+    // Return the jobs array if it exists, otherwise the whole object
+    return NextResponse.json(data.jobs || data);
   } catch (error) {
     console.error('Failed to fetch cron jobs:', error);
     return NextResponse.json({ error: 'Failed to fetch cron jobs' }, { status: 500 });
@@ -31,8 +31,20 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Job ID is required' }, { status: 400 });
     }
 
-    execSync(`/home/moltbot/.local/bin/nanobot cron remove --job_id ${id}`);
-    return NextResponse.json({ success: true });
+    if (!fs.existsSync(CRON_JOBS_PATH)) {
+      return NextResponse.json({ error: 'Cron jobs file not found' }, { status: 404 });
+    }
+
+    const fileContent = fs.readFileSync(CRON_JOBS_PATH, 'utf-8');
+    const data = JSON.parse(fileContent);
+    
+    if (data.jobs && Array.isArray(data.jobs)) {
+      data.jobs = data.jobs.filter((job: any) => job.job_id !== id);
+      fs.writeFileSync(CRON_JOBS_PATH, JSON.stringify(data, null, 2));
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json({ error: 'Invalid cron jobs format' }, { status: 500 });
   } catch (error) {
     console.error('Failed to delete cron job:', error);
     return NextResponse.json({ error: 'Failed to delete cron job' }, { status: 500 });

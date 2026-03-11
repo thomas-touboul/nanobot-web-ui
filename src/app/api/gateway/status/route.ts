@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import fs from 'fs';
+import path from 'path';
 
 const execAsync = promisify(exec);
+const CONFIG_PATH = '/home/moltbot/.nanobot/config.json';
 
 export async function GET() {
   try {
-    // Check systemd service status
+    // 1. Check systemd service status
     let serviceState = 'inactive';
     let pid = 'N/A';
     try {
@@ -20,23 +23,47 @@ export async function GET() {
       console.error('Failed to get systemd status', e);
     }
 
-    // Get nanobot status for config info
+    // 2. Read config for model, provider and channels
     let model = 'unknown';
+    let provider = 'auto';
+    let activeChannels: string[] = [];
     try {
-      const { stdout: nanobotOutput } = await execAsync('/home/moltbot/.local/bin/nanobot status');
-      const modelMatch = nanobotOutput.match(/Model: (.*)/);
-      if (modelMatch) model = modelMatch[1].trim();
+      if (fs.existsSync(CONFIG_PATH)) {
+        const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
+        model = config.agents?.defaults?.model || 'unknown';
+        provider = config.agents?.defaults?.provider || 'auto';
+        
+        // Extract active channels
+        if (config.channels) {
+          Object.entries(config.channels).forEach(([name, settings]: [string, any]) => {
+            if (settings && typeof settings === 'object' && settings.enabled === true) {
+              activeChannels.push(name);
+            }
+          });
+        }
+      }
     } catch (e) {
-      console.error('Failed to get nanobot status', e);
+      console.error('Failed to read config', e);
     }
+
+    // 3. Check RPC Probe
+    let rpcProbe = 'Offline';
+    try {
+      const { stdout: netstatOutput } = await execAsync('netstat -tuln | grep :18790');
+      if (netstatOutput.includes(':18790')) {
+        rpcProbe = 'Online';
+      }
+    } catch (e) {}
 
     return NextResponse.json({
       service: 'nanobot-gateway',
       state: serviceState,
       pid: pid === '0' ? 'N/A' : pid,
       model: model,
-      port: 18790, // Default nanobot port
-      uptime: 'N/A' 
+      provider: provider,
+      channels: activeChannels,
+      port: 18790,
+      rpc_probe: rpcProbe
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

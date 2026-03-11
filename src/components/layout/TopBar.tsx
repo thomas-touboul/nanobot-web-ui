@@ -2,103 +2,83 @@
 
 import { useTheme } from "next-themes";
 import { Sun, Moon, Menu, X } from "lucide-react";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { Navigation } from "./Navigation";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export default function TopBar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState<boolean | null>(null);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    
+    const checkStatus = async () => {
+      try {
+        const res = await fetch('/api/gateway/status');
+        const data = await res.json();
+        setIsOnline(data.state === 'active');
+      } catch (error) {
+        setIsOnline(false);
+      }
+    };
+
+    checkStatus();
+    const interval = setInterval(checkStatus, 30000); // Check every 30s
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
-    <>
-      <header className="h-14 w-full border-b border-border bg-background/80 backdrop-blur-md px-4 md:px-6 flex items-center justify-between shrink-0 sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 -ml-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-all duration-200"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-
-          <Link href="/" className="flex md:hidden items-center gap-2 font-semibold text-sm tracking-tight text-foreground">
-            <div className="w-5 h-5 bg-foreground rounded text-[10px] flex items-center justify-center text-background font-bold shadow-sm">
-              A
-            </div>
-          </Link>
-
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="hidden xs:inline">Gateway Online</span>
-            <span className="xs:hidden">Online</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 md:gap-4">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center">
           <button 
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-all duration-200"
-            aria-label="Toggle theme"
+            className="lg:hidden p-2 -ml-2 hover:bg-secondary rounded-md transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mounted && theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-
-          <div className="h-4 w-px bg-border/60 mx-1"></div>
-
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="w-6 h-6 bg-gradient-to-tr from-zinc-800 to-zinc-600 dark:from-zinc-200 dark:to-zinc-400 rounded-full flex items-center justify-center text-[10px] font-bold text-background shadow-sm ring-1 ring-border/20">
-              T
-            </div>
-            <span className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-default hidden xs:inline">
-              Thomas
-            </span>
-          </div>
         </div>
-      </header>
+
+        <div className="flex items-center gap-3">
+          {/* Status Indicator */}
+          <div className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-500",
+            isOnline === null ? "bg-secondary/50 text-muted-foreground border-border" :
+            isOnline ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+            "bg-red-500/10 text-red-500 border-red-500/20 animate-pulse"
+          )}>
+            <div className={cn(
+              "h-1.5 w-1.5 rounded-full",
+              isOnline === null ? "bg-muted-foreground" :
+              isOnline ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : 
+              "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
+            )} />
+            <span className="hidden xs:inline">Gateway {isOnline === null ? 'Checking...' : isOnline ? 'Online' : 'Offline'}</span>
+            <span className="xs:hidden">{isOnline === null ? '...' : isOnline ? 'ON' : 'OFF'}</span>
+          </div>
+
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2.5 rounded-xl bg-secondary/50 hover:bg-secondary border border-border/50 transition-all duration-200"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+        </div>
+      </div>
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div 
-          className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          <div 
-            className={cn(
-              "fixed inset-y-0 left-0 w-[280px] bg-card border-r border-border p-4 shadow-2xl transition-transform duration-300 ease-in-out",
-              mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-            )}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-6 px-2">
-              <div className="flex items-center gap-2 font-semibold text-lg tracking-tight text-foreground">
-                <div className="w-6 h-6 bg-foreground rounded text-[12px] flex items-center justify-center text-background font-bold shadow-sm">
-                  A
-                </div>
-                <span>AI Agent Admin</span>
-              </div>
-              <button 
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <nav className="space-y-1">
-              <Suspense fallback={<div className="animate-pulse space-y-2"><div className="h-10 bg-secondary rounded-md w-full"></div></div>}>
-                <Navigation onItemClick={() => setMobileMenuOpen(false)} />
-              </Suspense>
-            </nav>
+        <div className="lg:hidden fixed inset-0 top-16 z-50 bg-background animate-in slide-in-from-left duration-300">
+          <div className="p-4">
+            <Navigation onItemClick={() => setMobileMenuOpen(false)} />
           </div>
         </div>
       )}
-    </>
+    </header>
   );
 }
