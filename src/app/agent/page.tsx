@@ -28,7 +28,11 @@ export default function AgentPage() {
       const res = await fetch("/api/config");
       if (res.ok) {
         const data = await res.json();
+        console.log("API Response:", data);
+        console.log("Agent config:", data.agent);
         setConfig(data.agent || {});
+      } else {
+        console.error("API error:", res.status);
       }
     } catch (err) {
       console.error("Failed to load config:", err);
@@ -138,11 +142,12 @@ export default function AgentPage() {
                 </label>
                 <input
                   type="number"
-                  value={config.temperature ?? 0.7}
-                  onChange={(e) => setConfig({ ...config, temperature: parseFloat(e.target.value) })}
+                  value={config.temperature ?? ''}
+                  onChange={(e) => setConfig({ ...config, temperature: e.target.value ? parseFloat(e.target.value) : undefined })}
                   min={0}
                   max={2}
                   step={0.1}
+                  placeholder="0.7"
                   className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                 />
                 <p className="text-xs text-muted-foreground">0-2 (0 = deterministic)</p>
@@ -154,10 +159,11 @@ export default function AgentPage() {
                 </label>
                 <input
                   type="number"
-                  value={config.maxTokens || 4096}
-                  onChange={(e) => setConfig({ ...config, maxTokens: parseInt(e.target.value) })}
+                  value={config.maxTokens ?? ''}
+                  onChange={(e) => setConfig({ ...config, maxTokens: e.target.value ? parseInt(e.target.value) : undefined })}
                   min={1}
                   step={1}
+                  placeholder="4096"
                   className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                 />
                 <p className="text-xs text-muted-foreground">Response length limit</p>
@@ -198,7 +204,7 @@ export default function AgentPage() {
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={config.heartbeat?.enabled ?? true}
+                  checked={config.heartbeat?.enabled ?? false}
                   onChange={(e) => setConfig({
                     ...config,
                     heartbeat: { ...config.heartbeat, enabled: e.target.checked }
@@ -215,13 +221,17 @@ export default function AgentPage() {
               </label>
               <input
                 type="number"
-                value={config.heartbeat?.intervalS || 86400}
+                value={config.heartbeat?.intervalS ?? ''}
                 onChange={(e) => setConfig({
                   ...config,
-                  heartbeat: { ...config.heartbeat, intervalS: parseInt(e.target.value) || 86400 }
+                  heartbeat: { 
+                    ...config.heartbeat, 
+                    intervalS: e.target.value ? parseInt(e.target.value) : undefined 
+                  }
                 })}
                 min={60}
                 step={60}
+                placeholder="86400"
                 className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
               />
               <p className="text-xs text-muted-foreground">Default: 86400 (24 hours)</p>
@@ -233,10 +243,11 @@ export default function AgentPage() {
               </label>
               <input
                 type="number"
-                value={config.memoryWindow || 100}
-                onChange={(e) => setConfig({ ...config, memoryWindow: parseInt(e.target.value) })}
+                value={config.memoryWindow ?? ''}
+                onChange={(e) => setConfig({ ...config, memoryWindow: e.target.value ? parseInt(e.target.value) : undefined })}
                 min={1}
                 step={1}
+                placeholder="100"
                 className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
               />
               <p className="text-xs text-muted-foreground">Number of exchanges to keep in context</p>
