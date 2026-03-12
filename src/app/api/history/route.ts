@@ -15,8 +15,8 @@ export async function GET(request: Request) {
   try {
     const content = fs.readFileSync(HISTORY_PATH, 'utf-8');
     
-    // Regex to match [YYYY-MM-DD HH:mm] Content
-    const entryRegex = /\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\] ([\s\S]*?)(?=\n\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}\]|$)/g;
+    // Regex to match [YYYY-MM-DD HH:mm] or [YYYY-MM-DD HH:mm-HH:mm] Content
+    const entryRegex = /\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?:-\d{2}:\d{2})?)\] ([\s\S]*?)(?=\n\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?:-\d{2}:\d{2})?\]|$)/g;
     
     const entries = [];
     let match;
