@@ -97,8 +97,8 @@ function EditorContent() {
   const syntaxStyle = resolvedTheme === 'dark' ? atomDark : oneLight;
 
   return (
-    <div className="h-full flex flex-col space-y-4 animate-fade-in -mx-3 sm:-mx-4 md:mx-0">
-      <div className="flex items-center justify-between px-3 sm:px-4 md:px-0">
+    <div className="h-full flex flex-col space-y-4 animate-fade-in">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="p-2 bg-secondary/50 rounded-lg shadow-sm border border-border/40">
             <FileText className="w-5 h-5 text-muted-foreground" />
@@ -148,7 +148,7 @@ function EditorContent() {
         </div>
       </div>
 
-      <div className="flex-1 relative min-h-[500px] border-0 sm:border border-border sm:rounded-xl overflow-hidden shadow-none sm:shadow-lg bg-card">
+      <div className="flex-1 relative h-0 border border-border rounded-xl overflow-hidden shadow-lg bg-card">
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -159,12 +159,12 @@ function EditorContent() {
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="absolute inset-0 w-full h-full p-3 sm:p-4 md:p-6 bg-transparent font-mono text-xs resize-none focus:outline-none leading-relaxed"
+                className="absolute inset-0 w-full h-full p-4 md:p-6 bg-transparent font-mono text-xs resize-none focus:outline-none leading-relaxed"
                 spellCheck={false}
                 autoFocus
               />
             ) : (
-              <div className="absolute inset-0 w-full h-full overflow-y-auto p-3 sm:p-4 md:p-6 bg-card">
+              <div className="absolute inset-0 w-full h-full overflow-y-auto p-4 md:p-6 bg-card">
                 {isMarkdown ? (
                   <div className="prose prose-sm prose-zinc dark:prose-invert max-w-none">
                     <ReactMarkdown
