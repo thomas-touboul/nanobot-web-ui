@@ -148,7 +148,7 @@ function EditorContent() {
         </div>
       </div>
 
-      <div className="flex-1 relative h-0 border border-border rounded-xl overflow-hidden shadow-lg bg-card">
+      <div className="flex-1 relative min-h-[300px] sm:min-h-[400px] md:min-h-[500px] border border-border rounded-xl overflow-hidden shadow-lg bg-card">
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
