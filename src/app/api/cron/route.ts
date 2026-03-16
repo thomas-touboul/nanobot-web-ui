@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const CRON_JOBS_PATH = '/home/moltbot/.nanobot/jobs.json';
+const CRON_JOBS_PATH = '/home/moltbot/.nanobot/cron/jobs.json';
 
 export async function GET() {
   try {
