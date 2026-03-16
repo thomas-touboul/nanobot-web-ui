@@ -21,6 +21,11 @@ const systemNavigation = [
     href: "/models", 
     match: (path: string) => path.startsWith("/models")
   },
+  { 
+    ...UI_TEXT.navigation.security,
+    href: "/security", 
+    match: (path: string) => path.startsWith("/security")
+  },
 ];
 
 const brainNavigation = [

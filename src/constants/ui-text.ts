@@ -9,7 +9,8 @@ import {
   Activity,
   Users,
   Bot,
-  MessageSquare
+  MessageSquare,
+  Shield
 } from "lucide-react";
 
 /**
@@ -90,6 +91,14 @@ export const UI_TEXT = {
       color: "text-rose-500",
       bgColor: "bg-rose-500/10",
       borderColor: "border-orange-500/20",
+    },
+    security: {
+      title: "Security",
+      subtitle: "Access & Permissions",
+      icon: Shield,
+      color: "text-slate-700",
+      bgColor: "bg-slate-700/10",
+      borderColor: "border-slate-700/20",
     },
   },
   pages: {
