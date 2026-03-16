@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const CRON_JOBS_PATH = '/home/moltbot/.nanobot/cron/jobs.json';
+const CRON_JOBS_PATH = '/home/moltbot/.nanobot/jobs.json';
 
 export async function GET() {
   try {
@@ -39,7 +39,7 @@ export async function DELETE(req: NextRequest) {
     const data = JSON.parse(fileContent);
     
     if (data.jobs && Array.isArray(data.jobs)) {
-      data.jobs = data.jobs.filter((job: any) => job.job_id !== id);
+      data.jobs = data.jobs.filter((job: any) => job.id !== id);
       fs.writeFileSync(CRON_JOBS_PATH, JSON.stringify(data, null, 2));
       return NextResponse.json({ success: true });
     }
