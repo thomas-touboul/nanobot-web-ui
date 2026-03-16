@@ -96,9 +96,9 @@ export const UI_TEXT = {
       title: "Security",
       subtitle: "Access & Permissions",
       icon: Shield,
-      color: "text-slate-700",
-      bgColor: "bg-slate-700/10",
-      borderColor: "border-slate-700/20",
+      color: "text-blue-900",
+      bgColor: "bg-blue-900/10",
+      borderColor: "border-blue-900/20",
     },
   },
   pages: {
