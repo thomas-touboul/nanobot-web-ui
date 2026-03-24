@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
-const CRON_JOBS_PATH = '/home/moltbot/.nanobot/cron/jobs.json';
+const CRON_JOBS_PATH = '/home/moltbot/.nanobot/workspace/cron/jobs.json';
 
 interface CronJob {
   id: string;
