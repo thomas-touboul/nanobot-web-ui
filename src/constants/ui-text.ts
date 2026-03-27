@@ -100,6 +100,14 @@ export const UI_TEXT = {
       bgColor: "bg-blue-900/10",
       borderColor: "border-blue-900/20",
     },
+    gatewayLogs: {
+      title: "Gateway Logs",
+      subtitle: "Real-time service logs",
+      icon: Activity,
+      color: "text-rose-500",
+      bgColor: "bg-rose-500/10",
+      borderColor: "border-rose-500/20",
+    },
   },
   pages: {
     dashboard: {

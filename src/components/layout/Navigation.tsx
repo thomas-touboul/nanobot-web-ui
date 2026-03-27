@@ -26,6 +26,11 @@ const systemNavigation = [
     href: "/security", 
     match: (path: string) => path.startsWith("/security")
   },
+  { 
+    ...UI_TEXT.navigation.gatewayLogs,
+    href: "/gateway-logs", 
+    match: (path: string) => path.startsWith("/gateway-logs")
+  },
 ];
 
 const brainNavigation = [
