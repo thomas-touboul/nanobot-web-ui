@@ -21,7 +21,7 @@ export function HeaderWithIcon({
   className,
 }: HeaderWithIconProps) {
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
+    <div className={cn("flex flex-col gap-5", className)}>
       <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
         <div className={cn("p-2 rounded-lg shadow-sm border", iconBgClass, iconBorderClass)}>
           <Icon className={cn("w-8 h-8", iconColorClass)} />

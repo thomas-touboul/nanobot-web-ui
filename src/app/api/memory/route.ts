@@ -15,12 +15,12 @@ export async function GET() {
         // Exclude dated files (YYYY-MM-DD.md) and non-markdown
         if (entry.isFile() && entry.name.endsWith('.md') && !/^\d{4}-\d{2}-\d{2}\.md$/.test(entry.name)) {
           const stats = fs.statSync(path.join(memoryDir, entry.name));
-          files.push({
-            name: entry.name,
-            path: `memory/${entry.name}`,
-            updatedAt: stats.mtime,
-            size: stats.size
-          });
+      files.push({
+        name: entry.name,
+        path: `workspace/memory/${entry.name}`,
+        updatedAt: stats.mtime,
+        size: stats.size
+      });
         }
       });
     }
