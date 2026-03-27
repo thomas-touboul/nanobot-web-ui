@@ -9,6 +9,9 @@ import {
   RefreshCw,
   AlertCircle,
   ChevronRight,
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight,
   Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,19 +23,40 @@ interface HistoryEntry {
   content: string;
 }
 
+interface HistoryResponse {
+  entries: HistoryEntry[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
 export default function HistoryPage() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [pagination, setPagination] = useState<HistoryResponse>({
+    entries: [],
+    total: 0,
+    page: 1,
+    totalPages: 0,
+    limit: 10
+  });
 
-  const fetchHistory = async (query = "") => {
+  const fetchHistory = async (query = "", page = 1) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/history${query ? `?q=${encodeURIComponent(query)}` : ""}`);
+      const params = new URLSearchParams();
+      if (query) params.append('q', query);
+      params.append('page', page.toString());
+      params.append('limit', '10');
+      
+      const response = await fetch(`/api/history?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch history");
-      const data = await response.json();
+      const data: HistoryResponse = await response.json();
       setEntries(data.entries || []);
+      setPagination(data);
       setError(null);
     } catch (err) {
       setError("Could not load history logs. Please try again.");
@@ -48,8 +72,15 @@ export default function HistoryPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchHistory(searchQuery);
+    fetchHistory(searchQuery, 1);
   };
+
+  const goToPage = (page: number) => {
+    if (page < 1 || page > pagination.totalPages) return;
+    fetchHistory(searchQuery, page);
+  };
+
+  const { page, totalPages, total } = pagination;
 
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
@@ -75,7 +106,7 @@ export default function HistoryPage() {
             />
           </form>
           <button 
-            onClick={() => fetchHistory(searchQuery)}
+            onClick={() => fetchHistory(searchQuery, page)}
             className="p-2.5 bg-secondary/50 border border-border/50 rounded-xl hover:bg-secondary transition-colors"
             title="Refresh"
           >
@@ -108,38 +139,117 @@ export default function HistoryPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {entries.map((entry, index) => {
-              const [datePart, timePart] = entry.date.split(' ');
-              return (
-                <div 
-                  key={index} 
-                  className="group relative flex flex-col md:flex-row gap-6 p-6 bg-card border border-border rounded-2xl hover:border-indigo-500/20 transition-all duration-300"
-                >
-                  <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 min-w-[140px]">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-500 uppercase tracking-wider">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {datePart}
+          <>
+            <div className="grid grid-cols-1 gap-4">
+              {entries.map((entry, index) => {
+                const [datePart, timePart] = entry.date.split(' ');
+                return (
+                  <div 
+                    key={index} 
+                    className="group relative flex flex-col md:flex-row gap-6 p-6 bg-card border border-border rounded-2xl hover:border-indigo-500/20 transition-all duration-300"
+                  >
+                    <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 min-w-[140px]">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-500 uppercase tracking-wider">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {datePart}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                        <Clock className="w-3.5 h-3.5" />
+                        {timePart}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                      <Clock className="w-3.5 h-3.5" />
-                      {timePart}
+                    
+                    <div className="flex-1">
+                      <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                        {entry.content}
+                      </p>
+                    </div>
+
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:block">
+                      <ChevronRight className="w-5 h-5 text-indigo-500/20" />
                     </div>
                   </div>
-                  
-                  <div className="flex-1">
-                    <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                      {entry.content}
-                    </p>
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border/40">
+                <div className="text-sm text-muted-foreground">
+                  Showing <span className="font-medium text-foreground">{(page - 1) * pagination.limit + 1}</span> to{" "}
+                  <span className="font-medium text-foreground">{Math.min(page * pagination.limit, total)}</span> of{" "}
+                  <span className="font-medium text-foreground">{total}</span> entries
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => goToPage(1)}
+                    disabled={page === 1}
+                    className="p-2 rounded-lg border border-border bg-background hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="First page"
+                  >
+                    <ChevronsLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => goToPage(page - 1)}
+                    disabled={page === 1}
+                    className="p-2 rounded-lg border border-border bg-background hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Previous page"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum: number;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (page <= 3) {
+                        pageNum = i + 1;
+                      } else if (page >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = page - 2 + i;
+                      }
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => goToPage(pageNum)}
+                          className={cn(
+                            "w-8 h-8 text-sm font-medium rounded-lg transition-colors",
+                            page === pageNum
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-background border border-border hover:bg-secondary"
+                          )}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:block">
-                    <ChevronRight className="w-5 h-5 text-indigo-500/20" />
-                  </div>
+                  <button
+                    onClick={() => goToPage(page + 1)}
+                    disabled={page === totalPages}
+                    className="p-2 rounded-lg border border-border bg-background hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Next page"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => goToPage(totalPages)}
+                    disabled={page === totalPages}
+                    className="p-2 rounded-lg border border-border bg-background hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Last page"
+                  >
+                    <ChevronsRight className="w-4 h-4" />
+                  </button>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
