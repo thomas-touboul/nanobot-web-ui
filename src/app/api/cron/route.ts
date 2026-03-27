@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-
-const CRON_JOBS_PATH = '/home/moltbot/.nanobot/workspace/cron/jobs.json';
+import { getDefaultResolver } from '@/lib/server/agent-paths';
 
 interface CronJob {
   id: string;
@@ -38,12 +37,18 @@ function generateId(): string {
   return crypto.randomBytes(4).toString('hex');
 }
 
+function getCronJobsPath(): string {
+  return getDefaultResolver().cronJobsFile();
+}
+
 function loadJobs(): { version: number; jobs: CronJob[] } {
-  if (!fs.existsSync(CRON_JOBS_PATH)) {
+  const cronJobsPath = getCronJobsPath();
+  
+  if (!fs.existsSync(cronJobsPath)) {
     return { version: 1, jobs: [] };
   }
   
-  const fileContent = fs.readFileSync(CRON_JOBS_PATH, 'utf-8');
+  const fileContent = fs.readFileSync(cronJobsPath, 'utf-8');
   const data = JSON.parse(fileContent);
   return {
     version: data.version || 1,
@@ -52,11 +57,12 @@ function loadJobs(): { version: number; jobs: CronJob[] } {
 }
 
 function saveJobs(data: { version: number; jobs: CronJob[] }) {
-  const dir = path.dirname(CRON_JOBS_PATH);
+  const cronJobsPath = getCronJobsPath();
+  const dir = path.dirname(cronJobsPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  fs.writeFileSync(CRON_JOBS_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  fs.writeFileSync(cronJobsPath, JSON.stringify(data, null, 2), 'utf-8');
 }
 
 export async function GET() {

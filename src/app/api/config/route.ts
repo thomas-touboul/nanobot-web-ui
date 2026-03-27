@@ -1,16 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
-
-const CONFIG_PATH = '/home/moltbot/.nanobot/config.json';
+import { getDefaultResolver } from '@/lib/server/agent-paths';
 
 export async function GET() {
   try {
-    if (!fs.existsSync(CONFIG_PATH)) {
+    const resolver = getDefaultResolver();
+    const configPath = resolver.config();
+
+    if (!fs.existsSync(configPath)) {
       return NextResponse.json({ error: 'Config not found' }, { status: 404 });
     }
 
-    const content = fs.readFileSync(CONFIG_PATH, 'utf-8');
+    const content = fs.readFileSync(configPath, 'utf-8');
     const config = JSON.parse(content);
     
     return NextResponse.json(config);
@@ -23,11 +25,13 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const updates = await request.json();
-    
+    const resolver = getDefaultResolver();
+    const configPath = resolver.config();
+
     // Read existing config
     let config = {};
-    if (fs.existsSync(CONFIG_PATH)) {
-      const content = fs.readFileSync(CONFIG_PATH, 'utf-8');
+    if (fs.existsSync(configPath)) {
+      const content = fs.readFileSync(configPath, 'utf-8');
       config = JSON.parse(content);
     }
 
@@ -35,12 +39,18 @@ export async function POST(request: NextRequest) {
     const mergedConfig = deepMerge(config, updates);
 
     // Create backup
-    if (fs.existsSync(CONFIG_PATH)) {
-      fs.copyFileSync(CONFIG_PATH, `${CONFIG_PATH}.bak`);
+    if (fs.existsSync(configPath)) {
+      fs.copyFileSync(configPath, `${configPath}.bak`);
+    }
+
+    // Ensure directory exists
+    const configDir = path.dirname(configPath);
+    if (!fs.existsSync(configDir)) {
+      fs.mkdirSync(configDir, { recursive: true });
     }
 
     // Write new config
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(mergedConfig, null, 2), 'utf-8');
+    fs.writeFileSync(configPath, JSON.stringify(mergedConfig, null, 2), 'utf-8');
     
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,19 +1,21 @@
+import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { NextResponse } from 'next/server';
-
-const HISTORY_PATH = '/home/moltbot/.nanobot/workspace/memory/HISTORY.md';
+import { getDefaultResolver } from '@/lib/server/agent-paths';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q')?.toLowerCase();
 
-  if (!fs.existsSync(HISTORY_PATH)) {
+  const resolver = getDefaultResolver();
+  const historyPath = resolver.historyFile();
+
+  if (!fs.existsSync(historyPath)) {
     return NextResponse.json({ entries: [] });
   }
 
   try {
-    const content = fs.readFileSync(HISTORY_PATH, 'utf-8');
+    const content = fs.readFileSync(historyPath, 'utf-8');
     
     // Regex to match [YYYY-MM-DD HH:mm] or [YYYY-MM-DD HH:mm-HH:mm] Content
     const entryRegex = /\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?:-\d{2}:\d{2})?)\] ([\s\S]*?)(?=\n\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?:-\d{2}:\d{2})?\]|$)/g;

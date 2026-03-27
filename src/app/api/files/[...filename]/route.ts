@@ -1,58 +1,52 @@
 import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
-
-const CONFIG_ROOT = '/home/moltbot/.nanobot';
+import { getDefaultResolver } from '@/lib/server/agent-paths';
 
 function getSafePath(pathSegments: string[]): string | null {
-  let relPath = path.join(...pathSegments);
+  const resolver = getDefaultResolver();
+  const relPath = path.join(...pathSegments);
   
-  // If the path doesn't start with workspace/, prepend it if it's a known location
-  if (!relPath.startsWith('workspace/') && !relPath.startsWith('config.json')) {
-    relPath = path.join('workspace', relPath);
+  // Build the full path using the resolver
+  let fullPath: string;
+  
+  // Determine the type of file and use appropriate resolver method
+  if (relPath === 'config.json') {
+    fullPath = resolver.config();
+  } else if (relPath.startsWith('workspace/memory/') && relPath.endsWith('.md')) {
+    const filename = path.basename(relPath);
+    fullPath = resolver.memoryFile(filename);
+  } else if (relPath === 'workspace/SOUL.md') {
+    fullPath = resolver.coreFile('SOUL.md');
+  } else if (relPath === 'workspace/AGENTS.md') {
+    fullPath = resolver.coreFile('AGENTS.md');
+  } else if (relPath === 'workspace/TOOLS.md') {
+    fullPath = resolver.coreFile('TOOLS.md');
+  } else if (relPath === 'workspace/USER.md') {
+    fullPath = resolver.coreFile('USER.md');
+  } else if (relPath === 'workspace/HEARTBEAT.md') {
+    fullPath = resolver.coreFile('HEARTBEAT.md');
+  } else if (relPath === 'workspace/memory/HISTORY.md') {
+    fullPath = resolver.historyFile();
+  } else {
+    // Skills: workspace/skills/<folder>/SKILL.md
+    const segments = relPath.split(path.sep);
+    if (segments.length === 4 && 
+        segments[0] === 'workspace' && 
+        segments[1] === 'skills' && 
+        segments[3] === 'SKILL.md') {
+        fullPath = resolver.skillFile(segments[2]);
+    } else {
+      return null;
+    }
   }
 
-  const fullPath = path.join(CONFIG_ROOT, relPath);
-
-  // Prevent Directory Traversal
-  if (!fullPath.startsWith(CONFIG_ROOT)) {
+  // Security: ensure the resolved path is within the agent's root
+  if (!resolver.isWithinAgent(fullPath)) {
     return null;
   }
 
-  // Allowed files (relative to CONFIG_ROOT)
-  const allowedFiles = [
-    'config.json',
-    'workspace/SOUL.md',
-    'workspace/memory/MEMORY.md',
-    'workspace/AGENTS.md',
-    'workspace/TOOLS.md',
-    'workspace/USER.md',
-    'workspace/HEARTBEAT.md',
-    'workspace/memory/HISTORY.md',
-  ];
-
-  if (allowedFiles.includes(relPath)) {
-    return fullPath;
-  }
-
-  // Skills: workspace/skills/<folder>/SKILL.md
-  const segments = relPath.split(path.sep);
-  if (segments.length === 4 && 
-      segments[0] === 'workspace' && 
-      segments[1] === 'skills' && 
-      segments[3] === 'SKILL.md') {
-      return fullPath;
-  }
-
-  // Memory: workspace/memory/*.md
-  if (segments.length === 3 && 
-      segments[0] === 'workspace' && 
-      segments[1] === 'memory' && 
-      segments[2].endsWith('.md')) {
-      return fullPath;
-  }
-
-  return null;
+  return fullPath;
 }
 
 export async function GET(

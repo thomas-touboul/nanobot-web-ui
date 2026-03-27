@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AgentProvider } from "@/contexts/AgentContext";
 import Sidebar from "@/components/layout/Sidebar";
+import TopBar from "@/components/layout/TopBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,18 +27,24 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex h-screen overflow-hidden bg-background text-foreground">
-            {/* Desktop Sidebar */}
-            <Sidebar />
-            
-            <div className="relative flex flex-1 flex-col h-full overflow-hidden">
-              <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                <main className="p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
-                  {children}
-                </main>
+          <AgentProvider>
+            <div className="flex h-screen overflow-hidden bg-background text-foreground">
+              {/* Desktop Sidebar */}
+              <Sidebar />
+              
+              <div className="relative flex flex-1 flex-col h-full overflow-hidden">
+                {/* Top Bar */}
+                <TopBar />
+                
+                {/* Main Content */}
+                <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                  <main className="p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full pt-4">
+                    {children}
+                  </main>
+                </div>
               </div>
             </div>
-          </div>
+          </AgentProvider>
         </ThemeProvider>
       </body>
     </html>

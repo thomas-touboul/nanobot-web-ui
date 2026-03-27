@@ -2,18 +2,20 @@ import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
-import path from 'path';
+import { getDefaultResolver } from '@/lib/server/agent-paths';
 
 const execAsync = promisify(exec);
-const CONFIG_PATH = '/home/moltbot/.nanobot/config.json';
 
 export async function GET() {
   try {
+    const resolver = getDefaultResolver();
+    const agent = resolver['agent']; // On accède à l'agent via le resolver
+
     // 1. Check systemd service status
     let serviceState = 'inactive';
     let pid = 'N/A';
     try {
-      const { stdout: systemdOutput } = await execAsync('systemctl --user show nanobot-gateway --property=ActiveState,MainPID');
+      const { stdout: systemdOutput } = await execAsync(`systemctl --user show ${agent.serviceName} --property=ActiveState,MainPID`);
       const lines = systemdOutput.split('\n');
       lines.forEach(line => {
         if (line.startsWith('ActiveState=')) serviceState = line.split('=')[1];
@@ -28,8 +30,9 @@ export async function GET() {
     let provider = 'auto';
     let activeChannels: string[] = [];
     try {
-      if (fs.existsSync(CONFIG_PATH)) {
-        const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
+      const configPath = resolver.config();
+      if (fs.existsSync(configPath)) {
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         model = config.agents?.defaults?.model || 'unknown';
         provider = config.agents?.defaults?.provider || 'auto';
         
@@ -46,23 +49,23 @@ export async function GET() {
       console.error('Failed to read config', e);
     }
 
-    // 3. Check RPC Probe
+    // 3. Check RPC Probe (port de l'agent)
     let rpcProbe = 'Offline';
     try {
-      const { stdout: netstatOutput } = await execAsync('netstat -tuln | grep :18790');
-      if (netstatOutput.includes(':18790')) {
+      const { stdout: netstatOutput } = await execAsync(`netstat -tuln | grep :${agent.port}`);
+      if (netstatOutput.includes(`:${agent.port}`)) {
         rpcProbe = 'Online';
       }
     } catch (e) {}
 
     return NextResponse.json({
-      service: 'nanobot-gateway',
+      service: agent.serviceName,
       state: serviceState,
       pid: pid === '0' ? 'N/A' : pid,
-      model: model,
-      provider: provider,
+      model,
+      provider,
       channels: activeChannels,
-      port: 18790,
+      port: agent.port,
       rpc_probe: rpcProbe
     });
   } catch (error: any) {

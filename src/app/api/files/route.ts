@@ -1,23 +1,25 @@
+import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { NextResponse } from 'next/server';
-
-const ROOT = '/home/moltbot/.nanobot';
-const WORKSPACE = path.join(ROOT, 'workspace');
+import { getDefaultResolver } from '@/lib/server/agent-paths';
 
 export async function GET() {
   try {
+    const resolver = getDefaultResolver();
+    const root = resolver.root();
+    const workspace = resolver.workspace();
+
     const rootFiles = [
-      { name: 'config.json', path: path.join(ROOT, 'config.json'), type: 'json' },
+      { name: 'config.json', path: path.join(root, 'config.json'), type: 'json' },
     ];
 
     const workspaceFiles = [
-      { name: 'SOUL.md', path: path.join(WORKSPACE, 'SOUL.md'), type: 'markdown' },
-      { name: 'MEMORY.md', path: path.join(WORKSPACE, 'memory/MEMORY.md'), type: 'markdown' },
-      { name: 'AGENTS.md', path: path.join(WORKSPACE, 'AGENTS.md'), type: 'markdown' },
-      { name: 'TOOLS.md', path: path.join(WORKSPACE, 'TOOLS.md'), type: 'markdown' },
-      { name: 'USER.md', path: path.join(WORKSPACE, 'USER.md'), type: 'markdown' },
-      { name: 'HEARTBEAT.md', path: path.join(WORKSPACE, 'HEARTBEAT.md'), type: 'markdown' },
+      { name: 'SOUL.md', path: resolver.coreFile('SOUL.md'), type: 'markdown' },
+      { name: 'MEMORY.md', path: resolver.memoryFile('MEMORY.md'), type: 'markdown' },
+      { name: 'AGENTS.md', path: resolver.coreFile('AGENTS.md'), type: 'markdown' },
+      { name: 'TOOLS.md', path: resolver.coreFile('TOOLS.md'), type: 'markdown' },
+      { name: 'USER.md', path: resolver.coreFile('USER.md'), type: 'markdown' },
+      { name: 'HEARTBEAT.md', path: resolver.coreFile('HEARTBEAT.md'), type: 'markdown' },
     ];
 
     const allFiles = [...rootFiles, ...workspaceFiles].filter(f => fs.existsSync(f.path));
@@ -25,8 +27,8 @@ export async function GET() {
     return NextResponse.json({ 
       files: allFiles.map(f => ({
         name: f.name,
-        // We return a relative path from ROOT to be used by the [...filename] route
-        path: path.relative(ROOT, f.path),
+        // We return a relative path from root to be used by the [...filename] route
+        path: resolver.getRelativePath(f.path) || f.name,
         type: f.type
       }))
     });

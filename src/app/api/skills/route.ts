@@ -1,21 +1,23 @@
 import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
-
-const SKILLS_DIR = '/home/moltbot/.nanobot/workspace/skills';
+import { getDefaultResolver } from '@/lib/server/agent-paths';
 
 export async function GET() {
   try {
-    if (!fs.existsSync(SKILLS_DIR)) {
+    const resolver = getDefaultResolver();
+    const skillsDir = resolver.skillsDir();
+
+    if (!fs.existsSync(skillsDir)) {
       return NextResponse.json([]);
     }
 
-    const folders = fs.readdirSync(SKILLS_DIR);
+    const folders = fs.readdirSync(skillsDir);
     const skills = folders.map(folder => {
-      const skillPath = path.join(SKILLS_DIR, folder);
+      const skillPath = path.join(skillsDir, folder);
       if (!fs.statSync(skillPath).isDirectory()) return null;
 
-      const skillFile = path.join(skillPath, 'SKILL.md');
+      const skillFile = resolver.skillFile(folder);
       let name = folder;
       let description = "";
 
@@ -55,8 +57,9 @@ export async function POST(req: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '');
     
-    const skillPath = path.join(SKILLS_DIR, slug);
-    const skillFile = path.join(skillPath, 'SKILL.md');
+    const resolver = getDefaultResolver();
+    const skillPath = resolver.skillFolder(slug);
+    const skillFile = resolver.skillFile(slug);
 
     if (fs.existsSync(skillPath)) {
       return NextResponse.json({ error: 'Skill already exists' }, { status: 400 });
@@ -91,10 +94,11 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Folder name is required' }, { status: 400 });
     }
 
-    const skillPath = path.join(SKILLS_DIR, folderName);
+    const resolver = getDefaultResolver();
+    const skillPath = resolver.skillFolder(folderName);
 
     // Security: ensure we are within the skills directory
-    if (!skillPath.startsWith(SKILLS_DIR)) {
+    if (!resolver.isWithinAgent(skillPath)) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
