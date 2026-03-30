@@ -1,6 +1,6 @@
 # AI Agent Admin 🐈
 
-> Dashboard de gestion local pour votre agent IA Nanobot
+> Local management dashboard for your Nanobot AI agent
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com/)
@@ -8,129 +8,129 @@
 
 ---
 
-## 📋 Table des matières
+## 📋 Table of Contents
 
-- [Présentation](#présentation)
-- [✨ Fonctionnalités](#-fonctionnalités)
-  - [🤖 Configuration de l'Agent](#-configuration-de-lagent)
-  - [💬 Gestion des canaux](#-gestion-des-canaux)
-  - [🧠 Base de connaissances](#-base-de-connaissances)
-  - [⚡ Opérations](#-opérations)
-  - [🛠️ Système](#️-système)
-  - [🌐 Internationalisation](#-internationalisation)
-  - [💬 Chat intégré](#-chat-intégré)
-- [🏗️ Stack technique](#️-stack-technique)
-- [🚀 Démarrage rapide](#-démarrage-rapide)
+- [Overview](#overview)
+- [✨ Features](#-features)
+  - [🤖 Agent Configuration](#-agent-configuration)
+  - [💬 Channel Management](#-channel-management)
+  - [🧠 Knowledge Base](#-knowledge-base)
+  - [⚡ Operations](#-operations)
+  - [🛠️ System](#️-system)
+  - [🌐 Internationalization](#-internationalization)
+  - [💬 Integrated Chat](#-integrated-chat)
+- [🏗️ Tech Stack](#️-tech-stack)
+- [🚀 Quick Start](#-quick-start)
 - [⚙️ Configuration](#️-configuration)
 - [🔌 API Routes](#-api-routes)
 - [📁 Architecture](#-architecture)
-- [🔒 Sécurité](#-sécurité)
-- [📝 Licence](#-licence)
+- [🔒 Security](#-security)
+- [📝 License](#-license)
 
 ---
 
-## Présentation
+## Overview
 
-**AI Agent Admin** est un dashboard web moderne et puissant pour configurer, surveiller et opérer votre agent IA **Nanobot** en local. Il offre une interface intuitive pour gérer tous les aspects de votre agent : configuration, mémoire, canaux de communication, tâches planifiées, et bien plus encore.
+**AI Agent Admin** is a modern, powerful web dashboard for configuring, monitoring, and operating your **Nanobot** AI agent locally. It provides an intuitive interface to manage all aspects of your agent: configuration, memory, communication channels, scheduled tasks, and more.
 
-L'application est construite avec **Next.js 15** (App Router), **Tailwind CSS 4**, et s'intègre directement avec les fichiers de configuration locale de Nanobot (`~/.nanobot/config.json`) ainsi qu'avec le service systemd `nanobot-gateway`.
-
----
-
-## ✨ Fonctionnalités
-
-### 🤖 Configuration de l'Agent
-
-- **Paramètres du modèle** : Définir le modèle par défaut, température, max tokens, reasoning effort, et memory window
-- **Surveillance temps réel** : Statut du service Nanobot (PID, port, probe RPC)
-- **Éditeur de configuration** : Éditeur JSON intégré pour modifications avancées
-- **Identité de l'agent** : Configuration du workspace, provider, et contraintes opérationnelles (maxToolIterations)
-
-### 💬 Gestion des canaux
-
-- **Telegram** : Token bot, chat IDs autorisés, comportement de réponse
-- **WhatsApp** : URL bridge, token d'authentification, numéros autorisés
-- **Paramètres globaux** : Gestion des indicateurs de progression (sendProgress)
-
-### 🧠 Base de connaissances
-
-- **Fichiers mémoire** : Parcourir et gérer les fichiers `.md` thématiques
-- **Fichiers système** : Éditer les fichiers core (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, etc.)
-- **Éditeur intégré** : Éditeur avec coloration syntaxique pour tous types de fichiers
-
-### ⚡ Opérations
-
-- **Monitoring des subagents** : Suivi en temps réel des tâches et sub-agents
-- **Cron & Rappels** : Voir et gérer les tâches planifiées depuis `jobs.json`
-- **Historique** : Parcourir l'historique des conversations et logs d'activité
-
-### 🛠️ Système
-
-- **Providers** : Gérer les clés API des fournisseurs de modèles (OpenAI, Anthropic, etc.)
-- **Centre de compétences** : Lister, éditer, et supprimer les skills de l'agent
-- **Thèmes** : Support clair/sombre avec détection automatique des préférences système
-
-### 🌐 Internationalisation
-
-- **Support multilingue** : Interface disponible en **français** et **anglais**
-- **Sélecteur de langue** : Changement dynamique depuis la barre supérieure
-- **Traductions complètes** : Tous les textes de l'interface sont traduits
-- **Context i18n** : Architecture avec `LanguageContext` et fichiers `locales/fr.json`, `locales/en.json`
-- **Persistance** : La langue choisie est sauvegardée dans le localStorage
-
-### 💬 Chat intégré
-
-- **Interface de chat** : Discutez directement avec votre agent depuis le dashboard
-- **Markdown & syntax highlighting** : Support du GFM et coloration syntaxique pour le code
-- **Sessions persistantes** : Les conversations sont sauvegardées dans le localStorage
-- **Nouvelle session** : Bouton pour réinitialiser le chat
-- **Traduit** : Interface du chat entièrement traduite selon la langue sélectionnée
-- **API dédiée** : Endpoint `/api/chat` pour les interactions
+Built with **Next.js 15** (App Router), **Tailwind CSS 4**, it integrates directly with Nanobot's local configuration files (`~/.nanobot/config.json`) and the `nanobot-gateway` systemd service.
 
 ---
 
-## 🏗️ Stack technique
+## ✨ Features
 
-- **Framework** : Next.js 15 (App Router, Server & Client Components)
-- **Styling** : Tailwind CSS 4
-- **UI Components** : Shadcn UI (Radix UI primitives)
-- **Icons** : Lucide React
-- **Markdown** : react-markdown, remark-gfm
-- **Syntax Highlighting** : react-syntax-highlighter (thème OneDark)
-- **State Management** : React Context (AgentContext, LanguageContext, ThemeProvider)
-- **API** : Route Handlers Next.js (app/api)
-- **Intégration système** : Lecture/écriture de `~/.nanobot/config.json`,监控 systemd via `systemctl`
-- **Language** : TypeScript strict
+### 🤖 Agent Configuration
+
+- **Model Settings**: Configure default model, temperature, max tokens, reasoning effort, and memory window
+- **Live Gateway Monitoring**: Real-time Nanobot service status (PID, port, RPC probe)
+- **Direct Config Editor**: Built-in JSON editor for advanced configuration changes
+- **Agent Identity**: Workspace, provider, and operational constraints (maxToolIterations)
+
+### 💬 Channel Management
+
+- **Telegram**: Bot token, allowed chat IDs, reply behavior
+- **WhatsApp**: Bridge URL, auth token, allowed numbers
+- **Global Settings**: Manage send progress indicators across all channels
+
+### 🧠 Knowledge Base
+
+- **Memory Files**: Browse and manage thematic `.md` files
+- **Core Files**: Edit system files (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, etc.)
+- **Full-text Editor**: Built-in editor with syntax highlighting for all file types
+
+### ⚡ Operations
+
+- **Subagents Monitor**: Real-time tracking of background tasks and sub-agents
+- **Cron & Reminders**: View and manage scheduled tasks from `jobs.json`
+- **History**: Browse conversation history and agent activity logs
+
+### 🛠️ System
+
+- **Providers**: Manage AI model provider API keys (OpenAI, Anthropic, etc.)
+- **Skills Center**: List, edit, and delete agent skills
+- **Theme Support**: Light/dark mode with system preference detection
+
+### 🌐 Internationalization
+
+- **Multilingual UI**: Interface available in **French** and **English**
+- **Language Selector**: Dynamic language switching from the top bar
+- **Full Translations**: All interface texts are translated
+- **i18n Context**: Architecture with `LanguageContext` and `locales/fr.json`, `locales/en.json`
+- **Persistence**: Selected language saved in localStorage
+
+### 💬 Integrated Chat
+
+- **Chat Interface**: Directly chat with your agent from the dashboard
+- **Markdown & Syntax Highlighting**: GFM support and code syntax highlighting
+- **Persistent Sessions**: Conversations saved in localStorage
+- **New Session**: Button to reset the chat
+- **Translated**: Entire chat UI translated according to selected language
+- **Dedicated API**: `/api/chat` endpoint for interactions
 
 ---
 
-## 🚀 Démarrage rapide
+## 🏗️ Tech Stack
 
-### Prérequis
+- **Framework**: Next.js 15 (App Router, Server & Client Components)
+- **Styling**: Tailwind CSS 4
+- **UI Components**: Shadcn UI (Radix UI primitives)
+- **Icons**: Lucide React
+- **Markdown**: react-markdown, remark-gfm
+- **Syntax Highlighting**: react-syntax-highlighter (OneDark theme)
+- **State Management**: React Context (AgentContext, LanguageContext, ThemeProvider)
+- **API**: Next.js Route Handlers (app/api)
+- **System Integration**: Read/write `~/.nanobot/config.json`, systemd monitoring via `systemctl`
+- **Language**: Strict TypeScript
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
 
 - Node.js 18+
-- npm ou yarn
-- Un agent Nanobot configuré localement
+- npm or yarn
+- A locally configured Nanobot agent
 
 ### Installation
 
 ```bash
-# Cloner le dépôt
+# Clone the repository
 git clone https://github.com/thomas-touboul/ai-agent-admin.git
 cd ai-agent-admin
 
-# Installer les dépendances
+# Install dependencies
 npm install
 ```
 
-### Développement
+### Development
 
 ```bash
-# Lancer le serveur de développement
+# Start the development server
 npm run dev
 ```
 
-Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Production
 
@@ -138,7 +138,7 @@ Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 # Build
 npm run build
 
-# Démarrer le serveur de production
+# Start the production server
 npm start
 ```
 
@@ -146,44 +146,44 @@ npm start
 
 ## ⚙️ Configuration
 
-Le dashboard lit et écrit directement dans votre fichier de configuration Nanobot :
+The dashboard reads from and writes directly to your Nanobot configuration file:
 
 ```
 ~/.nanobot/config.json
 ```
 
-### Sections de configuration supportées
+### Supported Config Sections
 
-- `agents.defaults` — Paramètres du modèle et comportement
-- `channels` — Configuration Telegram, WhatsApp, etc.
-- `providers` — Clés API pour les fournisseurs d'IA
-- `gateway` — Configuration du service et heartbeat
-- `tools` — Paramètres web search, exécution, MCP servers
+- `agents.defaults` — Model settings and behavior
+- `channels` — Telegram, WhatsApp, etc. configuration
+- `providers` — AI provider API keys
+- `gateway` — Service configuration and heartbeat
+- `tools` — Web search, execution, MCP servers settings
 
-### Variables d'environnement (optionnelles)
+### Environment Variables (optional)
 
 ```env
-# Chemin personnalisé vers le dossier .nanobot (par défaut: ~/.nanobot)
-NANOBOT_HOME=/chemin/vers/.nanobot
+# Custom path to .nanobot folder (default: ~/.nanobot)
+NANOBOT_HOME=/path/to/.nanobot
 ```
 
 ---
 
 ## 🔌 API Routes
 
-| Route | Méthode | Description |
-|-------|---------|-------------|
-| `/api/config` | GET/POST | Lire/modifier la configuration globale |
-| `/api/chat` | POST | Envoyer un message à l'agent (sessions) |
-| `/api/gateway/status` | GET | Statut du service nanobot-gateway |
-| `/api/gateway/logs` | GET | Logs du gateway (fichier journal) |
-| `/api/memory` | GET/POST/PUT/DELETE | Gestion des fichiers mémoire |
-| `/api/files` | GET/POST/PUT/DELETE | Édition de fichiers arbitraires |
-| `/api/cron` | GET | Liste des tâches cron |
-| `/api/history` | GET | Historique des conversations |
-| `/api/subagents` | GET | Liste des subagents actifs |
-| `/api/providers` | GET/POST/PUT/DELETE | Gestion des providers |
-| `/api/skills` | GET/POST/PUT/DELETE | Gestion des compétences |
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/config` | GET/POST | Read/modify global configuration |
+| `/api/chat` | POST | Send a message to the agent (sessions) |
+| `/api/gateway/status` | GET | Nanobot-gateway service status |
+| `/api/gateway/logs` | GET | Gateway logs (journal file) |
+| `/api/memory` | GET/POST/PUT/DELETE | Memory files management |
+| `/api/files` | GET/POST/PUT/DELETE | Arbitrary file editing |
+| `/api/cron` | GET | Cron tasks list |
+| `/api/history` | GET | Conversation history |
+| `/api/subagents` | GET | Active subagents list |
+| `/api/providers` | GET/POST/PUT/DELETE | Providers management |
+| `/api/skills` | GET/POST/PUT/DELETE | Skills management |
 
 ---
 
@@ -192,65 +192,65 @@ NANOBOT_HOME=/chemin/vers/.nanobot
 ```
 src/
 ├── app/
-│   ├── agent/              # Page configuration agent
-│   ├── chat/               # Page chat intégré
-│   ├── channels/           # Gestion canaux
-│   ├── core-files/         # Fichiers système
-│   ├── cron/               # Tâches planifiées
-│   ├── editor/             # Éditeur JSON universel
-│   ├── gateway-logs/       # Logs du gateway
-│   ├── history/            # Historique conversations
-│   ├── layout.tsx          # Layout racine avec providers
-│   ├── memory/             # Fichiers mémoire
-│   ├── models/             # Page providers
-│   ├── page.tsx            # Page d'accueil (dashboard)
-│   ├── security/           # Sécurité (chat IDs, etc.)
-│   ├── skills/             # Gestion skills
-│   └── subagents/          # Monitoring subagents
+│   ├── agent/              # Agent configuration page
+│   ├── chat/               # Integrated chat page
+│   ├── channels/           # Channel management
+│   ├── core-files/         # System files
+│   ├── cron/               # Scheduled tasks
+│   ├── editor/             # Universal JSON editor
+│   ├── gateway-logs/       # Gateway logs
+│   ├── history/            # Conversation history
+│   ├── layout.tsx          # Root layout with providers
+│   ├── memory/             # Memory files
+│   ├── models/             # Providers page
+│   ├── page.tsx            # Homepage (dashboard)
+│   ├── security/           # Security (chat IDs, etc.)
+│   ├── skills/             # Skills management
+│   └── subagents/          # Subagents monitoring
 ├── components/
-│   ├── HeaderWithIcon.tsx  # En-tête avec icône
-│   ├── ThemeProvider.tsx   # Gestion thème clair/sombre
+│   ├── HeaderWithIcon.tsx  # Header with icon
+│   ├── ThemeProvider.tsx   # Light/dark theme management
 │   └── layout/
-│       ├── Navigation.tsx  # Barre latérale
-│       ├── Sidebar.tsx     # Sidebar responsive
-│       └── TopBar.tsx      # Barre supérieure (langue, thème)
+│       ├── Navigation.tsx  # Sidebar
+│       ├── Sidebar.tsx     # Responsive sidebar
+│       └── TopBar.tsx      # Top bar (language, theme)
 ├── constants/
-│   └── ui-text.ts          # Textes UI + icones + styles
+│   └── ui-text.ts          # UI texts + icons + styles
 ├── contexts/
-│   ├── AgentContext.tsx    # Contexte agent (config)
-│   ├── LanguageContext.tsx # Contexte i18n (fr/en)
-│   └── ThemeProvider.tsx   # Contexte thème
+│   ├── AgentContext.tsx    # Agent context (config)
+│   ├── LanguageContext.tsx # i18n context (fr/en)
+│   └── ThemeProvider.tsx   # Theme context
 ├── hooks/
 ├── lib/
-│   ├── cli.ts              # Wrapper CLI nanobot
+│   ├── cli.ts              # Nanobot CLI wrapper
 │   ├── server/
-│   │   └── agent-paths.ts  # Résolution chemins agent
+│   │   └── agent-paths.ts  # Agent path resolution
 │   ├── shared/
-│   │   └── agent-types.ts  # Types TypeScript
-│   └── utils.ts            # Utilitaires (cn, etc.)
-└── locales/                # (à créer) Fichiers de traduction
+│   │   └── agent-types.ts  # TypeScript types
+│   └── utils.ts            # Utilities (cn, etc.)
+└── locales/                # (to be created) Translation files
     ├── fr.json
     └── en.json
 ```
 
 ---
 
-## 🔒 Sécurité
+## 🔒 Security
 
-Ce dashboard est conçu pour un usage **local uniquement**. Il interagit directement avec :
+This dashboard is designed for **local use only**. It interacts directly with:
 
-- Votre dossier `~/.nanobot` (fichiers de configuration)
-- Le service systemd `nanobot-gateway` (via `systemctl`)
-- Le système de fichiers local
+- Your `~/.nanobot` folder (configuration files)
+- The `nanobot-gateway` systemd service (via `systemctl`)
+- The local filesystem
 
-**Recommandations** :
-- Ne pas exposer ce dashboard sur internet sans authentification
-- Utiliser un reverse proxy avec auth si accès distant nécessaire
-- Vérifier les permissions du dossier `~/.nanobot` (chmod 700)
-- Ne pas partager les logs contenant des informations sensibles
+**Recommendations**:
+- Do not expose this dashboard on the internet without authentication
+- Use a reverse proxy with auth if remote access is necessary
+- Check permissions on the `~/.nanobot` folder (chmod 700)
+- Do not share logs containing sensitive information
 
 ---
 
-## 📝 Licence
+## 📝 License
 
-MIT — Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+MIT — See the [LICENSE](LICENSE) file for details.
