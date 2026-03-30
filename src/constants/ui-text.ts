@@ -19,6 +19,7 @@ import {
  */
 
 export const UI_ICONS = {
+  chat: MessageSquare,
   agent: Bot,
   channels: MessageSquare,
   providers: Cpu,
@@ -33,6 +34,11 @@ export const UI_ICONS = {
 };
 
 export const UI_STYLES = {
+  chat: {
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/20",
+  },
   agent: {
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
@@ -93,6 +99,7 @@ export const UI_STYLES = {
 export const UI_TRANSLATIONS = {
   en: {
     navigation: {
+      chat: { title: "Chat", subtitle: "Direct Conversation" },
       agent: { title: "Agent", subtitle: "Agent Settings" },
       channels: { title: "Channels", subtitle: "Telegram & WhatsApp" },
       providers: { title: "Providers", subtitle: "Models & Keys" },
@@ -106,6 +113,10 @@ export const UI_TRANSLATIONS = {
       gatewayLogs: { title: "Gateway Logs", subtitle: "Real-time service logs" },
     },
     pages: {
+      chat: {
+        title: "Direct Chat",
+        subtitle: "Have a conversation with your agent directly from the dashboard.",
+      },
       dashboard: {
         title: "AI Agent Gateway",
         subtitle: "System status and quick access to your agent's core.",
@@ -170,6 +181,7 @@ export const UI_TRANSLATIONS = {
   },
   fr: {
     navigation: {
+      chat: { title: "Chat", subtitle: "Conversation directe" },
       agent: { title: "Agent", subtitle: "Paramètres de l'agent" },
       channels: { title: "Canaux", subtitle: "Telegram & WhatsApp" },
       providers: { title: "Fournisseurs", subtitle: "Modèles & Clés" },
@@ -183,6 +195,10 @@ export const UI_TRANSLATIONS = {
       gatewayLogs: { title: "Logs Gateway", subtitle: "Logs service temps-réel" },
     },
     pages: {
+      chat: {
+        title: "Chat Direct",
+        subtitle: "Discutez directement avec votre agent depuis le tableau de bord.",
+      },
       dashboard: {
         title: "Gateway de l'Agent IA",
         subtitle: "État du système et accès rapide au cœur de votre agent.",

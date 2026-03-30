@@ -17,6 +17,14 @@ export function Navigation({ onItemClick }: NavigationProps) {
 
   const systemNavigation = [
     { 
+      title: t.navigation.chat.title,
+      subtitle: t.navigation.chat.subtitle,
+      icon: UI_ICONS.chat,
+      ...UI_STYLES.chat,
+      href: "/chat", 
+      match: (path: string) => path.startsWith("/chat")
+    },
+    { 
       title: t.navigation.agent.title,
       subtitle: t.navigation.agent.subtitle,
       icon: UI_ICONS.agent,
