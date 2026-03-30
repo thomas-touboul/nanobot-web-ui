@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bot, Save, Loader2, RotateCcw } from "lucide-react";
+import { Bot, Save, Loader2, RotateCcw, Folder, Cpu, Gauge, Zap, Brain } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 
 interface AgentConfig {
+  workspace?: string;
   model?: string;
+  provider?: string;
   temperature?: number;
   maxTokens?: number;
   reasoningEffort?: "low" | "medium" | "high" | null;
   memoryWindow?: number;
+  maxToolIterations?: number;
 }
 
 export default function AgentPage() {
@@ -19,14 +22,13 @@ export default function AgentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const fetchConfig = async () => {
     try {
       const res = await fetch("/api/config");
       if (res.ok) {
         const data = await res.json();
-        // Config is in agents.defaults
         const agentConfig = data.agents?.defaults || {};
         setConfig(agentConfig);
       } else {
@@ -54,13 +56,22 @@ export default function AgentPage() {
       });
       
       if (saveRes.ok) {
-        setMessage({ type: 'success', text: 'Configuration saved successfully!' });
+        setMessage({ 
+          type: 'success', 
+          text: language === 'fr' ? 'Configuration enregistrée avec succès !' : 'Configuration saved successfully!' 
+        });
       } else {
-        setMessage({ type: 'error', text: 'Failed to save configuration.' });
+        setMessage({ 
+          type: 'error', 
+          text: language === 'fr' ? "Échec de l'enregistrement de la configuration." : 'Failed to save configuration.' 
+        });
       }
     } catch (err) {
       console.error(err);
-      setMessage({ type: 'error', text: 'An error occurred while saving.' });
+      setMessage({ 
+        type: 'error', 
+        text: language === 'fr' ? 'Une erreur est survenue lors de l\'enregistrement.' : 'An error occurred while saving.' 
+      });
     } finally {
       setSaving(false);
     }
@@ -111,61 +122,90 @@ export default function AgentPage() {
         </div>
       )}
 
-      <div className="max-w-2xl">
-        {/* Model Settings */}
-        <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
-          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">
-            Model Settings
-          </h3>
-          
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                Default Model
-              </label>
-              <input
-                type="text"
-                value={config.model || ''}
-                onChange={(e) => setConfig({ ...config, model: e.target.value })}
-                placeholder="e.g. moonshot/kimi-k2.5"
-                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all font-mono"
-              />
-              <p className="text-xs text-muted-foreground">Model identifier (provider/model-name format).</p>
+      <div className="grid grid-cols-1 gap-8">
+        <div className="p-8 bg-card border border-border rounded-3xl shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Core Identity */}
+            <div className="space-y-6 md:col-span-2 lg:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                    Workspace Path
+                  </label>
+                  <input
+                    type="text"
+                    value={config.workspace || ''}
+                    readOnly
+                    className="w-full bg-secondary/20 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none transition-all font-mono opacity-60 cursor-default"
+                  />
+                  <p className="text-[10px] text-muted-foreground ml-1 italic">
+                    {language === 'fr' ? 'Lecture seule - Géré par le système' : 'Read only - System managed'}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                    Provider
+                  </label>
+                  <input
+                    type="text"
+                    value={config.provider || ''}
+                    onChange={(e) => setConfig({ ...config, provider: e.target.value })}
+                    placeholder="e.g. openrouter, openai"
+                    className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                    Default Model
+                  </label>
+                  <input
+                    type="text"
+                    value={config.model || ''}
+                    onChange={(e) => setConfig({ ...config, model: e.target.value })}
+                    placeholder="e.g. anthropic/claude-3-5-sonnet"
+                    className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                  Temperature
-                </label>
-                <input
-                  type="number"
-                  value={config.temperature ?? ''}
-                  onChange={(e) => setConfig({ ...config, temperature: e.target.value ? parseFloat(e.target.value) : undefined })}
-                  min={0}
-                  max={2}
-                  step={0.1}
-                  placeholder="0.1"
-                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-                />
-                <p className="text-xs text-muted-foreground">0-2 (0 = deterministic)</p>
-              </div>
+            <div className="h-px bg-border md:col-span-2 lg:col-span-3 my-2" />
 
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                  Max Tokens
-                </label>
-                <input
-                  type="number"
-                  value={config.maxTokens ?? ''}
-                  onChange={(e) => setConfig({ ...config, maxTokens: e.target.value ? parseInt(e.target.value) : undefined })}
-                  min={1}
-                  step={1}
-                  placeholder="8192"
-                  className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
-                />
-                <p className="text-xs text-muted-foreground">Response length limit</p>
-              </div>
+            {/* Inference Settings */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-2">
+                <Gauge className="w-3.5 h-3.5" />
+                Temperature
+              </label>
+              <input
+                type="number"
+                value={config.temperature ?? ''}
+                onChange={(e) => setConfig({ ...config, temperature: e.target.value ? parseFloat(e.target.value) : undefined })}
+                min={0}
+                max={2}
+                step={0.1}
+                placeholder="0.1"
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+              <p className="text-[11px] text-muted-foreground ml-1">0-2 (0 = {language === 'fr' ? 'déterministe' : 'deterministic'})</p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                Max Tokens
+              </label>
+              <input
+                type="number"
+                value={config.maxTokens ?? ''}
+                onChange={(e) => setConfig({ ...config, maxTokens: e.target.value ? parseInt(e.target.value) : undefined })}
+                min={1}
+                step={1}
+                placeholder="8192"
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+              <p className="text-[11px] text-muted-foreground ml-1">{language === 'fr' ? 'Limite de longueur de réponse' : 'Response length limit'}</p>
             </div>
 
             <div className="space-y-2">
@@ -175,18 +215,22 @@ export default function AgentPage() {
               <select
                 value={config.reasoningEffort || ''}
                 onChange={(e) => setConfig({ ...config, reasoningEffort: e.target.value as any || null })}
-                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               >
-                <option value="">Not set</option>
+                <option value="">{language === 'fr' ? 'Non défini' : 'Not set'}</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
               </select>
-              <p className="text-xs text-muted-foreground">For reasoning-capable models (o1, etc.)</p>
+              <p className="text-[11px] text-muted-foreground ml-1">{language === 'fr' ? 'Pour les modèles de raisonnement' : 'For reasoning models'}</p>
             </div>
 
+            <div className="h-px bg-border md:col-span-2 lg:col-span-3 my-2" />
+
+            {/* Operational Constraints */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-2">
+                <Brain className="w-3.5 h-3.5" />
                 Memory Window
               </label>
               <input
@@ -196,29 +240,29 @@ export default function AgentPage() {
                 min={1}
                 step={1}
                 placeholder="200"
-                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
-              <p className="text-xs text-muted-foreground">Number of exchanges to keep in context</p>
+              <p className="text-[11px] text-muted-foreground ml-1">{language === 'fr' ? 'Nombre d\'échanges à garder' : 'Number of exchanges to keep'}</p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-2">
+                <Zap className="w-3.5 h-3.5" />
+                Max Tool Iterations
+              </label>
+              <input
+                type="number"
+                value={config.maxToolIterations ?? ''}
+                onChange={(e) => setConfig({ ...config, maxToolIterations: e.target.value ? parseInt(e.target.value) : undefined })}
+                min={1}
+                step={1}
+                placeholder="40"
+                className="w-full bg-secondary/30 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+              <p className="text-[11px] text-muted-foreground ml-1">{language === 'fr' ? 'Limite d\'appels d\'outils' : 'Tool call limit'}</p>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Advanced */}
-      <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
-        <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60 mb-4">
-          Advanced
-        </h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          For more advanced configuration options, edit the config.json file directly.
-        </p>
-        <a
-          href="/editor?file=config.json"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-secondary text-secondary-foreground rounded-xl transition-all font-medium hover:bg-secondary/80 active:scale-95"
-        >
-          <Bot className="w-4 h-4" />
-          Open config.json in Editor
-        </a>
       </div>
     </div>
   );

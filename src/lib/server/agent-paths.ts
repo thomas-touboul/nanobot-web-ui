@@ -103,14 +103,14 @@ export class AgentPathResolver {
    * Chemin vers le répertoire cron
    */
   cronDir(): string {
-    return path.join(this.agent.rootPath, 'cron');
+    return path.join(this.agent.rootPath, 'workspace', 'cron');
   }
 
   /**
    * Chemin vers le fichier jobs.json des cron
    */
   cronJobsFile(): string {
-    return path.join(this.agent.rootPath, 'cron', 'jobs.json');
+    return path.join(this.agent.rootPath, 'workspace', 'cron', 'jobs.json');
   }
 
   /**
