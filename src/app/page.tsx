@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 interface GatewayStatus {
   service: string;
@@ -30,6 +31,7 @@ interface GatewayStatus {
 export default function Dashboard() {
   const [status, setStatus] = useState<GatewayStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetch("/api/gateway/status")
@@ -68,7 +70,7 @@ export default function Dashboard() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-foreground tracking-tight">AI Agent Gateway</h2>
+                <h2 className="text-xl font-bold text-foreground tracking-tight">{t.pages.dashboard.title}</h2>
                 <span className={cn(
                   "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border",
                   status?.state === "active" 
@@ -81,7 +83,7 @@ export default function Dashboard() {
               
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
                 <div className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground/80">{status?.model || "Loading..."}</span>
+                  <span className="font-medium text-foreground/80">{status?.model || (loading ? "..." : "---")}</span>
                 </div>
                 <div className="text-xs text-muted-foreground border-l border-border pl-4">
                   <span className="font-medium text-foreground/60 uppercase tracking-tighter">{status?.provider || "auto"}</span>
@@ -148,7 +150,7 @@ export default function Dashboard() {
                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                   : "bg-secondary text-muted-foreground border-transparent"
               )}>
-                {status?.rpc_probe || "Unknown"}
+                {status?.rpc_probe === "Online" ? t.common.online : status?.rpc_probe || "Unknown"}
               </span>
             </div>
              <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">

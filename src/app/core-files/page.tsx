@@ -16,7 +16,8 @@ import {
   LucideIcon
 } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
-import { UI_TEXT } from "@/constants/ui-text";
+import { useTranslation } from "@/contexts/LanguageContext";
+import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 
 interface File {
   name: string;
@@ -47,6 +48,7 @@ const fileDescriptions: Record<string, string> = {
 export default function CoreFilesPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetch("/api/files")
@@ -75,12 +77,12 @@ export default function CoreFilesPage() {
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <HeaderWithIcon 
-        title={UI_TEXT.pages.coreFiles.title}
-        subtitle={UI_TEXT.pages.coreFiles.subtitle}
-        icon={UI_TEXT.navigation.coreFiles.icon}
-        iconColorClass={UI_TEXT.navigation.coreFiles.color}
-        iconBgClass={UI_TEXT.navigation.coreFiles.bgColor}
-        iconBorderClass={UI_TEXT.navigation.coreFiles.borderColor}
+        title={t.pages.coreFiles.title}
+        subtitle={t.pages.coreFiles.subtitle}
+        icon={UI_ICONS.coreFiles}
+        iconColorClass={UI_STYLES.coreFiles.color}
+        iconBgClass={UI_STYLES.coreFiles.bgColor}
+        iconBorderClass={UI_STYLES.coreFiles.borderColor}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

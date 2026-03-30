@@ -10,12 +10,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
-import { UI_TEXT } from "@/constants/ui-text";
-
-interface LogEntry {
-  timestamp?: string;
-  message: string;
-}
+import { useTranslation } from "@/contexts/LanguageContext";
+import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 
 export default function GatewayLogsPage() {
   const [logs, setLogs] = useState<string[]>([]);
@@ -24,6 +20,7 @@ export default function GatewayLogsPage() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState(3000); // 3 seconds
+  const { t } = useTranslation();
 
   const fetchLogs = useCallback(async () => {
     try {
@@ -73,12 +70,12 @@ export default function GatewayLogsPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <HeaderWithIcon 
-          icon={UI_TEXT.navigation.history.icon} 
-          title="Gateway Logs"
-          subtitle="Real-time logs from nanobot-gateway systemd service"
-          iconColorClass="text-rose-500"
-          iconBgClass="bg-rose-500/10"
-          iconBorderClass="border-rose-500/20"
+          icon={UI_ICONS.gatewayLogs} 
+          title={t.pages.gatewayLogs.title}
+          subtitle={t.pages.gatewayLogs.subtitle}
+          iconColorClass={UI_STYLES.gatewayLogs.color}
+          iconBgClass={UI_STYLES.gatewayLogs.bgColor}
+          iconBorderClass={UI_STYLES.gatewayLogs.borderColor}
         />
         
         <div className="flex items-center gap-3">

@@ -13,7 +13,8 @@ import {
   Check
 } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
-import { UI_TEXT } from "@/constants/ui-text";
+import { useTranslation } from "@/contexts/LanguageContext";
+import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 
 interface CronJob {
   id: string;
@@ -66,6 +67,7 @@ export default function CronPage() {
   const [editingJob, setEditingJob] = useState<CronJob | null>(null);
   const [formData, setFormData] = useState<Partial<CronJob>>(emptyJob);
   const [saving, setSaving] = useState(false);
+  const { t } = useTranslation();
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -174,12 +176,12 @@ export default function CronPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <HeaderWithIcon 
-          title={UI_TEXT.pages.schedule.title} 
-          subtitle={UI_TEXT.pages.schedule.subtitle}
-          icon={UI_TEXT.navigation.schedule.icon}
-          iconColorClass={UI_TEXT.navigation.schedule.color}
-          iconBgClass={UI_TEXT.navigation.schedule.bgColor}
-          iconBorderClass={UI_TEXT.navigation.schedule.borderColor}
+          title={t.pages.schedule.title} 
+          subtitle={t.pages.schedule.subtitle}
+          icon={UI_ICONS.schedule}
+          iconColorClass={UI_STYLES.schedule.color}
+          iconBgClass={UI_STYLES.schedule.bgColor}
+          iconBorderClass={UI_STYLES.schedule.borderColor}
         />
         
         <button

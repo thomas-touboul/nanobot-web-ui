@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { cn } from "@/lib/utils";
-import { UI_TEXT } from "@/constants/ui-text";
+import { useTranslation } from "@/contexts/LanguageContext";
+import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 
 interface ProviderConfig {
   apiKey: string;
@@ -32,6 +33,7 @@ export default function ModelsPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetch("/api/providers")
@@ -96,12 +98,12 @@ export default function ModelsPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <HeaderWithIcon 
-          title={UI_TEXT.pages.providers.title} 
-          subtitle={UI_TEXT.pages.providers.subtitle}
-          icon={UI_TEXT.navigation.providers.icon}
-          iconColorClass={UI_TEXT.navigation.providers.color}
-          iconBgClass={UI_TEXT.navigation.providers.bgColor}
-          iconBorderClass={UI_TEXT.navigation.providers.borderColor}
+          title={t.pages.providers.title} 
+          subtitle={t.pages.providers.subtitle}
+          icon={UI_ICONS.providers}
+          iconColorClass={UI_STYLES.providers.color}
+          iconBgClass={UI_STYLES.providers.bgColor}
+          iconBorderClass={UI_STYLES.providers.borderColor}
         />
         
         <div className="flex items-center gap-3">
@@ -109,7 +111,7 @@ export default function ModelsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search providers..."
+              placeholder={t.common.search}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 pr-4 py-2 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 w-64 transition-all"
@@ -133,7 +135,7 @@ export default function ModelsPage() {
             ) : (
               <Save className="w-4 h-4" />
             )}
-            {saveSuccess ? "Saved!" : "Save Changes"}
+            {saveSuccess ? "Saved!" : t.common.save}
           </button>
         </div>
       </div>

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Bot, Save, Loader2, RotateCcw } from "lucide-react";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
-import { UI_TEXT } from "@/constants/ui-text";
+import { useTranslation } from "@/contexts/LanguageContext";
+import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 
 interface AgentConfig {
   model?: string;
@@ -18,6 +19,7 @@ export default function AgentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+  const { t } = useTranslation();
 
   const fetchConfig = async () => {
     try {
@@ -76,12 +78,12 @@ export default function AgentPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <HeaderWithIcon 
-          title={UI_TEXT.pages.agent.title}
-          subtitle={UI_TEXT.pages.agent.subtitle}
-          icon={UI_TEXT.pages.agent.icon}
-          iconColorClass={UI_TEXT.pages.agent.color}
-          iconBgClass={UI_TEXT.pages.agent.bgColor}
-          iconBorderClass={UI_TEXT.pages.agent.borderColor}
+          title={t.pages.agent.title}
+          subtitle={t.pages.agent.subtitle}
+          icon={UI_ICONS.agent}
+          iconColorClass={UI_STYLES.agent.color}
+          iconBgClass={UI_STYLES.agent.bgColor}
+          iconBorderClass={UI_STYLES.agent.borderColor}
         />
         
         <div className="flex items-center gap-3">
@@ -90,7 +92,7 @@ export default function AgentPage() {
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-secondary text-secondary-foreground rounded-xl transition-all font-medium hover:bg-secondary/80 active:scale-95 shrink-0"
           >
             <RotateCcw className="w-4 h-4" />
-            Reset
+            {t.common.refresh}
           </button>
           <button 
             onClick={handleSave}
@@ -98,7 +100,7 @@ export default function AgentPage() {
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl transition-all font-semibold shadow-lg hover:opacity-90 active:scale-95 disabled:opacity-50 shrink-0"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            Save Changes
+            {t.common.save}
           </button>
         </div>
       </div>

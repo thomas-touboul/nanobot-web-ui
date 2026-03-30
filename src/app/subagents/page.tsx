@@ -1,6 +1,7 @@
 "use client";
 
-import { UI_TEXT } from "@/constants/ui-text";
+import { useTranslation } from "@/contexts/LanguageContext";
+import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { Bot, Clock, CheckCircle2, XCircle, Loader2, Terminal } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -19,6 +20,7 @@ interface SubagentTask {
 export default function SubagentsPage() {
   const [tasks, setTasks] = useState<SubagentTask[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -42,12 +44,12 @@ export default function SubagentsPage() {
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <HeaderWithIcon 
-        title={UI_TEXT.pages.subagents.title} 
-        subtitle={UI_TEXT.pages.subagents.subtitle}
-        icon={UI_TEXT.navigation.subagents.icon}
-        iconColorClass={UI_TEXT.navigation.subagents.color}
-        iconBgClass={UI_TEXT.navigation.subagents.bgColor}
-        iconBorderClass={UI_TEXT.navigation.subagents.borderColor}
+        title={t.pages.subagents.title} 
+        subtitle={t.pages.subagents.subtitle}
+        icon={UI_ICONS.subagents}
+        iconColorClass={UI_STYLES.subagents.color}
+        iconBgClass={UI_STYLES.subagents.bgColor}
+        iconBorderClass={UI_STYLES.subagents.borderColor}
       />
 
       <div className="max-w-4xl mx-auto">

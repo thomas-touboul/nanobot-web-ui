@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
-import { UI_TEXT } from "@/constants/ui-text";
+import { useTranslation } from "@/contexts/LanguageContext";
+import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 
 interface Skill {
   folderName: string;
@@ -30,6 +31,7 @@ export default function SkillsPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [confirmName, setConfirmName] = useState("");
+  const { t } = useTranslation();
   
   // Create Skill state
   const [newSkillTitle, setNewSkillTitle] = useState("");
@@ -114,12 +116,12 @@ export default function SkillsPage() {
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <HeaderWithIcon 
-          title={UI_TEXT.pages.skills.title} 
-          subtitle={UI_TEXT.pages.skills.subtitle} 
-          icon={UI_TEXT.navigation.skills.icon}
-          iconColorClass={UI_TEXT.navigation.skills.color}
-          iconBgClass={UI_TEXT.navigation.skills.bgColor}
-          iconBorderClass={UI_TEXT.navigation.skills.borderColor}
+          title={t.pages.skills.title} 
+          subtitle={t.pages.skills.subtitle} 
+          icon={UI_ICONS.skills}
+          iconColorClass={UI_STYLES.skills.color}
+          iconBgClass={UI_STYLES.skills.bgColor}
+          iconBorderClass={UI_STYLES.skills.borderColor}
         />
 
         <button 

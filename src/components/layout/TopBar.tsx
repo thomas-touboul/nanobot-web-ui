@@ -3,13 +3,15 @@
 import { Server, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAgent } from "@/contexts/AgentContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Languages } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function TopBar() {
   const { activeAgent, agents } = useAgent();
   const { theme, setTheme } = useTheme();
+  const { language, setLanguage, t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean | null>(null);
 
@@ -66,33 +68,61 @@ export default function TopBar() {
             "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
           )} />
           <span className="hidden sm:inline">
-            {isOnline === null ? '...' : isOnline ? 'Online' : 'Offline'}
+            {isOnline === null ? '...' : isOnline ? t.common.online : t.common.offline}
           </span>
         </div>
       </div>
 
-      {/* Droite : Theme Switcher */}
-      <div className="flex items-center gap-1 bg-secondary/10 rounded-lg p-1 border border-border/40">
-        <button
-          onClick={() => setTheme("light")}
-          className={cn(
-            "p-1.5 rounded transition-all",
-            theme === "light" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-          )}
-          title="Light mode"
-        >
-          <Sun className="h-3.5 w-3.5" />
-        </button>
-        <button
-          onClick={() => setTheme("dark")}
-          className={cn(
-            "p-1.5 rounded transition-all",
-            theme === "dark" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-          )}
-          title="Dark mode"
-        >
-          <Moon className="h-3.5 w-3.5" />
-        </button>
+      {/* Droite : Language & Theme Switchers */}
+      <div className="flex items-center gap-4">
+        {/* Language Switcher */}
+        <div className="flex items-center gap-1 bg-secondary/10 rounded-lg p-1 border border-border/40">
+          <div className="px-1.5 flex items-center">
+            <Languages className="h-3.5 w-3.5 text-muted-foreground" />
+          </div>
+          <button
+            onClick={() => setLanguage("en")}
+            className={cn(
+              "px-2 py-1 rounded text-[10px] font-bold transition-all",
+              language === "en" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            EN
+          </button>
+          <button
+            onClick={() => setLanguage("fr")}
+            className={cn(
+              "px-2 py-1 rounded text-[10px] font-bold transition-all",
+              language === "fr" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            FR
+          </button>
+        </div>
+
+        {/* Theme Switcher */}
+        <div className="flex items-center gap-1 bg-secondary/10 rounded-lg p-1 border border-border/40">
+          <button
+            onClick={() => setTheme("light")}
+            className={cn(
+              "p-1.5 rounded transition-all",
+              theme === "light" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            )}
+            title="Light mode"
+          >
+            <Sun className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => setTheme("dark")}
+            className={cn(
+              "p-1.5 rounded transition-all",
+              theme === "dark" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            )}
+            title="Dark mode"
+          >
+            <Moon className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     </header>
   );
