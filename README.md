@@ -1,6 +1,6 @@
 # AI Agent Admin 🐈
 
-> Local management dashboard for your Nanobot AI agent
+Local management dashboard for your [Nanobot](https://github.com/HKUDS/nanobot) AI agent
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com/)
