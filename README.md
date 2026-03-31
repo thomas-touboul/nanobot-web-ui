@@ -2,7 +2,7 @@
 
 Local management dashboard for your [Nanobot](https://github.com/HKUDS/nanobot) AI agents
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.1-black)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -33,7 +33,7 @@ Local management dashboard for your [Nanobot](https://github.com/HKUDS/nanobot) 
 
 **Nanobot Web UI** is a modern, powerful web dashboard for configuring, monitoring, and operating your **Nanobot** AI agent locally. It provides an intuitive interface to manage all aspects of your agent: configuration, memory, communication channels, scheduled tasks, and more.
 
-Built with **Next.js 15** (App Router), **Tailwind CSS 4**, it integrates directly with Nanobot's local configuration files (`~/.nanobot/config.json`) and the `nanobot-gateway` systemd service.
+Built with **Next.js 16.2.1** (App Router), **Tailwind CSS 4**, it integrates directly with Nanobot's local configuration files (`~/.nanobot/config.json`) and the `nanobot-gateway` systemd service.
 
 ---
 
@@ -91,7 +91,7 @@ Built with **Next.js 15** (App Router), **Tailwind CSS 4**, it integrates direct
 
 ## 🏗️ Tech Stack
 
-- **Framework**: Next.js 15 (App Router, Server & Client Components)
+- **Framework**: Next.js 16.2.1 (App Router, Server & Client Components)
 - **Styling**: Tailwind CSS 4
 - **UI Components**: Shadcn UI (Radix UI primitives)
 - **Icons**: Lucide React
@@ -108,7 +108,7 @@ Built with **Next.js 15** (App Router), **Tailwind CSS 4**, it integrates direct
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 - A locally configured Nanobot agent
 
