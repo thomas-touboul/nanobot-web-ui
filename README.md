@@ -142,6 +142,93 @@ npm run build
 npm start
 ```
 
+For persistent background operation and auto-restart on boot, create a systemd service:
+
+```bash
+# System-wide service (requires sudo)
+sudo nano /etc/systemd/system/ai-agent-admin.service
+```
+
+```ini
+[Unit]
+Description=AI Agent Admin Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=moltbot
+WorkingDirectory=/home/moltbot/.nanobot/workspace/projects/ai-agent-admin
+Environment="PORT=18791"
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable ai-agent-admin.service
+sudo systemctl start ai-agent-admin.service
+sudo systemctl status ai-agent-admin.service
+```
+
+For user-level services (recommended when `nanobot-gateway` is a user service), place the service file in `~/.config/systemd/user/ai-agent-admin.service` and use `systemctl --user` commands. Enable linger with `sudo loginctl enable-linger <user>` to keep the service running after logout.
+
+---
+
+## 🌐 Remote Access with Tailscale
+
+You can securely access the dashboard from anywhere using **Tailscale**, a zero-config mesh VPN based on WireGuard.
+
+### Setup
+
+1. **Install Tailscale** on your server (Linux):
+   ```bash
+   curl -fsSL https://tailscale.com/install.sh | sh
+   # Or: apt install tailscale
+   ```
+
+2. **Start and authenticate** on the server:
+   ```bash
+   sudo tailscale up
+   ```
+   Follow the URL to log in with the same account as your mobile device.
+
+3. **Install Tailscale** on your mobile device (iOS/Android) and log in with the same account.
+
+4. **Get the server's Tailscale IP**:
+   ```bash
+   tailscale ip
+   ```
+   It will look like `100.x.y.z`.
+
+5. **Access the dashboard** from your mobile browser:
+   ```
+   http://<TAILSCALE_IP>:18791
+   ```
+   (Replace `18791` with your configured port if different.)
+
+### Production Deployment
+
+When running the dashboard as a systemd service (see below), ensure it listens on all interfaces:
+
+```ini
+# In /etc/systemd/system/ai-agent-admin.service or ~/.config/systemd/user/ai-agent-admin.service
+Environment="PORT=18791"
+ExecStart=/usr/bin/npm start
+```
+
+The service will be reachable via Tailscale automatically.
+
+### Firewall
+
+Tailscale traffic is encrypted and authenticated; no additional firewall rules are needed for the Tailscale interface. If you have a local firewall (ufw, firewalld), ensure the dashboard port (e.g., 18791) is allowed **only** on the Tailscale interface or locally.
+
 ---
 
 ## ⚙️ Configuration
