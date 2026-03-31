@@ -11,19 +11,19 @@ export async function GET() {
     const resolver = getDefaultResolver();
     const agent = resolver['agent']; // On accède à l'agent via le resolver
 
-    // 1. Check systemd service status
-    let serviceState = 'inactive';
-    let pid = 'N/A';
-    try {
-      const { stdout: systemdOutput } = await execAsync(`systemctl --user show ${agent.serviceName} --property=ActiveState,MainPID`);
-      const lines = systemdOutput.split('\n');
-      lines.forEach(line => {
-        if (line.startsWith('ActiveState=')) serviceState = line.split('=')[1];
-        if (line.startsWith('MainPID=')) pid = line.split('=')[1];
-      });
-    } catch (e) {
-      console.error('Failed to get systemd status', e);
-    }
+     // 1. Check systemd service status (user service)
+     let serviceState = 'inactive';
+     let pid = 'N/A';
+     try {
+       const { stdout: systemdOutput } = await execAsync(`systemctl --user show ${agent.serviceName} --property=ActiveState,MainPID`);
+       const lines = systemdOutput.split('\n');
+       lines.forEach(line => {
+         if (line.startsWith('ActiveState=')) serviceState = line.split('=')[1];
+         if (line.startsWith('MainPID=')) pid = line.split('=')[1];
+       });
+     } catch (e) {
+       console.error('Failed to get systemd status', e);
+     }
 
     // 2. Read config for model, provider and channels
     let model = 'unknown';
