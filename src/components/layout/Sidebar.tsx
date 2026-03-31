@@ -26,14 +26,14 @@ function SidebarContent() {
         "fixed inset-y-0 left-0 z-50 flex flex-col w-64 border-r border-border bg-card/50 backdrop-blur-sm transition-transform duration-300 md:translate-x-0 md:static md:h-screen",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="h-12 flex items-center px-6 border-b border-border/40">
-          <Link href="/" className="flex items-center gap-2 font-semibold text-sm tracking-tight text-foreground hover:opacity-80 transition-opacity">
-            <div className="w-5 h-5 bg-foreground rounded text-[10px] flex items-center justify-center text-background font-bold shadow-sm">
-              A
-            </div>
-            <span className="hidden sm:inline">AI Agent Admin</span>
-          </Link>
-        </div>
+         <div className="h-12 flex items-center px-6 border-b border-border/40">
+           <Link href="/" className="flex items-center gap-2 font-semibold text-sm tracking-tight text-foreground hover:opacity-80 transition-opacity">
+             <div className="w-5 h-5 bg-foreground rounded text-[10px] flex items-center justify-center text-background font-bold shadow-sm">
+               N
+             </div>
+             <span className="hidden sm:inline">Nanobot Web UI</span>
+           </Link>
+         </div>
         
         <div className="flex-1 py-2 overflow-y-auto">
           <Navigation onItemClick={() => setMobileMenuOpen(false)} />

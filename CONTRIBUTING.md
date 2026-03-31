@@ -1,6 +1,6 @@
-# Contributing to AI Agent Admin
+# Contributing to Nanobot Web UI
 
-Thank you for your interest in contributing to **AI Agent Admin**! This document outlines the process for contributing to the project via forks and pull requests.
+Thank you for your interest in contributing to **Nanobot Web UI**! This document outlines the process for contributing to the project via forks and pull requests.
 
 ---
 
@@ -27,13 +27,13 @@ This project adheres to a simple principle: **be respectful and constructive**. 
 
 ### 1. Fork the Repository
 
-Click the "Fork" button on the [main repository](https://github.com/thomas-touboul/ai-agent-admin) to create your own copy.
+Click the "Fork" button on the [main repository](https://github.com/thomas-touboul/nanobot-web-ui) to create your own copy.
 
 ### 2. Clone Your Fork
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/ai-agent-admin.git
-cd ai-agent-admin
+git clone https://github.com/YOUR-USERNAME/nanobot-web-ui.git ~/.nanobot/nanobot-web-ui
+cd ~/.nanobot/nanobot-web-ui
 ```
 
 ### 3. Add Upstream Remote
@@ -41,7 +41,7 @@ cd ai-agent-admin
 Link your fork to the original repository to sync changes:
 
 ```bash
-git remote add upstream https://github.com/thomas-touboul/ai-agent-admin.git
+git remote add upstream https://github.com/thomas-touboul/nanobot-web-ui.git
 ```
 
 ### 4. Install Dependencies

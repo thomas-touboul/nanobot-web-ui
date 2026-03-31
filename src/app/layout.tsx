@@ -10,8 +10,8 @@ import TopBar from "@/components/layout/TopBar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Agent Admin",
-  description: "AI Agent Administration Dashboard",
+  title: "Nanobot Web UI",
+  description: "Nanobot Administration Dashboard",
 };
 
 export default function RootLayout({

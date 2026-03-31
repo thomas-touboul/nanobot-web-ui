@@ -196,7 +196,7 @@ export default function SkillsPage() {
               <Puzzle className="w-8 h-8 opacity-20" />
             </div>
             <p className="text-lg font-semibold">No skills detected</p>
-            <p className="text-sm mt-1">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.nanobot/skills</code> folder</p>
+             <p className="text-sm mt-1">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.nanobot/workspace/skills</code> folder</p>
           </div>
         )}
       </div>
@@ -241,10 +241,10 @@ export default function SkillsPage() {
                 />
               </div>
               
-              <div className="flex items-center gap-2 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
-                <Info className="w-4 h-4 shrink-0" />
-                <p className="text-xs leading-relaxed">This will create a new directory in <code>.nanobot/workspace/skills/</code> and initialize it with a <code>SKILL.md</code> file.</p>
-              </div>
+               <div className="flex items-center gap-2 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
+                 <Info className="w-4 h-4 shrink-0" />
+                 <p className="text-xs leading-relaxed">This will create a new directory in <code>.nanobot/workspace/skills/</code> (relative to the dashboard) and initialize it with a <code>SKILL.md</code> file.</p>
+               </div>
             </div>
 
             <div className="p-4 bg-secondary/20 border-t border-border flex justify-end gap-3">
@@ -287,9 +287,9 @@ export default function SkillsPage() {
             </div>
             
             <div className="p-6 space-y-4">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                This action is <strong className="text-foreground">permanent</strong>. It will delete the <code>.nanobot/skills/{selectedSkill.folderName}</code> directory and all its contents.
-              </p>
+               <p className="text-sm text-muted-foreground leading-relaxed">
+                 This action is <strong className="text-foreground">permanent</strong>. It will delete the <code>.nanobot/workspace/skills/{selectedSkill.folderName}</code> directory and all its contents.
+               </p>
               
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">

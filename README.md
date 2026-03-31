@@ -31,7 +31,7 @@ Local management dashboard for your [Nanobot](https://github.com/HKUDS/nanobot) 
 
 ## Overview
 
-**AI Agent Admin** is a modern, powerful web dashboard for configuring, monitoring, and operating your **Nanobot** AI agent locally. It provides an intuitive interface to manage all aspects of your agent: configuration, memory, communication channels, scheduled tasks, and more.
+**Nanobot Web UI** is a modern, powerful web dashboard for configuring, monitoring, and operating your **Nanobot** AI agent locally. It provides an intuitive interface to manage all aspects of your agent: configuration, memory, communication channels, scheduled tasks, and more.
 
 Built with **Next.js 15** (App Router), **Tailwind CSS 4**, it integrates directly with Nanobot's local configuration files (`~/.nanobot/config.json`) and the `nanobot-gateway` systemd service.
 
@@ -115,9 +115,9 @@ Built with **Next.js 15** (App Router), **Tailwind CSS 4**, it integrates direct
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/thomas-touboul/ai-agent-admin.git
-cd ai-agent-admin
+# Clone the repository into ~/.nanobot/
+git clone https://github.com/thomas-touboul/nanobot-web-ui.git ~/.nanobot/nanobot-web-ui
+cd ~/.nanobot/nanobot-web-ui
 
 # Install dependencies
 npm install
@@ -146,7 +146,7 @@ For persistent background operation and auto-restart on boot, create a systemd s
 
 ```bash
 # System-wide service (requires sudo)
-sudo nano /etc/systemd/system/ai-agent-admin.service
+sudo nano /etc/systemd/system/nanobot-web-ui.service
 ```
 
 ```ini
@@ -157,7 +157,7 @@ After=network.target
 [Service]
 Type=simple
 User=moltbot
-WorkingDirectory=/home/<USER>/.nanobot/workspace/projects/ai-agent-admin
+WorkingDirectory=/home/<USER>/.nanobot/nanobot-web-ui
 Environment="PORT=18791"
 Environment="NODE_ENV=production"
 ExecStart=/usr/bin/npm start
@@ -172,12 +172,12 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable ai-agent-admin.service
-sudo systemctl start ai-agent-admin.service
-sudo systemctl status ai-agent-admin.service
+sudo systemctl enable nanobot-web-ui.service
+sudo systemctl start nanobot-web-ui.service
+sudo systemctl status nanobot-web-ui.service
 ```
 
-For user-level services (recommended when `nanobot-gateway` is a user service), place the service file in `~/.config/systemd/user/ai-agent-admin.service` and use `systemctl --user` commands. Enable linger with `sudo loginctl enable-linger <user>` to keep the service running after logout.
+For user-level services (recommended when `nanobot-gateway` is a user service), place the service file in `~/.config/systemd/user/nanobot-web-ui.service` and use `systemctl --user` commands. Enable linger with `sudo loginctl enable-linger <user>` to keep the service running after logout.
 
 ---
 
@@ -218,7 +218,7 @@ You can securely access the dashboard from anywhere using **Tailscale**, a zero-
 When running the dashboard as a systemd service (see below), ensure it listens on all interfaces:
 
 ```ini
-# In /etc/systemd/system/ai-agent-admin.service or ~/.config/systemd/user/ai-agent-admin.service
+# In /etc/systemd/system/nanobot-web-ui.service or ~/.config/systemd/user/nanobot-web-ui.service
 Environment="PORT=18791"
 ExecStart=/usr/bin/npm start
 ```

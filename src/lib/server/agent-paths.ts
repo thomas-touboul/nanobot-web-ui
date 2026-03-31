@@ -2,7 +2,24 @@ import fs from 'fs';
 import path from 'path';
 import { Agent } from '@/lib/shared/agent-types';
 
-const DEFAULT_AGENT_ROOT = '/home/moltbot/.nanobot';
+/**
+ * Determine le chemin racine par défaut pour l'agent.
+ * Utilise NANOBOT_HOME si défini, sinon calcule le parent du répertoire du dashboard.
+ * Le dashboard est attendu dans ~/.nanobot/nanobot-web-ui/, donc le parent est ~/.nanobot.
+ */
+function getDefaultAgentRoot(): string {
+  const envPath = process.env.NANOBOT_HOME;
+  if (envPath) return envPath;
+
+  // Si on est dans le répertoire du projet (nanobot-web-ui), le parent est .nanobot
+  const cwd = process.cwd();
+  if (cwd.includes('nanobot-web-ui')) {
+    return path.resolve(cwd, '..');
+  }
+
+  // Fallback pour le développement
+  return '/home/moltbot/.nanobot';
+}
 
 /**
  * Retourne l'agent par défaut (pour l'instant un seul agent)
@@ -11,7 +28,7 @@ export function getDefaultAgent(): Agent {
   return {
     id: 'default',
     name: 'Default Agent',
-    rootPath: DEFAULT_AGENT_ROOT,
+    rootPath: getDefaultAgentRoot(),
     serviceName: 'nanobot-gateway',
     port: 18790,
     enabled: true

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 /**
- * Centralized UI text, style and icon constants for the AI Agent Admin dashboard.
+ * Centralized UI text, style and icon constants for the Nanobot Web UI dashboard.
  * Supports internationalization (i18n).
  */
 
@@ -117,10 +117,10 @@ export const UI_TRANSLATIONS = {
         title: "Direct Chat",
         subtitle: "Have a conversation with your agent directly from the dashboard.",
       },
-      dashboard: {
-        title: "AI Agent Gateway",
-        subtitle: "System status and quick access to your agent's core.",
-      },
+       dashboard: {
+         title: "Nanobot Gateway",
+         subtitle: "System status and quick access to your agent's core.",
+       },
       agent: {
         title: "Agent Configuration",
         subtitle: "Configure your agent's identity and behavior.",
@@ -199,10 +199,10 @@ export const UI_TRANSLATIONS = {
         title: "Chat Direct",
         subtitle: "Discutez directement avec votre agent depuis le tableau de bord.",
       },
-      dashboard: {
-        title: "Gateway de l'Agent IA",
-        subtitle: "État du système et accès rapide au cœur de votre agent.",
-      },
+       dashboard: {
+         title: "Gateway Nanobot",
+         subtitle: "État du système et accès rapide au cœur de votre agent.",
+       },
       agent: {
         title: "Configuration de l'Agent",
         subtitle: "Configurez l'identité et le comportement de votre agent.",

@@ -103,10 +103,10 @@ function EditorContent() {
           <div className="p-2 bg-secondary/50 rounded-lg shadow-sm border border-border/40">
             <FileText className="w-5 h-5 text-muted-foreground" />
           </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">{filename}</h1>
-            <p className="text-[10px] text-muted-foreground font-mono">/home/moltbot/.nanobot/{filename}</p>
-          </div>
+           <div>
+             <h1 className="text-xl font-bold tracking-tight">{filename}</h1>
+             <p className="text-[10px] text-muted-foreground font-mono">~/.nanobot/{filename}</p>
+           </div>
         </div>
 
         <div className="flex items-center gap-3">
