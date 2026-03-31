@@ -157,7 +157,7 @@ After=network.target
 [Service]
 Type=simple
 User=moltbot
-WorkingDirectory=/home/moltbot/.nanobot/workspace/projects/ai-agent-admin
+WorkingDirectory=/home/<USER>/.nanobot/workspace/projects/ai-agent-admin
 Environment="PORT=18791"
 Environment="NODE_ENV=production"
 ExecStart=/usr/bin/npm start
