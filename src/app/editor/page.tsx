@@ -16,11 +16,14 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 function EditorContent() {
   const searchParams = useSearchParams();
   const filename = searchParams.get("file");
   const { resolvedTheme } = useTheme();
+  const { activeAgent } = useAgent();
   
   const [content, setContent] = useState("");
   const [originalContent, setOriginalContent] = useState("");
@@ -32,7 +35,7 @@ function EditorContent() {
   useEffect(() => {
     if (filename) {
       setLoading(true);
-      fetch(`/api/files/${filename}`)
+      agentFetch(`/api/files/${filename}`, {}, activeAgent)
         .then((res) => res.json())
         .then((data) => {
           setContent(data.content || "");
@@ -46,17 +49,17 @@ function EditorContent() {
             setLoading(false);
         });
     }
-  }, [filename]);
+  }, [filename, activeAgent]);
 
   const handleSave = async () => {
     if (!filename) return;
     setSaving(true);
     try {
-      const res = await fetch(`/api/files/${filename}`, {
+      const res = await agentFetch(`/api/files/${filename}`, {
         method: "POST",
         body: JSON.stringify({ content }),
         headers: { "Content-Type": "application/json" },
-      });
+      }, activeAgent);
       if (res.ok) {
         setMessage("Saved!");
         setOriginalContent(content);
@@ -105,7 +108,7 @@ function EditorContent() {
           </div>
            <div>
              <h1 className="text-xl font-bold tracking-tight">{filename}</h1>
-             <p className="text-[10px] text-muted-foreground font-mono">~/.nanobot/{filename}</p>
+             <p className="text-[10px] text-muted-foreground font-mono">~/.nanobot-coding/{filename}</p>
            </div>
         </div>
 

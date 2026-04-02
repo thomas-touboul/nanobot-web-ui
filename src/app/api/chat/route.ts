@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
 const execAsync = promisify(exec);
 
 export async function POST(req: NextRequest) {
   try {
+    const resolver = getResolverFromRequest(req);
     const { message, sessionId } = await req.json();
 
     if (!message) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    const resolver = getDefaultResolver();
     const workspace = resolver.workspace();
     const config = resolver.config();
     

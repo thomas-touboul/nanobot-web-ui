@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
-function getSafePath(pathSegments: string[]): string | null {
-  const resolver = getDefaultResolver();
+function getSafePath(pathSegments: string[], resolver: any): string | null {
   const relPath = path.join(...pathSegments);
   
   // Build the full path using the resolver
@@ -53,8 +52,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ filename: string[] }> }
 ) {
+  const resolver = getResolverFromRequest(request);
   const { filename } = await params;
-  const filePath = getSafePath(filename);
+  const filePath = getSafePath(filename, resolver);
 
   if (!filePath || !fs.existsSync(filePath)) {
     return NextResponse.json({ error: 'File not found or unauthorized' }, { status: 404 });
@@ -72,9 +72,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ filename: string[] }> }
 ) {
+  const resolver = getResolverFromRequest(request);
   const { filename } = await params;
   const { content } = await request.json();
-  const filePath = getSafePath(filename);
+  const filePath = getSafePath(filename, resolver);
 
   if (!filePath) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });

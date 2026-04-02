@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
 interface CronJob {
   id: string;
@@ -37,12 +37,12 @@ function generateId(): string {
   return crypto.randomBytes(4).toString('hex');
 }
 
-function getCronJobsPath(): string {
-  return getDefaultResolver().cronJobsFile();
+function getCronJobsPath(resolver: any): string {
+  return resolver.cronJobsFile();
 }
 
-function loadJobs(): { version: number; jobs: CronJob[] } {
-  const cronJobsPath = getCronJobsPath();
+function loadJobs(resolver: any): { version: number; jobs: CronJob[] } {
+  const cronJobsPath = getCronJobsPath(resolver);
   
   if (!fs.existsSync(cronJobsPath)) {
     return { version: 1, jobs: [] };
@@ -56,8 +56,8 @@ function loadJobs(): { version: number; jobs: CronJob[] } {
   };
 }
 
-function saveJobs(data: { version: number; jobs: CronJob[] }) {
-  const cronJobsPath = getCronJobsPath();
+function saveJobs(data: { version: number; jobs: CronJob[] }, resolver: any) {
+  const cronJobsPath = getCronJobsPath(resolver);
   const dir = path.dirname(cronJobsPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -65,9 +65,10 @@ function saveJobs(data: { version: number; jobs: CronJob[] }) {
   fs.writeFileSync(cronJobsPath, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const data = loadJobs();
+    const resolver = getResolverFromRequest(req);
+    const data = loadJobs(resolver);
     return NextResponse.json(data.jobs);
   } catch (error) {
     console.error('Failed to fetch cron jobs:', error);
@@ -77,8 +78,9 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const resolver = getResolverFromRequest(req);
     const body = await req.json();
-    const data = loadJobs();
+    const data = loadJobs(resolver);
     
     const now = Date.now();
     const newJob: CronJob = {
@@ -111,7 +113,7 @@ export async function POST(req: NextRequest) {
     };
 
     data.jobs.push(newJob);
-    saveJobs(data);
+    saveJobs(data, resolver);
     
     return NextResponse.json(newJob, { status: 201 });
   } catch (error) {
@@ -128,7 +130,8 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Job ID is required' }, { status: 400 });
     }
 
-    const data = loadJobs();
+    const resolver = getResolverFromRequest(req);
+    const data = loadJobs(resolver);
     const jobIndex = data.jobs.findIndex((j: CronJob) => j.id === body.id);
     
     if (jobIndex === -1) {
@@ -160,7 +163,7 @@ export async function PUT(req: NextRequest) {
     };
 
     data.jobs[jobIndex] = updatedJob;
-    saveJobs(data);
+    saveJobs(data, resolver);
     
     return NextResponse.json(updatedJob);
   } catch (error) {
@@ -171,6 +174,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const resolver = getResolverFromRequest(req);
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
     
@@ -178,7 +182,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Job ID is required' }, { status: 400 });
     }
 
-    const data = loadJobs();
+    const data = loadJobs(resolver);
     const initialLength = data.jobs.length;
     data.jobs = data.jobs.filter((job: CronJob) => job.id !== id);
     
@@ -186,7 +190,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
-    saveJobs(data);
+    saveJobs(data, resolver);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete cron job:', error);

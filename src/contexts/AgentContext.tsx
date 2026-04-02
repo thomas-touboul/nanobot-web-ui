@@ -1,67 +1,75 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from 'react';
+
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Agent } from '@/lib/shared/agent-types';
 
 interface AgentContextType {
   agents: Agent[];
   activeAgent: Agent;
+  setActiveAgent: (agent: Agent) => void;
   refreshAgents: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const AgentContext = createContext<AgentContextType | null>(null);
 
-// Determine default root path: use NANOBOT_HOME env or parent directory of dashboard
-function getDefaultRootPath(): string {
-  if (typeof window !== 'undefined') {
-    // Client-side: not used for server operations, but we need a placeholder
-    return '/home/moltbot/.nanobot';
-  }
-  // Server-side: use env var or compute relative to this file
-  const envPath = process.env.NANOBOT_HOME;
-  if (envPath) return envPath;
-  // Dashboard is in ~/.nanobot/nanobot-web-ui/, so parent is ~/.nanobot
-  // __dirname in server component points to .../src/contexts/
-  // We need to go up to project root then to parent
-  const currentDir = process.cwd(); // Should be project root
-  return currentDir.includes('nanobot-web-ui') ? currentDir.replace(/nanobot-web-ui$/, '') : '/home/moltbot/.nanobot';
-}
-
-// Agent par défaut (pour l'instant un seul agent)
-const DEFAULT_AGENT: Agent = {
-  id: 'default',
-  name: 'Default Agent',
-  rootPath: getDefaultRootPath(),
-  serviceName: 'nanobot-gateway',
-  port: 18790,
-  enabled: true
-};
+const AGENT_STORAGE_KEY = 'nanobot-active-agent-id';
 
 export function AgentProvider({ children }: { children: React.ReactNode }) {
-  const [agents, setAgents] = useState<Agent[]>([DEFAULT_AGENT]);
-  const [activeAgent, setActiveAgent] = useState<Agent>(DEFAULT_AGENT);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [activeAgent, setActiveAgentState] = useState<Agent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshAgents = async () => {
-    // Pour l'instant, on utilise juste l'agent par défaut
-    // Plus tard, on fera un fetch vers /api/agents
-    setAgents([DEFAULT_AGENT]);
-    setActiveAgent(DEFAULT_AGENT);
-    setIsLoading(false);
-  };
+  const refreshAgents = useCallback(async () => {
+    try {
+      const res = await fetch('/api/agents');
+      const data = await res.json();
+      
+      if (data.agents && data.agents.length > 0) {
+        setAgents(data.agents);
+        
+        // Restore previously selected agent from localStorage, or use first one
+        const savedAgentId = localStorage.getItem(AGENT_STORAGE_KEY);
+        const savedAgent = data.agents.find((a: Agent) => a.id === savedAgentId);
+        const defaultAgent = savedAgent || data.agents[0];
+        
+        setActiveAgentState(defaultAgent);
+        if (!savedAgent) {
+          localStorage.setItem(AGENT_STORAGE_KEY, defaultAgent.id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load agents:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const setActiveAgent = useCallback((agent: Agent) => {
+    setActiveAgentState(agent);
+    localStorage.setItem(AGENT_STORAGE_KEY, agent.id);
+  }, []);
 
   useEffect(() => {
     refreshAgents();
-  }, []);
+  }, [refreshAgents]);
 
   if (isLoading) {
-    return null; // ou un loader
+    return null; // or a loader
+  }
+
+  // Wait until we have agents
+  if (agents.length === 0 || !activeAgent) {
+    return null;
   }
 
   return (
     <AgentContext.Provider value={{
       agents,
       activeAgent,
-      refreshAgents
+      setActiveAgent,
+      refreshAgents,
+      isLoading
     }}>
       {children}
     </AgentContext.Provider>

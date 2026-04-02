@@ -6,6 +6,8 @@ import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { Bot, Clock, CheckCircle2, XCircle, Loader2, Terminal } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface SubagentTask {
   id: string;
@@ -21,11 +23,12 @@ export default function SubagentsPage() {
   const [tasks, setTasks] = useState<SubagentTask[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch('/api/subagents');
+        const response = await agentFetch('/api/subagents', {}, activeAgent);
         const data = await response.json();
         const activeTasks = Array.isArray(data) ? data.filter((t: SubagentTask) => t.status === 'running') : [];
         setTasks(activeTasks);
@@ -39,7 +42,7 @@ export default function SubagentsPage() {
     fetchTasks();
     const interval = setInterval(fetchTasks, 3000); // Refresh every 3s for "real-time" feel
     return () => clearInterval(interval);
-  }, []);
+  }, [activeAgent]);
 
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">

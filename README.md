@@ -13,6 +13,7 @@ Local management dashboard for your [Nanobot](https://github.com/HKUDS/nanobot) 
 - [Overview](#overview)
 - [✨ Features](#-features)
   - [🤖 Agent Configuration](#-agent-configuration)
+  - [🔀 Multi-Agent Management](#-multi-agent-management)
   - [💬 Channel Management](#-channel-management)
   - [🧠 Knowledge Base](#-knowledge-base)
   - [⚡ Operations](#-operations)
@@ -21,6 +22,7 @@ Local management dashboard for your [Nanobot](https://github.com/HKUDS/nanobot) 
   - [💬 Integrated Chat](#-integrated-chat)
 - [🏗️ Tech Stack](#️-tech-stack)
 - [🚀 Quick Start](#-quick-start)
+- [🤖 Multi-Agent Setup](#-multi-agent-setup)
 - [⚙️ Configuration](#️-configuration)
 - [🔌 API Routes](#-api-routes)
 - [📁 Architecture](#-architecture)
@@ -45,6 +47,20 @@ Built with **Next.js 16.2.1** (App Router), **Tailwind CSS 4**, it integrates di
 - **Live Gateway Monitoring**: Real-time Nanobot service status (PID, port, RPC probe)
 - **Direct Config Editor**: Built-in JSON editor for advanced configuration changes
 - **Agent Identity**: Workspace, provider, and operational constraints (maxToolIterations)
+
+### 🔀 Multi-Agent Management
+
+- **Agent Selector**: Top bar dropdown to switch between configured agents
+- **Agent-Scoped Views**: All pages automatically reflect the selected agent's data (config, memory, history, etc.)
+- **Independent Workspaces**: Each agent has its own `~/.nanobot-[name]/` workspace with separate:
+  - Configuration (`config.json`)
+  - Memory files (`workspace/memory/`)
+  - History (`workspace/memory/HISTORY.md`)
+  - Skills (`workspace/skills/`)
+  - Cron jobs (`workspace/cron/jobs.json`)
+  - Gateway service and logs
+- **X-Agent-ID Header**: API routes use the `X-Agent-ID` header to route requests to the correct agent
+- **Dynamic Service Discovery**: Automatically detects agents from `~/.nanobot*` directories
 
 ### 💬 Channel Management
 
@@ -181,6 +197,90 @@ For user-level services (recommended when `nanobot-gateway` is a user service), 
 
 ---
 
+## 🤖 Multi-Agent Setup
+
+Nanobot Web UI supports managing **multiple agents** from a single dashboard. Each agent has its own isolated workspace.
+
+### Directory Structure
+
+```
+~/.nanobot/           # Default agent (legacy)
+~/.nanobot-coding/    # Coding agent
+~/.nanobot-trading/   # Trading agent
+~/.nanobot-[name]/    # Custom agents
+```
+
+### Creating a New Agent
+
+1. **Create the workspace directory**:
+   ```bash
+   mkdir -p ~/.nanobot-myagent/workspace/memory
+   ```
+
+2. **Create a basic config.json**:
+   ```bash
+   cat > ~/.nanobot-myagent/config.json << 'EOF'
+   {
+     "agents": {
+       "defaults": {
+         "model": "claude-sonnet-4-20250514",
+         "provider": "anthropic"
+       }
+     },
+     "gateway": {
+       "port": 18792
+     }
+   }
+   EOF
+   ```
+
+3. **Create and start the gateway service**:
+   ```bash
+   nano ~/.config/systemd/user/nanobot-myagent-gateway.service
+   ```
+   
+   ```ini
+   [Unit]
+   Description=Nanobot MyAgent Gateway
+   After=network.target
+
+   [Service]
+   Type=simple
+   WorkingDirectory=/home/<USER>/.nanobot-myagent
+   ExecStart=/home/<USER>/.local/share/uv/tools/nanobot-ai/bin/nanobot gateway start
+   Restart=always
+   RestartSec=10
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+   
+   ```bash
+   systemctl --user daemon-reload
+   systemctl --user enable nanobot-myagent-gateway.service
+   systemctl --user start nanobot-myagent-gateway.service
+   ```
+
+4. **Configure the gateway port** in `config.json`:
+   ```json
+   {
+     "gateway": {
+       "port": 18792
+     }
+   }
+   ```
+
+The agent will appear in the top bar dropdown automatically.
+
+### Agent Discovery
+
+The dashboard automatically discovers agents by scanning for `~/.nanobot*` directories. The agent ID is derived from the directory name:
+- `.nanobot/` → `default`
+- `.nanobot-coding/` → `coding`
+- `.nanobot-trading/` → `trading`
+
+---
+
 ## 🌐 Remote Access with Tailscale
 
 You can securely access the dashboard from anywhere using **Tailscale**, a zero-config mesh VPN based on WireGuard.
@@ -233,11 +333,13 @@ Tailscale traffic is encrypted and authenticated; no additional firewall rules a
 
 ## ⚙️ Configuration
 
-The dashboard reads from and writes directly to your Nanobot configuration file:
+The dashboard reads from and writes directly to the active agent's Nanobot configuration file:
 
 ```
-~/.nanobot/config.json
+~/.nanobot-[agent-id]/config.json
 ```
+
+For the default agent: `~/.nanobot/config.json`
 
 ### Supported Config Sections
 
@@ -258,8 +360,11 @@ NANOBOT_HOME=/path/to/.nanobot
 
 ## 🔌 API Routes
 
+All routes support the `X-Agent-ID` header to target a specific agent. If omitted, the default agent is used.
+
 | Route | Method | Description |
 |-------|--------|-------------|
+| `/api/agents` | GET | List all discovered agents |
 | `/api/config` | GET/POST | Read/modify global configuration |
 | `/api/chat` | POST | Send a message to the agent (sessions) |
 | `/api/gateway/status` | GET | Nanobot-gateway service status |
@@ -309,11 +414,14 @@ src/
 │   └── ThemeProvider.tsx   # Theme context
 ├── hooks/
 ├── lib/
+│   ├── api-client.ts       # agentFetch() wrapper for multi-agent
 │   ├── cli.ts              # Nanobot CLI wrapper
 │   ├── server/
-│   │   └── agent-paths.ts  # Agent path resolution
+│   │   ├── agents.ts      # Agent discovery logic
+│   │   ├── agent-paths.ts # AgentPathResolver class
+│   │   └── request-agent.ts # X-Agent-ID header parsing
 │   ├── shared/
-│   │   └── agent-types.ts  # TypeScript types
+│   │   └── agent-types.ts # TypeScript types for agents
 │   └── utils.ts            # Utilities (cn, etc.)
 └── locales/                # (to be created) Translation files
     ├── fr.json

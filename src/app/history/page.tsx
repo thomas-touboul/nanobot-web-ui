@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface HistoryEntry {
   date: string;
@@ -38,6 +40,7 @@ export default function HistoryPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
   const [pagination, setPagination] = useState<HistoryResponse>({
     entries: [],
     total: 0,
@@ -54,7 +57,7 @@ export default function HistoryPage() {
       params.append('page', page.toString());
       params.append('limit', '10');
       
-      const response = await fetch(`/api/history?${params.toString()}`);
+      const response = await agentFetch(`/api/history?${params.toString()}`, {}, activeAgent);
       if (!response.ok) throw new Error("Failed to fetch history");
       const data: HistoryResponse = await response.json();
       setEntries(data.entries || []);
@@ -70,7 +73,7 @@ export default function HistoryPage() {
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [activeAgent]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

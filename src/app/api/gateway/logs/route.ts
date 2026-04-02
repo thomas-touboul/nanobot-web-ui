@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
 const execAsync = promisify(exec);
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // Get last 10 entries from journalctl for nanobot-gateway user service
-    const { stdout } = await execAsync('journalctl --user -u nanobot-gateway -n 10 --no-pager', {
+    const resolver = getResolverFromRequest(request);
+    const agent = resolver['agent'];
+    
+    // Get last 10 entries from journalctl for the agent's gateway service
+    const { stdout } = await execAsync(`journalctl --user -u ${agent.serviceName} -n 10 --no-pager`, {
       maxBuffer: 1024 * 1024 // 1MB buffer
     });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { 
   Puzzle, 
@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { useAgent } from "@/contexts/AgentContext";
+import { agentFetch } from "@/lib/api-client";
 
 interface Skill {
   folderName: string;
@@ -32,6 +34,7 @@ export default function SkillsPage() {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [confirmName, setConfirmName] = useState("");
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
   
   // Create Skill state
   const [newSkillTitle, setNewSkillTitle] = useState("");
@@ -39,9 +42,10 @@ export default function SkillsPage() {
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const fetchSkills = () => {
+  const fetchSkills = useCallback(() => {
+    if (!activeAgent) return;
     setLoading(true);
-    fetch("/api/skills")
+    agentFetch("/api/skills", {}, activeAgent)
       .then((res) => res.json())
       .then((data) => {
         setSkills(data);
@@ -51,21 +55,21 @@ export default function SkillsPage() {
         console.error(err);
         setLoading(false);
       });
-  };
+  }, [activeAgent]);
 
   useEffect(() => {
     fetchSkills();
-  }, []);
+  }, [fetchSkills]);
 
   const handleCreateSkill = async () => {
-    if (!newSkillTitle || !newSkillDescription) return;
+    if (!newSkillTitle || !newSkillDescription || !activeAgent) return;
     setCreating(true);
     try {
-      const res = await fetch("/api/skills", {
+      const res = await agentFetch("/api/skills", {
         method: "POST",
         body: JSON.stringify({ title: newSkillTitle, description: newSkillDescription }),
         headers: { "Content-Type": "application/json" },
-      });
+      }, activeAgent);
       if (res.ok) {
         setIsCreateModalOpen(false);
         setNewSkillTitle("");
@@ -83,12 +87,12 @@ export default function SkillsPage() {
   };
 
   const handleDeleteSkill = async () => {
-    if (!selectedSkill || confirmName !== selectedSkill.folderName) return;
+    if (!selectedSkill || confirmName !== selectedSkill.folderName || !activeAgent) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/skills?folderName=${selectedSkill.folderName}`, {
+      const res = await agentFetch(`/api/skills?folderName=${selectedSkill.folderName}`, {
         method: "DELETE",
-      });
+      }, activeAgent);
       if (res.ok) {
         setIsDeleteModalOpen(false);
         setSelectedSkill(null);
@@ -196,7 +200,7 @@ export default function SkillsPage() {
               <Puzzle className="w-8 h-8 opacity-20" />
             </div>
             <p className="text-lg font-semibold">No skills detected</p>
-             <p className="text-sm mt-1">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.nanobot/workspace/skills</code> folder</p>
+              <p className="text-sm mt-1">Install skills in the <code className="text-xs bg-secondary px-1 py-0.5 rounded">.nanobot-coding/workspace/skills</code> folder</p>
           </div>
         )}
       </div>
@@ -243,7 +247,7 @@ export default function SkillsPage() {
               
                <div className="flex items-center gap-2 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
                  <Info className="w-4 h-4 shrink-0" />
-                 <p className="text-xs leading-relaxed">This will create a new directory in <code>.nanobot/workspace/skills/</code> (relative to the dashboard) and initialize it with a <code>SKILL.md</code> file.</p>
+                  <p className="text-xs leading-relaxed">This will create a new directory in <code>.nanobot-coding/workspace/skills/</code> (relative to the dashboard) and initialize it with a <code>SKILL.md</code> file.</p>
                </div>
             </div>
 
@@ -288,7 +292,7 @@ export default function SkillsPage() {
             
             <div className="p-6 space-y-4">
                <p className="text-sm text-muted-foreground leading-relaxed">
-                 This action is <strong className="text-foreground">permanent</strong>. It will delete the <code>.nanobot/workspace/skills/{selectedSkill.folderName}</code> directory and all its contents.
+                  This action is <strong className="text-foreground">permanent</strong>. It will delete the <code>.nanobot-coding/workspace/skills/{selectedSkill.folderName}</code> directory and all its contents.
                </p>
               
               <div className="space-y-2">

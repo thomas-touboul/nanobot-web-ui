@@ -4,21 +4,30 @@ import { Agent } from '@/lib/shared/agent-types';
 
 /**
  * Determine le chemin racine par défaut pour l'agent.
- * Utilise NANOBOT_HOME si défini, sinon calcule le parent du répertoire du dashboard.
- * Le dashboard est attendu dans ~/.nanobot/nanobot-web-ui/, donc le parent est ~/.nanobot.
+ * Utilise NANOBOT_HOME si défini, sinon cherche .nanobot-coding ou .nanobot dans le système de fichiers
  */
 function getDefaultAgentRoot(): string {
   const envPath = process.env.NANOBOT_HOME;
   if (envPath) return envPath;
 
-  // Si on est dans le répertoire du projet (nanobot-web-ui), le parent est .nanobot
-  const cwd = process.cwd();
-  if (cwd.includes('nanobot-web-ui')) {
-    return path.resolve(cwd, '..');
+  // Chercher dans l'ordre de priorité:
+  const candidates = [
+    '/home/moltbot/.nanobot-coding',  // coding agent (priorité)
+    '/home/moltbot/.nanobot-trading', // trading agent
+    '/home/moltbot/.nanobot',         // legacy
+  ];
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      fs.appendFileSync('/home/moltbot/nanobot-agent-paths.log', `[${new Date().toISOString()}] Using: ${candidate}\n`);
+      return candidate;
+    }
   }
 
-  // Fallback pour le développement
-  return '/home/moltbot/.nanobot';
+  // Fallback final
+  const fallback = '/home/moltbot/.nanobot-coding';
+  fs.appendFileSync('/home/moltbot/nanobot-agent-paths.log', `[${new Date().toISOString()}] Fallback: ${fallback}\n`);
+  return fallback;
 }
 
 /**

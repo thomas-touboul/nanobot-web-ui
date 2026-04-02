@@ -5,6 +5,8 @@ import { Bot, Save, Loader2, RotateCcw, Folder, Cpu, Gauge, Zap, Brain } from "l
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface AgentConfig {
   workspace?: string;
@@ -23,10 +25,11 @@ export default function AgentPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const { t, language } = useTranslation();
+  const { activeAgent } = useAgent();
 
   const fetchConfig = async () => {
     try {
-      const res = await fetch("/api/config");
+      const res = await agentFetch("/api/config", {}, activeAgent);
       if (res.ok) {
         const data = await res.json();
         const agentConfig = data.agents?.defaults || {};
@@ -43,17 +46,17 @@ export default function AgentPage() {
 
   useEffect(() => {
     fetchConfig();
-  }, []);
+  }, [activeAgent]);
 
   const handleSave = async () => {
     setSaving(true);
     setMessage(null);
     try {
-      const saveRes = await fetch("/api/config", {
+      const saveRes = await agentFetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ agents: { defaults: config } }),
-      });
+      }, activeAgent);
       
       if (saveRes.ok) {
         setMessage({ 

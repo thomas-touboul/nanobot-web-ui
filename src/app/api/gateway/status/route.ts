@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
 const execAsync = promisify(exec);
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const resolver = getDefaultResolver();
-    const agent = resolver['agent']; // On accède à l'agent via le resolver
+    const resolver = getResolverFromRequest(request);
+    const agent = resolver['agent'];
 
      // 1. Check systemd service status (user service)
      let serviceState = 'inactive';

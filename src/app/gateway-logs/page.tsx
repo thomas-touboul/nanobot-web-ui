@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 export default function GatewayLogsPage() {
   const [logs, setLogs] = useState<string[]>([]);
@@ -21,10 +23,11 @@ export default function GatewayLogsPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState(3000); // 3 seconds
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
 
   const fetchLogs = useCallback(async () => {
     try {
-      const res = await fetch('/api/gateway/logs');
+      const res = await agentFetch('/api/gateway/logs', {}, activeAgent);
       if (!res.ok) throw new Error('Failed to fetch logs');
       const data = await res.json();
       
@@ -42,7 +45,7 @@ export default function GatewayLogsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeAgent]);
 
   useEffect(() => {
     fetchLogs();

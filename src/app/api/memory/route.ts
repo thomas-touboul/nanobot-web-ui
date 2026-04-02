@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const resolver = getDefaultResolver();
+    const resolver = getResolverFromRequest(request);
     const memoryDir = resolver.memoryDir();
     const files: any[] = [];
 
@@ -37,6 +37,7 @@ export async function GET() {
 
 export async function DELETE(request: Request) {
   try {
+    const resolver = getResolverFromRequest(request);
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('filename');
 
@@ -54,7 +55,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Cannot delete core system files' }, { status: 403 });
     }
 
-    const resolver = getDefaultResolver();
     const filePath = resolver.memoryFile(filename);
 
     // Check if file exists and is within memory directory

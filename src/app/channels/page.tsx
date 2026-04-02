@@ -5,6 +5,8 @@ import { MessageSquare, Save, Loader2, RotateCcw, Send, Smartphone } from "lucid
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface ChannelConfig {
   sendProgress?: boolean;
@@ -31,10 +33,11 @@ export default function ChannelsPage() {
   const [newChatId, setNewChatId] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
 
   const fetchConfig = async () => {
     try {
-      const res = await fetch("/api/config");
+      const res = await agentFetch("/api/config", {}, activeAgent);
       if (res.ok) {
         const data = await res.json();
         setConfig(data.channels || {});
@@ -48,17 +51,17 @@ export default function ChannelsPage() {
 
   useEffect(() => {
     fetchConfig();
-  }, []);
+  }, [activeAgent]);
 
   const handleSave = async () => {
     setSaving(true);
     setMessage(null);
     try {
-      const saveRes = await fetch("/api/config", {
+      const saveRes = await agentFetch("/api/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channels: config }),
-      });
+      }, activeAgent);
       
       if (saveRes.ok) {
         setMessage({ type: 'success', text: 'Configuration saved successfully!' });
