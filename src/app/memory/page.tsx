@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { 
   ChevronRight, 
@@ -16,6 +16,8 @@ import { cn } from "@/lib/utils";
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { useAgent } from "@/contexts/AgentContext";
+import { agentFetch } from "@/lib/api-client";
 
 interface MemoryFile {
   name: string;
@@ -61,7 +63,7 @@ const SortButton = ({ active, label, icon: Icon, onClick, order }: SortButtonPro
   </button>
 );
 
-const FileItem = ({ file, onDelete }: { file: MemoryFile, onDelete: (name: string) => void }) => {
+const FileItem = ({ file, onDelete, activeAgent }: { file: MemoryFile, onDelete: (name: string) => void, activeAgent: any }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -71,7 +73,7 @@ const FileItem = ({ file, onDelete }: { file: MemoryFile, onDelete: (name: strin
     if (confirm(`Are you sure you want to delete ${file.name}?`)) {
       setIsDeleting(true);
       try {
-        const res = await fetch(`/api/memory?filename=${file.name}`, { method: 'DELETE' });
+        const res = await agentFetch(`/api/memory?filename=${file.name}`, { method: 'DELETE' }, activeAgent);
         if (res.ok) {
           onDelete(file.name);
         } else {
@@ -165,13 +167,15 @@ const CoreCard = ({ file, title, description }: { file: MemoryFile, title: strin
 );
 
 export default function MemoryPage() {
+  const { activeAgent } = useAgent();
   const [files, setFiles] = useState<MemoryFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sort, setSort] = useState<{key: SortKey, order: "asc" | "desc"}>({ key: "name", order: "asc" });
 
-  const fetchFiles = () => {
-    fetch("/api/memory")
+  const fetchFiles = useCallback(() => {
+    if (!activeAgent) return;
+    agentFetch("/api/memory", {}, activeAgent)
       .then((res) => res.json())
       .then((data) => {
         setFiles(data.files || []);
@@ -181,11 +185,11 @@ export default function MemoryPage() {
         console.error(err);
         setLoading(false);
       });
-  };
+  }, [activeAgent]);
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [fetchFiles]);
 
   const handleDeleteFile = (name: string) => {
     setFiles(prev => prev.filter(f => f.name !== name));
@@ -283,7 +287,7 @@ export default function MemoryPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sortedFiles.map(f => <FileItem key={f.path} file={f} onDelete={handleDeleteFile} />)}
+          {sortedFiles.map(f => <FileItem key={f.path} file={f} onDelete={handleDeleteFile} activeAgent={activeAgent} />)}
           {sortedFiles.length === 0 && (
             <div className="col-span-full py-12 text-center border border-dashed border-border rounded-2xl bg-secondary/5">
               <p className="text-sm text-muted-foreground italic">No additional documents found.</p>

@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const resolver = getDefaultResolver();
+    const resolver = getResolverFromRequest(request);
     const configPath = resolver.config();
 
     if (!fs.existsSync(configPath)) {
@@ -25,7 +25,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const updates = await request.json();
-    const resolver = getDefaultResolver();
+    const resolver = getResolverFromRequest(request);
     const configPath = resolver.config();
 
     // Read existing config

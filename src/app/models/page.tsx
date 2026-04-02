@@ -17,6 +17,8 @@ import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface ProviderConfig {
   apiKey: string;
@@ -34,9 +36,10 @@ export default function ModelsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
 
   useEffect(() => {
-    fetch("/api/providers")
+    agentFetch("/api/providers", {}, activeAgent)
       .then((res) => res.json())
       .then((data) => {
         setProviders(data);
@@ -46,7 +49,7 @@ export default function ModelsPage() {
         console.error("Failed to fetch providers:", err);
         setLoading(false);
       });
-  }, []);
+  }, [activeAgent]);
 
   const handleUpdate = (name: string, field: keyof ProviderConfig, value: string) => {
     setProviders((prev) => ({
@@ -62,11 +65,11 @@ export default function ModelsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch("/api/providers", {
+      const res = await agentFetch("/api/providers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(providers),
-      });
+      }, activeAgent);
       if (res.ok) {
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
@@ -96,7 +99,7 @@ export default function ModelsPage() {
 
   return (
     <div className="space-y-8 container max-w-7xl py-8 animate-fade-in pb-20">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:flex-end justify-between gap-6">
         <HeaderWithIcon 
           title={t.pages.providers.title} 
           subtitle={t.pages.providers.subtitle}

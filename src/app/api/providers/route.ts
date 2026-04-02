@@ -1,10 +1,10 @@
 import fs from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const resolver = getDefaultResolver();
+    const resolver = getResolverFromRequest(request);
     const configPath = resolver.config();
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     return NextResponse.json(config.providers || {});
@@ -15,8 +15,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const resolver = getResolverFromRequest(req);
     const updatedProviders = await req.json();
-    const resolver = getDefaultResolver();
     const configPath = resolver.config();
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     

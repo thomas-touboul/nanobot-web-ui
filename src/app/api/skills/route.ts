@@ -1,12 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const resolver = getDefaultResolver();
+    const resolver = getResolverFromRequest(request);
     const skillsDir = resolver.skillsDir();
+    const root = resolver.root();
+    
+    // Debug: force write to stderr
+    process.stderr.write(`[SKILLS] Root=${root} SkillsDir=${skillsDir} Exists=${fs.existsSync(skillsDir)}\n`);
 
     if (!fs.existsSync(skillsDir)) {
       return NextResponse.json([]);
@@ -47,6 +51,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const resolver = getResolverFromRequest(req);
     const { title, description } = await req.json();
     
     if (!title || !description) {
@@ -57,7 +62,6 @@ export async function POST(req: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '');
     
-    const resolver = getDefaultResolver();
     const skillPath = resolver.skillFolder(slug);
     const skillFile = resolver.skillFile(slug);
 
@@ -87,6 +91,7 @@ ${description}
 
 export async function DELETE(req: NextRequest) {
   try {
+    const resolver = getResolverFromRequest(req);
     const { searchParams } = new URL(req.url);
     const folderName = searchParams.get('folderName');
 
@@ -94,7 +99,6 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Folder name is required' }, { status: 400 });
     }
 
-    const resolver = getDefaultResolver();
     const skillPath = resolver.skillFolder(folderName);
 
     // Security: ensure we are within the skills directory

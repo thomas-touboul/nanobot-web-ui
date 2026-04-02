@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const resolver = getDefaultResolver();
+    const resolver = getResolverFromRequest(request);
     const subagentsFile = path.join(resolver.memoryDir(), 'subagents.json');
 
     if (!fs.existsSync(subagentsFile)) {

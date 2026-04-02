@@ -15,6 +15,8 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/contexts/LanguageContext";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface GatewayStatus {
   service: string;
@@ -32,9 +34,10 @@ export default function Dashboard() {
   const [status, setStatus] = useState<GatewayStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
 
   useEffect(() => {
-    fetch("/api/gateway/status")
+    agentFetch("/api/gateway/status", {}, activeAgent)
       .then((res) => res.json())
       .then((data) => {
         setStatus(data);
@@ -44,7 +47,7 @@ export default function Dashboard() {
         console.error(err);
         setLoading(false);
       });
-  }, []);
+  }, [activeAgent]);
 
   return (
     <div className="space-y-6 container max-w-7xl py-4 animate-fade-in pb-20">
@@ -154,9 +157,9 @@ export default function Dashboard() {
               </span>
             </div>
              <div className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
-              <span className="text-sm text-muted-foreground">Protocol</span>
-              <span className="text-sm font-medium">WebSocket / HTTP</span>
-            </div>
+               <span className="text-sm text-muted-foreground">Protocol</span>
+               <span className="text-sm font-medium">WebSocket / HTTP</span>
+             </div>
           </div>
         </div>
       </div>

@@ -15,6 +15,8 @@ import {
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface CronJob {
   id: string;
@@ -68,11 +70,12 @@ export default function CronPage() {
   const [formData, setFormData] = useState<Partial<CronJob>>(emptyJob);
   const [saving, setSaving] = useState(false);
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
 
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/cron");
+      const res = await agentFetch("/api/cron", {}, activeAgent);
       const data = await res.json();
       if (Array.isArray(data)) {
         setJobs(data);
@@ -90,12 +93,12 @@ export default function CronPage() {
 
   useEffect(() => {
     fetchJobs();
-  }, []);
+  }, [activeAgent]);
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
     try {
-      const res = await fetch(`/api/cron?id=${id}`, { method: "DELETE" });
+      const res = await agentFetch(`/api/cron?id=${id}`, { method: "DELETE" }, activeAgent);
       if (res.ok) {
         setJobs(jobs.filter(j => j.id !== id));
       }
@@ -140,11 +143,11 @@ export default function CronPage() {
         ? { ...formData, id: editingJob.id }
         : formData;
 
-      const res = await fetch(url, {
+      const res = await agentFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
-      });
+      }, activeAgent);
 
       if (res.ok) {
         await fetchJobs();

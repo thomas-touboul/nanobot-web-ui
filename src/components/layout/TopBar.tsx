@@ -9,17 +9,21 @@ import { Sun, Moon, Languages } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function TopBar() {
-  const { activeAgent, agents } = useAgent();
+  const { activeAgent, agents, setActiveAgent } = useAgent();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean | null>(null);
 
+  // Check gateway status for the active agent
   useEffect(() => {
+    if (!activeAgent) return;
+    
     setMounted(true);
     const checkStatus = async () => {
       try {
-        const res = await fetch('/api/gateway/status');
+        // Pass agent ID to get the correct gateway status
+        const res = await fetch(`/api/gateway/status?agentId=${activeAgent.id}`);
         const data = await res.json();
         setIsOnline(data.state === 'active');
       } catch (error) {
@@ -29,7 +33,14 @@ export default function TopBar() {
     checkStatus();
     const interval = setInterval(checkStatus, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeAgent]);
+
+  const handleAgentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const agent = agents.find(a => a.id === e.target.value);
+    if (agent) {
+      setActiveAgent(agent);
+    }
+  };
 
   if (!mounted) return null;
 
@@ -42,9 +53,8 @@ export default function TopBar() {
           <Server className="h-4 w-4 text-muted-foreground" />
           <select 
             value={activeAgent.id}
-            onChange={() => {}} // Pour plus tard
-            className="text-xs bg-transparent border border-border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-foreground/20 disabled:opacity-50"
-            disabled={agents.length <= 1}
+            onChange={handleAgentChange}
+            className="text-xs bg-transparent border border-border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-foreground/20"
           >
             {agents.map(agent => (
               <option key={agent.id} value={agent.id}>

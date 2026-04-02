@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { getDefaultResolver } from '@/lib/server/agent-paths';
+import { getResolverFromRequest } from '@/lib/server/request-agent';
 
 export async function GET(request: Request) {
+  const resolver = getResolverFromRequest(request);
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q')?.toLowerCase();
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '10');
 
-  const resolver = getDefaultResolver();
   const historyPath = resolver.historyFile();
 
   if (!fs.existsSync(historyPath)) {

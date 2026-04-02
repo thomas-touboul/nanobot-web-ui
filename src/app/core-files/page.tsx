@@ -18,6 +18,8 @@ import {
 import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface File {
   name: string;
@@ -49,9 +51,10 @@ export default function CoreFilesPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const { activeAgent } = useAgent();
 
   useEffect(() => {
-    fetch("/api/files")
+    agentFetch("/api/files", {}, activeAgent)
       .then((res) => res.json())
       .then((data) => {
         const coreFiles = (data.files || []).filter((f: File) => 
@@ -64,7 +67,7 @@ export default function CoreFilesPage() {
         console.error(err);
         setLoading(false);
       });
-  }, []);
+  }, [activeAgent]);
 
   if (loading) {
     return (

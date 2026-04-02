@@ -10,6 +10,8 @@ import { HeaderWithIcon } from "@/components/HeaderWithIcon";
 import { useTranslation } from "@/contexts/LanguageContext";
 import { UI_ICONS, UI_STYLES } from "@/constants/ui-text";
 import { cn } from "@/lib/utils";
+import { agentFetch } from "@/lib/api-client";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface Message {
   id: string;
@@ -26,6 +28,7 @@ export default function ChatPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { t, language } = useTranslation();
+  const { activeAgent } = useAgent();
 
   // Initialize from localStorage
   useEffect(() => {
@@ -89,11 +92,11 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/chat", {
+      const res = await agentFetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input, sessionId }),
-      });
+      }, activeAgent);
 
       const data = await res.json();
 
