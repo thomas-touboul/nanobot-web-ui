@@ -3,6 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import { getResolverFromRequest } from '@/lib/server/request-agent';
 
+interface HistoryEntry {
+  cursor: number;
+  timestamp: string;
+  content: string;
+}
+
 export async function GET(request: Request) {
   const resolver = getResolverFromRequest(request);
   const { searchParams } = new URL(request.url);
@@ -10,27 +16,54 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '10');
 
-  const historyPath = resolver.historyFile();
+  // Try new JSONL format first, fallback to legacy HISTORY.md
+  const memoryDir = resolver.memoryDir();
+  const jsonlPath = path.join(memoryDir, 'history.jsonl');
+  const mdPath = path.join(memoryDir, 'HISTORY.md');
+  
+  let useJsonl = fs.existsSync(jsonlPath);
+  const historyPath = useJsonl ? jsonlPath : (fs.existsSync(mdPath) ? mdPath : null);
 
-  if (!fs.existsSync(historyPath)) {
+  if (!historyPath) {
     return NextResponse.json({ entries: [], total: 0, page, totalPages: 0 });
   }
 
   try {
-    const content = fs.readFileSync(historyPath, 'utf-8');
-    
-    // Regex to match any [timestamp] format, including ranges like "YYYY-MM-DD to YYYY-MM-DD" or "YYYY-MM-DD HH:mm-HH:mm"
-    const entryRegex = /\[([^\]]+)\] ([\s\S]*?)(?=\n\[[^\]]+\]|$)/g;
-    
-    const entries = [];
-    let match;
+    const entries: { date: string; content: string }[] = [];
 
-    while ((match = entryRegex.exec(content)) !== null) {
-      const date = match[1];
-      const text = match[2].trim();
+    if (useJsonl) {
+      // Parse JSONL format
+      const content = fs.readFileSync(historyPath, 'utf-8');
+      const lines = content.split('\n').filter(line => line.trim());
+      
+      for (const line of lines) {
+        try {
+          const entry: HistoryEntry = JSON.parse(line);
+          if (!query || 
+              entry.content.toLowerCase().includes(query) || 
+              entry.timestamp.includes(query)) {
+            entries.push({ 
+              date: entry.timestamp, 
+              content: entry.content 
+            });
+          }
+        } catch {
+          // Skip malformed JSON lines
+        }
+      }
+    } else {
+      // Parse legacy Markdown format
+      const content = fs.readFileSync(historyPath, 'utf-8');
+      const entryRegex = /\[([^\]]+)\] ([\s\S]*?)(?=\n\[[^\]]+\]|$)/g;
+      let match;
 
-      if (!query || text.toLowerCase().includes(query) || date.includes(query)) {
-        entries.push({ date, content: text });
+      while ((match = entryRegex.exec(content)) !== null) {
+        const date = match[1];
+        const text = match[2].trim();
+
+        if (!query || text.toLowerCase().includes(query) || date.includes(query)) {
+          entries.push({ date, content: text });
+        }
       }
     }
 
@@ -48,7 +81,8 @@ export async function GET(request: Request) {
       total, 
       page, 
       totalPages,
-      limit 
+      limit,
+      format: useJsonl ? 'jsonl' : 'markdown'
     });
   } catch (error) {
     console.error('Error reading history:', error);
